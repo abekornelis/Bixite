@@ -1,0 +1,203 @@
+.*
+.* Sort list of opcodes by opcode
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   $$OPCDOP ,
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC $$OPCDOP               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLB  &$$OPCDOP_SORTED        * Executed indicator
+         AIF   (&$$OPCDOP_SORTED).EXIT * Execute only once!
+&$$OPCDOP_SORTED SETB 1                * Ok: first pass
+.*
+         GBLC  &HEXVAL                 * Hexadecimal string
+         GBLC  &DECVAL                 * Decimal string
+.*
+.* Variables for processing opcode definitions
+         LCLA  &MAJOPCD                * Current major opcode
+         LCLA  &MINOPCD                * Current minor opcode
+         LCLA  &CATOPCD                * Category of opcode
+         LCLC  &OPCODE                 * Full Opcode
+         LCLC  &MASKVAL                * Mask value
+         LCLC  &ATTRIB                 * Attribute
+         LCLC  &MNEMON                 * Mnemonic
+.*
+.* Additional fields for processing
+         LCLA  &CURRENT                * Ptr to current &NAME entry
+         LCLA  &I,J                    * Pointers
+         LCLA  &P                      * Pointer
+         LCLB  &OPCD1,&OPCD2           * OPCDxxxx indicators
+.*
+.* Arrays to hold parsed opcode definitions
+         LCLA  &INDEX                  * Index for tables below
+         GBLA  &SIZING
+         GBLA  &MNEM_LAST              * Index for tables below
+         GBLC  &MNEM(2500)             * Mnemonics
+         GBLC  &OPCD(2500)             * Opcodes
+         GBLA  &OPCDMAJ(2500)          * Major Opcodes
+         GBLA  &OPCDMIN(2500)          * Minor Opcodes
+         GBLC  &MASK(2500)             * Mask values
+         GBLC  &DESC(2500)             * Descriptor codes
+         GBLC  &NAME(2500)             * Full names
+         GBLC  &ATTR(2500)             * Attributes
+         GBLA  &OPCDCAT(2500)          * Categories for sorted entries
+         GBLA  &OPCDPTR(2500)          * Opcode ptr in sequence
+         GBLA  &CATEGORY(2500)         * Category values
+         GBLA  &CATPTR(2500)           * Pointers per category
+.*
+.* Create &OPCDPTR array with pointers to &OPCD in ascending sequence
+.* We'll use an insert sort. This way, we'll get equals sorted by
+.* mnemonic as that is the original input data sequence.
+.*
+&INDEX   SETA  &MNEM_LAST              * Point last valid entry
+&CURRENT SETA  0                       * Point before first name
+.OUTLOOP ANOP  ,                       * Outer Loop
+         ACTR  2*&CURRENT+10           * Allow sufficient compares
+&CURRENT SETA  &CURRENT+1              * Point next opcode
+         AIF   (&CURRENT GT &MNEM_LAST).OUTEXIT * Exit loop on end
+&MAJOPCD SETA  (&OPCDMAJ(&CURRENT))    * Extract major opcode
+&MINOPCD SETA  (&OPCDMIN(&CURRENT))    * Extract minor opcode
+&ATTRIB  SETC  '&ATTR(&CURRENT)'       * Extract attribute
+&MASKVAL SETC  '&MASK(&CURRENT)'       * Extract Mask Value
+         AIF   (&MAJOPCD LT 0).CATNEG  * If negative: Ok
+         AIF   (&MAJOPCD LT 256).CAT00 * 00-FF - category 0
+&OPCODE  SETC  '&OPCD(&CURRENT)'       * Extract opcode
+&HEXVAL  SETC  '&OPCODE'(1,2)          * Extract major opcode
+         HEX2DEC ,                     * Convert to decimal
+&CATOPCD SETA  (&DECVAL)               * Result from HEX2DEC
+         AGO   .CATOK
+.CATNEG  ANOP  ,                       * Negative major opcode
+&CATOPCD SETA  (&MAJOPCD)              * Copy opcode
+         AGO   .CATOK
+.CAT00   ANOP  ,                       * Major opcode 00-FF
+&CATOPCD SETA  0                       * Category 00
+.CATOK   ANOP  ,
+.*
+.* Set up for inner loop: move all opcodes evaluating as larger
+.* up by 1 entry, insert new pointer when existing entry is smaller
+.* or when emptying entry 1. Sort on category, major opcode,
+.* minor opcode, mask value - retaining order on mnemonic
+.*
+&I       SETA  &CURRENT                * Point after last valid entry
+.INRLOOP ANOP  ,
+&J       SETA  &I                      * Point current free entry
+&I       SETA  &I-1                    * Point prior entry
+         AIF   (&I EQ 0).INRFND        * No more entries left
+&OPCDPTR(&J) SETA &OPCDPTR(&I)         * Copy pointer to free entry
+&OPCDCAT(&J) SETA &OPCDCAT(&I)         * Copy associated category
+         AIF   (&CATOPCD LT &OPCDCAT(&I)).INRLOOP * Wrong category
+         AIF   (&CATOPCD GT &OPCDCAT(&I)).INRFND  * OK: located
+&P       SETA  &OPCDPTR(&I)            * Get pointer to OPCD entry
+         AIF   (&MAJOPCD LT &OPCDMAJ(&P)).INRLOOP * Wrong major opcode
+         AIF   (&MAJOPCD GT &OPCDMAJ(&P)).INRFND  * OK: located
+         AIF   (&MINOPCD LT &OPCDMIN(&P)).INRLOOP * Next
+         AIF   (&MINOPCD GT &OPCDMIN(&P)).INRFND  * Ok: located
+         AIF   ('&MASKVAL' LT '&MASK(&P)').INRLOOP * Next
+         AIF   ('&MASKVAL' GT '&MASK(&P)').INRFND  * Ok: located
+.* Category, major opcode, minor opcode, and mask all match: multiple
+.* entries for the same cell. These are to be sorted by relevance:
+.* Currently supported instructions come first, older ones follow below
+.* And OPCDxxxx opcodes come after 'normal' opcodes
+&OPCD1   SETB  ('&ATTRIB' EQ 'Old')    * Current instruction old?
+&OPCD2   SETB  ('&ATTR(&P)' EQ 'Old')  * Sorted instruction old?
+         AIF   (&OPCD1 EQ &OPCD2).INRFND1 * No difference
+         AIF   (&OPCD1 EQ 1).INRFND    * Ok, add old one after current
+         AGO   .INRLOOP                * Move current instr further up
+.* Multiple old and current instructions: make sure OPCDxxxx
+.* mnemonics are sorted after any 'real' mnemonics.
+.INRFND1 ANOP  ,                       * Old separated from new
+&OPCD1   SETB  0
+&OPCD2   SETB  0
+         AIF   (K'&MNEMON LE 4).INRFND2 * Cannot be an OPCDxxxx
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').INRFND2 * no OPCDxxxx
+&OPCD1   SETB  1                       * Mark as OPCDxxxx entry to add
+.INRFND2 ANOP  ,
+         AIF   (K'&MNEM(&P) LE 4).INRFND3 * Cannot be OPCDxxxx
+         AIF   ('&MNEM(&P)'(1,4) NE 'OPCD').INRFND3 * No OPCDxxxx
+&OPCD2   SETB  1                       * Mark as existing OPCDxx entry
+.INRFND3 ANOP  ,
+         AIF   (&OPCD1 EQ &OPCD2).INRFND * Ok - no difference
+         AIF   (&OPCD1 EQ 1).INRFND    * Ok, add OPCDxxxx after others
+         AGO   .INRLOOP                * Skip existing OPCDxxxx
+.INRFND  ANOP  ,                       * Location found: insert entry
+&J       SETA  &I+1                    * Point current free entry
+&OPCDPTR(&J) SETA &CURRENT             * Set pointer to current &NAME
+&OPCDCAT(&J) SETA &CATOPCD             * Set associated category
+         AGO   .OUTLOOP                * Go add next &NAME entry
+.OUTEXIT ANOP  ,                       * Outer loop ends here
+.*
+.* All entries are sorted. Now fill &CATEGORY and &CATPTR arrays
+&I       SETA  0                       * Pointer for sorted opcodes
+&J       SETA  0                       * Pointer for categories
+&CATOPCD SETA  65535                   * Impossible value
+.CATLOOP ANOP  ,
+&I       SETA  &I+1
+         AIF   (&I GT &MNEM_LAST).CATEXIT
+         AIF   (&OPCDCAT(&I) EQ &CATOPCD).CATLOOP * No change: next
+&J       SETA  &J+1                    * Point next category
+&CATOPCD SETA  &OPCDCAT(&I)            * Extract new opcode
+&CATEGORY(&J) SETA &CATOPCD            * Save new category
+&CATPTR(&J) SETA &I                    * Index into sorted entries!
+         AGO   .CATLOOP
+.CATEXIT ANOP  ,
+.*
+.EXIT    MEND

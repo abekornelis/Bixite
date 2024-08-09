@@ -1,0 +1,276 @@
+.*
+.* Generate heading for an html page
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLHEAD &NAME,&LANG,&TYPE=INIT
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLHEAD               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         LCLC  &HTMLLANG               * Define language for page
+         LCLC  &CSSTYP                 * Type of CSS section, if any
+.*
+.* Check parameters
+         AIF   (K'&NAME EQ 0).ERROR1
+         AIF   (K'&LANG EQ 0).ERROR2
+.*
+         AIF   ('&LANG' EQ 'DE').LANGOK
+         AIF   ('&LANG' EQ 'ES').LANGOK
+         AIF   ('&LANG' EQ 'FR').LANGOK
+         AIF   ('&LANG' EQ 'FY').LANGOK
+         AIF   ('&LANG' EQ 'IT').LANGOK
+         AIF   ('&LANG' EQ 'NL').LANGOK
+         AIF   ('&LANG' EQ 'UK').LANGOK
+         AGO   .ERROR4
+.LANGOK  ANOP  ,
+&HTMLLANG SETC '&LANG'
+.*
+.* Obtain definitions for this page
+         GBLB  &(COPY_&NAME)             * On if COPY gen'ed for member
+         AIF   (&(COPY_&NAME)).COPYOK    * Member copied?
+         AINSERT '         HTMLHEAD &NAME,&LANG',FRONT
+         AINSERT '         COPY  &NAME',FRONT
+&(COPY_&NAME) SETB 1           * Indicate COPY was generated
+         MEXIT ,
+.COPYOK  ANOP  ,
+.*
+.* For old logic: generate heading; that's all
+.* For new logic: stack execution of HTMLBODY
+         GBLC  &(&NAME._SITE__XX)
+         GBLC  &(&NAME._SITE_LOGICAL_XX)
+         LCLC  &SITE                   * Name of site
+         LCLC  &X                      * Temp. string
+&SITE    SETC  UPPER('&(&NAME._SITE__XX)')
+         AIF   ('&(&NAME._SITE__XX)' EQ '').OLD * old Style
+         AIF   ('&TYPE' NE 'INIT').GENHEAD
+         AINSERT '         HTMLBODY &NAME,&LANG,&SITE',BACK
+         AGO   .EXIT
+.*
+.* Generate heading - new style. This does:
+.* 1) declare all globals we'll need
+.* 2) determine derived values we'll need
+.* 3) Generate first part of heading
+.* 4) Copy links from &NAME..xxH component
+.* 5) Generate remainder of heading
+.*
+.GENHEAD ANOP  ,
+.* Part 1: declare variables
+         GBLC  &($DEFAULT_LANG_DIR_&LANG)   * Directory for language
+         GBLC  &($DEFAULT_VAR_DOCTYPE_XX)   * Doctype definition
+         GBLC  &($&SITE._VAR_COMMENT_&LANG) * Thanks for reading this
+         GBLC  &($DEFAULT_VAR_HTML_&LANG)   * Html definition
+         GBLC  &($DEFAULT_VAR_SAVED_&LANG)  * Saved from
+         GBLC  &(&NAME._TITLE__&LANG)       * Page title
+         GBLC  &(&NAME._TITLE_OWNER__&LANG) * Page owner text
+         GBLC  &($&SITE._VAR_ICON_XX)       * Shortcut icon reference
+         GBLC  &(&NAME._VAR_ICON_XX)        * Shortcut icon reference
+         GBLC  &(&NAME._KEYS__&LANG)        * Keywords for page
+         GBLC  &(&NAME._DESC__&LANG)        * Description of page
+         GBLC  &($DEFAULT_CHANGED__XX)      * Change date for all
+         GBLC  &($&SITE._CHANGED__XX)       * Change date for site
+         GBLC  &(&NAME._CHANGED__XX)        * Change date for page
+         GBLC  &($&SITE._VAR_REPLY_XX)      * Reply-to mail address
+         GBLC  &($DEFAULT_VAR_GENERATOR_XX) * Name of html-generator
+         GBLC  &($DEFAULT_LANG_CODE_&LANG)  * Language code
+         GBLC  &($&SITE._CSS__XX)           * Default css-file
+         GBLC  &(&NAME._CSS__XX)            * Specific css-file
+         LCLC  &ORIGIN
+         LCLC  &TITLE
+         LCLC  &CHANGED
+         LCLC  &CSSFILE
+         LCLB  &ROOT
+.*
+.* Part 2: Determine derived values
+&TITLE   SETC  '&(&NAME._SITE__XX)'
+&X       SETC  LOWER('&(&NAME._SITE__XX)')
+         AIF   ('&X' NE 'root').SITEOK
+&ROOT    SETB  1                          * Mark as a root file
+&TITLE   SETC  '&(&NAME._SITE_LOGICAL_XX)' * Use logical site name
+&X       SETC  LOWER('&TITLE')            * Use logical site name
+.SITEOK  ANOP  ,
+&ORIGIN  SETC  '&($DEFAULT_VAR_SAVED_&LANG) http://www.&X'
+         AIF   ('&X' EQ 'bixoft' AND '&LANG' EQ 'NL').GENHNL
+&ORIGIN  SETC  '&ORIGIN'.'.com'
+         AGO   .GENHEXT
+.GENHNL  ANOP  ,
+&ORIGIN  SETC  '&ORIGIN'.'.nl'
+.GENHEXT ANOP  ,                           * extension  ok
+         AIF   (&ROOT).NODIR               * Skip language dir if root
+&ORIGIN  SETC  '&ORIGIN'.'/&($DEFAULT_LANG_DIR_&LANG)' * Add directory
+.NODIR   ANOP  ,
+&X       SETC  LOWER('&NAME')
+&ORIGIN  SETC  '&ORIGIN'.'/&X'.'.htm'      * Add file name
+
+         AIF   ('&(&NAME._TITLE_OWNER__&LANG)' EQ '').NOOWNER
+.* Owner override - explicitly stated
+&TITLE   SETC  '&(&NAME._TITLE_OWNER__&LANG)'
+.NOOWNER ANOP  ,
+&TITLE   SETC  '&TITLE - &(&NAME._TITLE__&LANG)'
+
+&CHANGED SETC  '&($DEFAULT_CHANGED__XX)'   * Assume default date
+         AIF   ('&CHANGED' GT '&($&SITE._CHANGED__XX)').DATE1
+&CHANGED SETC  '&($&SITE._CHANGED__XX)'    * Use site date
+.DATE1   ANOP  ,
+         AIF   ('&CHANGED' GT '&(&NAME._CHANGED__XX)').DATE2
+&CHANGED SETC  '&(&NAME._CHANGED__XX)'     * Use page date
+.DATE2   ANOP  ,
+
+         AIF   ('&(&NAME._CSS__XX)' EQ '').CSS1
+&CSSFILE SETC  '&(&NAME._CSS__XX)'         * Use specific name
+         AGO   .CSS9
+.CSS1    ANOP  ,
+&CSSFILE SETC  '&($&SITE._CSS__XX)'        * Use site default
+.CSS9    ANOP  ,
+
+.*
+.* Part 3: Generate first part of heading
+         HTMLPUN '&($DEFAULT_VAR_DOCTYPE_XX)',OP=HEAD
+         HTMLPUN '<!-- &LANG -->',OP=HEAD
+         HTMLPUN '&($&SITE._VAR_COMMENT_&LANG)',OP=HEAD
+         HTMLPUN '&($DEFAULT_VAR_HTML_&LANG)',OP=HEAD
+         HTMLPUN '<head>',OP=HEAD
+         HTMLPUN '<!-- &LANG -->',OP=HEAD
+         HTMLPUN '<!-- -->',OP=HEAD
+         HTMLPUN '<!-- &ORIGIN -->',OP=HEAD
+         HTMLPUN '<!-- -->',OP=HEAD
+         HTMLPUN '<title>&TITLE</title>',OP=HEAD
+&X       SETC    '&($&SITE._VAR_ICON_XX)'           * Default
+         AIF     ('&(&NAME._VAR_ICON_XX)' EQ '').ICONOK
+&X       SETC    '&(&NAME._VAR_ICON_XX)'            * Page-specific
+.ICONOK  HTMLPUN '&X',OP=HEAD
+.*
+.* Part 4: Generate links
+         GBLA  &(SIZE_&NAME._&LANG.H)    * Nr of entries
+         GBLC  &(HTML_&NAME._&LANG.H)(5) * Text of entries
+&J       SETA  0
+.LINKS   ANOP  ,
+&J       SETA  &J+1                      * Point next entry
+         AIF   (&J GT &(SIZE_&NAME._&LANG.H)).LINKSX
+         HTMLPUN '&(HTML_&NAME._&LANG.H)(&J)',OP=HEAD
+         AGO   .LINKS
+.LINKSX  ANOP  ,
+.*
+.* Part 5: Generate remainder of heading
+&X       SETC    '&(&NAME._KEYS__&LANG)' * Copy keywords for page
+&X       SETC    'content="&X."'
+         HTMLPUN '<meta http-equiv="keywords" &X />',OP=HEAD
+&X       SETC    '&(&NAME._DESC__&LANG)' * Copy description of page
+&X       SETC    'content="&X."'
+         HTMLPUN '<meta http-equiv="description" &X />',OP=HEAD
+         HTMLPUN '<meta http-equiv="robots"',OP=HEAD
+         HTMLPUN '      content="index,follow" />',OP=HEAD
+&X       SETC    '<meta http-equiv="Content-type"'
+&X       SETC    '&X content="text/html; charset=utf-8" />'
+         HTMLPUN '&X',OP=HEAD
+&X       SETC    '<meta http-equiv="author"      '
+&X       SETC    '&X content="Abe Kornelis" />'
+         HTMLPUN '&X',OP=HEAD
+&X       SETC    '<meta http-equiv="review"      '
+&X       SETC    '&X content="&CHANGED.)" />'
+         HTMLPUN '&X',OP=HEAD
+&X       SETC    '&($&SITE._VAR_REPLY_XX)' * Copy reply-to address
+&X       SETC    'content="&X."'
+         HTMLPUN '<meta http-equiv="reply-to"   &X />',OP=HEAD
+&X       SETC    '&($DEFAULT_VAR_GENERATOR_XX)' * Copy generator name
+&X       SETC    'content="&X."'
+         HTMLPUN '<meta http-equiv="generator"    &X />',OP=HEAD
+         HTMLPUN '<!-- &LANG -->',OP=HEAD
+&X       SETC    '&($DEFAULT_LANG_CODE_&LANG)'  * Copy language code
+&X       SETC    'content="&X."'
+         HTMLPUN '<meta http-equiv="content-language" &X />',OP=HEAD
+&X       SETC    '&CSSFILE'                     * Copy CSS filename
+&X       SETC    'href="&X." type="text/css" media="screen"'
+         HTMLPUN '<link rel="stylesheet" &X />',OP=HEAD
+         HTMLPUN '</head>',OP=HEAD
+         HTMLPUN '',OP=HEAD
+         AGO   .EXIT
+.*
+.* Generate heading for a HTML page
+.OLD     ANOP    ,
+         AINSERT '         HTMLGEN $DOCTYPE.ALG',BACK
+         AINSERT '         HTMLGEN $COMMENT.&LANG',BACK
+         AINSERT '         HTMLGEN $HTML.&LANG',BACK
+         AINSERT '         HTMLGEN $HEAD.ALG',BACK
+         AINSERT '         HTMLGEN &NAME..&LANG.H',BACK
+         AINSERT '         HTMLGEN $META.ALG',BACK
+         AINSERT '         HTMLGEN $META.&LANG',BACK
+         AINSERT '         HTMLGEN $STYLREL.ALG',BACK
+.*
+.* If this page has a private CSS definition, include it
+         GBLC     &(TYPE_&NAME._CSS)     * Type of CSS section if any
+&CSSTYP  SETC    '&(TYPE_&NAME._CSS)'
+         AIF     ('&CSSTYP' NE 'PRIVATE').NOCSS
+         AINSERT '         HTMLGEN &NAME..CSS',BACK
+.NOCSS   ANOP    ,
+         AINSERT '         HTMLGEN $HEADEND.ALG',BACK
+         AGO   .EXIT
+.*
+.ERROR1  MNOTE 8,'HTMLHEAD Error 1: Missing label on invocation'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLHEAD Error 2: Missing Language on invocation'
+         AGO   .EXIT
+
+.ERROR4  MNOTE 8,'HTMLHEAD Error 4: Unsupported language &LANG on invoc*
+               ation'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

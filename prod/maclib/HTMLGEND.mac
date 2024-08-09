@@ -1,0 +1,349 @@
+.*
+.* Generate a table of assembler Directives in html format
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLGEND ,
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLGEND               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLA  &OPCD_START,&OPCD_END   * Output from FINDOPCD/FINDMNEM
+.*
+.* Arrays to hold parsed opcode definitions
+         GBLA  &MNEM_LAST              * Index for tables below
+         AIF   (&MNEM_LAST EQ 0).ERROR27
+         GBLC  &MNEM(2500)             * Mnemonics
+         GBLA  &OPCDMIN(2500)          * Minor Opcodes
+         GBLC  &NAME(2500)             * Full names
+         GBLB  &GEND(2500)             * Generated on opcdxxxx pages
+         GBLA  &OPCDPTR(2500)          * Opcode ptr in sequence
+         LCLA  &P                      * Pointer
+.*
+.* Local variables for genopcd handling
+         LCLC  &CARD                   * Line content
+         LCLA  &L                      * Char index into &CARD
+         LCLA  &L3                     * Loop counter
+         LCLA  &LEN                    * Length
+         LCLC  &MNEMON                 * Mnemonic
+         LCLC  &nbsp
+.GENOPC2 ANOP  ,
+&nbsp    SETC  '&&nbsp'                * Must contain it's own value!
+.*
+.* Generate a table with all directives
+.*
+         GBLC  &SPC2NBSP                * Space conversion routine
+         LCLA  &AD(100)                 * Assembler Directives
+         LCLA  &PTRAD                   * Pointer for &AD
+         LCLA  &MD(100)                 * Macro Directives
+         LCLA  &PTRMD                   * Pointer for &MD
+         LCLA  &FT(100)                 * Field Types
+         LCLA  &PTRFT,&PTRFT2           * Pointers for &FT
+.*
+.* First we need to find all relevant directives and distribute
+.* them over the three tables, labelled type A thru C
+         FINDOPCD -2,-2                 * Macro directives
+         AIF   (&OPCD_START EQ 0).ERROR23
+&L3      SETA  &OPCD_START              * Save starting point
+         FINDOPCD -2,-1                 * Assembler directives
+         AIF   (&OPCD_START EQ 0).ERROR23
+&OPCD_START SETA &L3                    * Reset starting point
+         ACTR  16*(&OPCD_END-&OPCD_START)
+&L3      SETA  &OPCD_START-1            * Init loop over result set
+.OPLP9   ANOP  ,                        * Loop over instructions found
+&L3      SETA  &L3+1                    * Point next
+         AIF   (&L3 GT &OPCD_END).OPLP9X * Done: quit loop
+&P       SETA  &OPCDPTR(&L3)            * Extract pointer to &OPCD
+         AIF   (&OPCDMIN(&P) EQ -2).OPLP9B * Macro Directive
+&MNEMON  SETC  '&MNEM(&P)'              * Extract Mnemonic
+&L       SETA  ('&MNEMON' INDEX '.')    * Mnemonic has a period?
+         AIF   (&L EQ 0).OPLP9A         * Assembler directive
+.* Remaining cases: field types
+&MNEMON  SETC  '&MNEMON'(1,&L-1)        * Extract major
+         AIF   ('&MNEMON' EQ 'DC').OPLP9C * Ok: field type
+         AIF   ('&MNEMON' EQ 'DS').OPLP9C * Ok: field type
+         AGO   .ERROR24
+.OPLP9A  ANOP  ,
+&L       SETA  &PTRAD+1                 * Set new index
+&AD(&L)  SETA  &P                       * Insert pointer
+&PTRAD   SETA  &L                       * Move high water mark
+         AGO   .OPLP9
+.OPLP9B  ANOP  ,
+&L       SETA  &PTRMD+1                 * Set new index
+&MD(&L)  SETA  &P                       * Insert pointer
+&PTRMD   SETA  &L                       * Move high water mark
+         AGO   .OPLP9
+.OPLP9C  ANOP  ,
+&L       SETA  &PTRFT+1                 * Set new index
+&FT(&L)  SETA  &P                       * Insert pointer
+&PTRFT   SETA  &L                       * Move high water mark
+         AIF   ('&MNEMON' NE 'DC').OPLP9 * Ok: done
+&PTRFT2  SETA  &PTRFT+1                 * Starting index for DS
+         AGO   .OPLP9
+.OPLP9X  ANOP  ,
+&PTRFT   SETA  &PTRFT2-1                * Abridge to end of DC part
+.*
+.* Now that all relevant instructions have been buffered,
+.* we can start generating the actual html
+.*
+         HTMLPUN '<!-- UK -->'
+         HTMLPUN '<table class="opcodes">'
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <th>Assembler&nbsp;Directive</th>'
+         HTMLPUN '  <th>Description</th>'
+         HTMLPUN '  <th>Macro&nbsp;Directive</th>'
+         HTMLPUN '  <th>Description</th>'
+         HTMLPUN '  <th>DC/DS&nbsp;Field&nbsp;Type</th>'
+         HTMLPUN '  <th>Description</th>'
+         HTMLPUN ' </tr>'
+.* Loop over all rows
+         ACTR  16*(&OPCD_END-&OPCD_START)
+&L3      SETA  0
+.NOERR25 ANOP  ,
+.NOERR26 ANOP  ,
+.OPLPA   ANOP  ,
+&L3      SETA  &L3+1
+         AIF   (&L3 LE &PTRAD).OPLPAA   * Array 1 exhausted?
+         AIF   (&L3 LE &PTRMD).OPLPAA   * Array 2 exhausted?
+         AIF   (&L3 LE &PTRFT).OPLPAA   * Array 3 exhausted?
+         AGO   .OPLPAX                  * All arrays exhausted!
+.OPLPAA  ANOP  ,
+         HTMLPUN ' <tr>'
+.* First column: Assembler Directive with link or blank
+&P       SETA  &AD(&L3)                 * Extract instruction pointer
+         AIF   (&P EQ 0).OPLPA1A        * No entry: use a blank
+&MNEMON  SETC  (LOWER '&MNEM(&P)')      * Extract mnemonic in lowcase
+&CARD    SETC  '  <td><a href="opcd/&MNEMON..htm">&MNEM(&P)</a></td>'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA1L
+         HTMLPUN '&CARD'
+&GEND(&P) SETB 1                        * Mark instruction generated
+         AGO   .OPLPA1X
+.OPLPA1L ANOP  ,                        * Card is too long
+         HTMLPUN '  <td><a href="opcd/&MNEMON.htm">'
+         HTMLPUN '   &MNEM(&P)</a></td>'
+&GEND(&P) SETB 1                        * Mark instruction generated
+         AGO   .OPLPA1X
+.OPLPA1A ANOP  ,
+         HTMLPUN '  <td>&nbsp;</td>'
+.OPLPA1X ANOP  ,
+.* Second column: Description or blank
+&P       SETA  &AD(&L3)                 * Extract instruction pointer
+         AIF   (&P EQ 0).OPLPA2A        * No entry: use a blank
+&SPC2NBSP SETC '&NAME(&P)'              * Extract description
+         SPC2NBSP ,
+&CARD    SETC  '  <td>&SPC2NBSP.</td>'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA2L
+         HTMLPUN '&CARD'
+         AGO   .OPLPA2X
+.OPLPA2L ANOP  ,                        * Card is too long
+         HTMLPUN '  <td>'
+         HTMLPUN '   &SPC2NBSP'
+         HTMLPUN '  </td>'
+         AGO   .OPLPA2X
+.OPLPA2A ANOP  ,
+         HTMLPUN '  <td>&nbsp;</td>'
+.OPLPA2X ANOP  ,
+.* Third column: Macro Directive with link or blank
+&P       SETA  &MD(&L3)                 * Extract instruction pointer
+         AIF   (&P EQ 0).OPLPA3A        * No entry: use a blank
+&MNEMON  SETC  (LOWER '&MNEM(&P)')      * Extract mnemonic in lowcase
+&CARD    SETC  '  <td><a href="opcd/&MNEMON..htm">&MNEM(&P)</a></td>'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA3L
+         HTMLPUN '&CARD'
+&GEND(&P) SETB 1                        * Mark instruction generated
+         AGO   .OPLPA3X
+.OPLPA3L ANOP  ,                        * Card is too long
+         HTMLPUN '  <td><a href="opcd/&MNEMON..htm">'
+         HTMLPUN '   &MNEM(&P)</a></td>'
+&GEND(&P) SETB 1                        * Mark instruction generated
+         AGO   .OPLPA3X
+.OPLPA3A ANOP  ,
+         HTMLPUN '  <td>&nbsp;</td>'
+.OPLPA3X ANOP  ,
+.* Fourth column: Description or blank
+&P       SETA  &MD(&L3)                 * Extract instruction pointer
+         AIF   (&P EQ 0).OPLPA4A        * No entry: use a blank
+&SPC2NBSP SETC '&NAME(&P)'              * Extract description
+         SPC2NBSP ,
+&CARD    SETC  '  <td>&SPC2NBSP.</td>'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA4L
+         HTMLPUN '&CARD'
+         AGO   .OPLPA4X
+.OPLPA4L ANOP  ,                        * Card is too long
+&CARD    SETC  '   &SPC2NBSP'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA4T     * Still Too long
+         HTMLPUN '  <td>'
+         HTMLPUN '   &SPC2NBSP'
+         HTMLPUN '  </td>'
+         AGO   .OPLPA4X
+.OPLPA4T ANOP  ,
+         HTMLPUN '  <td>'
+         HTMLPUN '&SPC2NBSP'
+         HTMLPUN '  </td>'
+         AGO   .OPLPA4X
+.OPLPA4A ANOP  ,
+         HTMLPUN '  <td>&nbsp;</td>'
+.OPLPA4X ANOP  ,
+.* Fifth column: Field Type or blank
+&P       SETA  &FT(&L3)                 * Extract instruction pointer
+         AIF   (&P EQ 0).OPLPA5A        * No entry: use a blank
+&MNEMON  SETC  '&MNEM(&P)'              * Extract mnemonic
+         AIF   (K'&MNEMON LE 3).ERROR25
+         AIF   ('&MNEMON'(1,3) NE 'DC.').ERROR25
+&MNEMON  SETC  '&MNEMON'(4,*)           * Extract actual field type
+&CARD    SETC  '  <td>&MNEMON</td>'
+         HTMLPUN '&CARD'
+&GEND(&P) SETB 1                        * Mark instruction generated
+.* Equivalent DS intruction  must be marked generated as well
+&P       SETA  &FT(&PTRFT2)             * Extract ptr to DS part
+         AIF   ('&MNEM(&P)' NE 'DS.&MNEMON').OPLPA5X * Mismatch!
+&GEND(&P) SETB 1                        * Mark instruction generated
+&FT(&PTRFT2) SETA 0                     * Remove processed entry
+&PTRFT2  SETA  &PTRFT2+1                *   and point next DS entry
+         AGO   .OPLPA5X
+.OPLPA5A ANOP  ,
+         HTMLPUN '  <td>&nbsp;</td>'
+.OPLPA5X ANOP  ,
+.* Sixth column: Description or blank
+&P       SETA  &FT(&L3)                 * Extract instruction pointer
+         AIF   (&P EQ 0).OPLPA6A        * No entry: use a blank
+&SPC2NBSP SETC '&NAME(&P)'              * Extract description
+         AIF   (K'&SPC2NBSP LE 6).ERROR26
+         AIF   ('&SPC2NBSP'(1,5) NE 'DC - ').ERROR26
+&SPC2NBSP SETC '&SPC2NBSP'(6,*)         * Remove leading 'DC - '
+&L       SETA  ('&SPC2NBSP' INDEX ' - ') * Separator present?
+         AIF   (&L EQ 0).OPLPA6N        * No: normal case
+&SPC2NBSP SETC '&SPC2NBSP'(1,&L-1)      * Use only beginning
+         SPC2NBSP ,
+&CARD    SETC  '  <td>&SPC2NBSP.<br />'
+         HTMLPUN '&CARD'
+&SPC2NBSP SETC '&NAME(&P)'              * re-extract description
+&SPC2NBSP SETC '&SPC2NBSP'(6,*)         * Remove leading 'DC - '
+&SPC2NBSP SETC '&SPC2NBSP'(&L+3,*)      * Use only trailing part
+         SPC2NBSP ,
+&CARD    SETC  '   &SPC2NBSP.</td>'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA6T     * Too long?
+         HTMLPUN '&CARD'
+         AGO   .OPLPA6X
+.OPLPA6T ANOP  ,
+&CARD    SETC  '   &SPC2NBSP'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA6U     * Still too long?
+         HTMLPUN '&CARD'
+         HTMLPUN '  </td>'
+         AGO   .OPLPA6X
+.OPLPA6U ANOP  ,
+         HTMLPUN '&SPC2NBSP'
+         HTMLPUN '  </td>'
+         AGO   .OPLPA6X
+.OPLPA6N ANOP  ,
+         SPC2NBSP ,
+&CARD    SETC  '  <td>&SPC2NBSP.</td>'
+&LEN     SETA  DCLEN('&CARD')
+         AIF   (&LEN GT 71).OPLPA6L
+         HTMLPUN '&CARD'
+         AGO   .OPLPA6X
+.OPLPA6L ANOP  ,                        * Card is too long
+         HTMLPUN '  <td>'
+         HTMLPUN '   &SPC2NBSP'
+         HTMLPUN '  </td>'
+         AGO   .OPLPA6X
+.OPLPA6A ANOP  ,
+         HTMLPUN '  <td>&nbsp;</td>'
+.OPLPA6X ANOP  ,
+         HTMLPUN ' </tr>'
+         AGO   .OPLPA
+.OPLPAX  ANOP  ,
+         HTMLPUN '</table>'
+         AGO   .EXIT
+
+.*
+.* Error messages - never mind the numbers, once upon a time this
+.*                  macro was part of HTMLGEN macro.
+.*
+.ERROR23 MNOTE 8,'HTMLGEND error 23: No instructions found with opcode=-*
+               -'
+         AGO   .EXIT
+
+.ERROR24 MNOTE 8,'HTMLGEND error 24: Unexpected period in &MNEM(&P)'
+         AGO   .EXIT
+
+.ERROR25 MNOTE 12,'HTMLGEND error 25: Expected a DC. mnemonic in stead o*
+               f &MNEMON.: internal error!'
+         AGO   .NOERR25
+
+.ERROR26 ANOP  ,
+&MNEMON  SETC  '&MNEM(&P)'
+         MNOTE 12,'HTMLGEND error 26: Expected description of &MNEMON to*
+                start with "DC - "'
+         AGO   .NOERR26
+
+.ERROR27 MNOTE 8,'HTMLGEND error 27: No opcode definitions available'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

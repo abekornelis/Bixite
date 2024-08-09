@@ -1,0 +1,182 @@
+.*
+.* Define a fragment of html
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   HTMLDEF &NAM,&CSSTYP=
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLDEF                * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Local variables
+         LCLC  &NAME                   * Name-part before period
+         LCLC  &TYPE                   * Name-part after  period
+         LCLA  &I                      * Input counter
+         LCLA  &J                      * Working counter
+         LCLC  &CARD                   * Input line
+
+.*
+.* Check parameters
+         AIF   (T'&NAM EQ 'O').ERROR1
+&J       SETA  FIND('&NAM', ',:;!? ()[]{}<>-+/*=''"\|%^&&')
+         AIF   (&J NE 0).ERROR2
+&J       SETA  FIND('&NAM', '.')       * Search separator char.
+         AIF   (&J EQ 0).ERROR3
+         AIF   (&J EQ K'&NAM).ERROR3
+         AIF   (&J EQ 1).ERROR4
+&TYPE    SETC  '&NAM'(&J+1,*)          * Extract type
+&NAME    SETC  '&NAM'(1,&J-1)          * Extract name
+&J       SETA  FIND('&TYPE', '.')      * More periods?
+         AIF   (&J NE 0).ERROR5
+.*
+.* CSSTYP must be omitted, only for CSS files INCLUDE is allowed
+         AIF   ('&CSSTYP' EQ '').NOERR8
+         AIF   ('&CSSTYP' NE 'PRIVATE').ERROR8
+         AIF   ('&TYPE' NE 'CSS').ERROR9
+.NOERR8  ANOP  ,
+.*
+.* Global parms to hold buffered text
+         GBLA  &(SIZE_&NAME._&TYPE.)    * Nr of entries
+         GBLC  &(HTML_&NAME._&TYPE.)(5) * Text of entries
+         GBLC  &(TYPE_&NAME._&TYPE.)  * Type of section
+&I       SETA  &(SIZE_&NAME._&TYPE.)  * Current nr of entries
+         AIF   (&I NE 0).ERROR6
+&(TYPE_&NAME._&TYPE.) SETC '&CSSTYP'
+.*
+.* Process input data
+&I       SETA  0
+.LOOP    ANOP  ,
+         ACTR  20                      * Limit on branches
+&CARD    AREAD ,                       * Get source line
+.*              * Check for end of input data
+         AIF   (K'&CARD LT 5).CHKTXT   * Too short: Store
+         AIF   ('&CARD'(1,5) EQ '/HTML').LOOPEND
+.CHKTXT  ANOP  ,                       * Check for line overflow
+         AIF   (K'&CARD LE 71).STORE
+&J       SETA  72                      * Point continuation pos.
+         AIF   ('&CARD'(&J,1) EQ ' ').COL72OK * No continuation
+         AIF   ('&CARD'(&J,1) EQ '+').COL72OK *    continuation
+         AGO   .ERROR7                 * Invalid character found
+.COL72OK ANOP  , 
+         AIF   (K'&CARD EQ 72).STORE
+&J       SETA  73                      * Point start of trailer
+.CHKCHAR ANOP  ,
+         AIF   ('&CARD'(&J,1) NE ' ').ERROR7 * Accept spaces only!
+&J       SETA  &J+1                    * point next char
+         AIF   (&J GT K'&CARD).STORE   * All chars ok!
+         AGO   .CHKCHAR
+.STORE   ANOP  ,
+&I       SETA  &I+1
+&CARD    SETC  DOUBLE('&CARD')         * Single quotes cause havoc!
+&(HTML_&NAME._&TYPE.)(&I) SETC '&CARD' * Buffer card text
+.*       MNOTE *,'&I - &(HTML_&NAME._&TYPE.)(&I)'
+         AGO   .LOOP                   * Go process next card
+.LOOPEND ANOP  ,
+         AIF   (&I EQ 0).EMPTY
+&(SIZE_&NAME._&TYPE.) SETA &I         * Copy record count
+         MEXIT
+.EMPTY   ANOP  ,
+&(SIZE_&NAME._&TYPE.) SETA -1         * Mark definition empty
+.* $NULL.ALG should be empty, all others should not:
+         AIF   ('&NAME..&TYPE' NE '$NULL.ALG').WARN1
+         MEXIT
+.*
+.WARN1   MNOTE 4,'HTMLDEF Warning1: &NAME..&TYPE marked empty'
+         MEXIT
+.*
+.ERROR1  MNOTE 8,'&HTMLDEF Error1: Missing Name on HTMLDEF invocation'
+         AGO   .ERRLOOP
+
+.ERROR2  ANOP  ,
+&X       SETC  '&NAME'(&J,1)            * Extract faulty character
+         MNOTE 8,'HTMLDEF Error2: Illegal char &X on invocation &NAM'
+         AGO   .ERRLOOP
+
+.ERROR3  MNOTE 8,'HTMLDEF Error3: Missing Type on invocation &NAM'
+         AGO   .ERRLOOP
+
+.ERROR4  MNOTE 8,'HTMLDEF Error4: Missing Name on invocation: &NAM'
+         AGO   .ERRLOOP
+
+.ERROR5  MNOTE 8,'HTMLDEF Error5: Multiple periods in name field: &NAM'
+         AGO   .ERRLOOP
+
+.ERROR6  MNOTE 8,'HTMLDEF Error6: &NAME..&TYPE already defined'
+         AGO   .ERRLOOP
+
+.ERROR7  MNOTE 8,'HTMLDEF Error7: Data line &I in &NAME..&TYPE is too l*
+               ong'
+         AGO   .STORE
+
+.ERROR8  MNOTE 8,'HTMLDEF Error8: Invalid value for CSSTYP: &CSSTYP'
+         AGO   .ERRLOOP
+
+.ERROR9  MNOTE 8,'HTMLDEF Error9: CSSTYP &CSSTYP not allowed for &TYPE-t
+               ype sections'
+         AGO   .ERRLOOP
+
+.ERRLOOP ANOP  ,                       * Discard data lines
+&CARD    AREAD ,
+         ACTR  20                      * Limit on branches
+         AIF   (K'&CARD LT 5).ERRLOOP
+         AIF   ('&CARD'(1,5) NE '/HTML').ERRLOOP
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

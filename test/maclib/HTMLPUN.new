@@ -1,0 +1,259 @@
+.*
+.* Store html data to be punched
+.* Reformat and punch the stored data upon request
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLPUN &CARD,&OP=STORE
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLPUN                * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         LCLA  &I                      * Pointer
+         LCLC  &TXT                    * Text to be saved
+.*
+.* Check requested operation
+         AIF   ('&OP' EQ 'STORE').STORE
+         AIF   ('&OP' EQ 'HEAD').HEAD
+         AIF   ('&OP' EQ 'PUNCH').PUNCH
+         AIF   ('&OP' EQ 'RESET').RESET
+         AGO   .ERROR1
+.*
+.* Store a string of html for punching
+.STORE   ANOP  ,
+         GBLA  &SIZE_HTMLOUT           * Active lines in HTMLOUT
+         GBLC  &HTMLOUT(5000)          * Text to be punched
+&TXT     SETC  '&CARD'
+         AIF   ('&CARD'(1,1) NE '''').SAVE
+&I       SETA  K'&CARD                 * Point last char
+         AIF   ('&CARD'(&I,1) NE '''').SAVE
+&TXT     SETC  '&CARD'(2,&I-2)         * Remove unneeded quotes
+.SAVE    ANOP  ,
+         AIF   ('&TXT' NE '').SAVE2    * Cannot punch empty string!
+&TXT     SETC  ' '
+.SAVE2   ANOP  ,
+&SIZE_HTMLOUT SETA &SIZE_HTMLOUT+1     * point next entry
+&HTMLOUT(&SIZE_HTMLOUT) SETC '&TXT'    * Save for later
+         AGO   .EXIT
+
+.*
+.* Store a string of html header data for punching
+.HEAD    ANOP  ,
+         GBLA  &SIZE_HTMLHDR           * Active lines in HTMLHDR
+         GBLC  &HTMLHDR(5000)          * Text to be punched
+&TXT     SETC  '&CARD'
+         AIF   ('&CARD'(1,1) NE '''').SAVHDR
+&I       SETA  K'&CARD                 * Point last char
+         AIF   ('&CARD'(&I,1) NE '''').SAVHDR
+&TXT     SETC  '&CARD'(2,&I-2)         * Remove unneeded quotes
+.SAVHDR  ANOP  ,
+         AIF   ('&TXT' NE '').SAVHDR2  * Cannot punch empty string!
+&TXT     SETC  ' '
+.SAVHDR2 ANOP  ,
+&SIZE_HTMLHDR SETA &SIZE_HTMLHDR+1     * point next entry
+&HTMLHDR(&SIZE_HTMLHDR) SETC '&TXT'    * Save for later
+         AGO   .EXIT
+
+.*
+.* Punch all stored strings of html
+.PUNCH   ANOP  ,
+         GBLA  &SIZE_HTMLHDR           * Active lines in HTMLHDR
+         GBLC  &HTMLHDR(5000)          * Text to be punched
+         GBLA  &SIZE_HTMLOUT           * Active lines in HTMLOUT
+         GBLC  &HTMLOUT(5000)          * Text to be punched
+.*
+         LCLC  &DATA                   * Line to be punched
+         LCLA  &J                      * Counter
+         LCLC  &HDR                    * Header for text to be split
+         LCLA  &LEN                    * Length
+         LCLC  &TYP                    * Type of statement
+.*
+         AIF   (&SIZE_HTMLOUT LT 1).ERROR2
+         AIF   (&SIZE_HTMLHDR LT 1).ERROR3
+.LOOP1   ANOP  ,
+         ACTR  99
+         AIF   (&SIZE_HTMLHDR NE 0).LOOP1H
+&I       SETA  &I+1                    * Point next entry
+         AIF   (&I GT &SIZE_HTMLOUT).LOOP1X
+&DATA    SETC  '&HTMLOUT(&I)'          * Copy data to be punched
+         AGO   .LOOP1GO
+.LOOP1H  ANOP  ,                       * Retrieve data for header
+&I       SETA  &I+1                    * Point next entry
+         AIF   (&I GT &SIZE_HTMLHDR).LOOP1XH * exit from header
+&DATA    SETC  '&HTMLHDR(&I)'          * Copy data to be punched
+.LOOP1GO ANOP  ,                       * Process the data
+&J       SETA  DCLEN('&DATA')
+         AIF   (&J GE 72).BREAK        * Data fits on one card?
+         PUNCH '&DATA'
+&TYP     SETC  ''                      * Reset line type
+         AGO   .LOOP1
+.LOOP1XH ANOP  ,                       * eXit point for punch header
+&SIZE_HTMLHDR SETA 0                   * Indicate header is done
+&I       SETA  0                       * Reset counter for array 2
+         AGO   .LOOP1                  * And go punch body
+.LOOP1X  ANOP  ,                       * eXit point for punch loop
+.RESET   ANOP  ,
+&SIZE_HTMLOUT SETA 0                   * reset array to empty
+&SIZE_HTMLHDR SETA 0                   * reset array to empty
+         AGO   .EXIT
+.*
+.* Data line does not fit on a single card
+.* Break the data according to specific rules
+.BREAK   ANOP  ,
+         AIF   ('&TYP' NE '').SETDATA  * Stmt type already known
+&LEN     SETA  71                      * Default length
+&TYP     SETC  'TXT'                   * Assume plain text
+         AIF   ('&DATA'(1,4) EQ '<!--').SETCMT
+         AIF   ('&DATA'(1,9) EQ '<!DOCTYPE').SETDOCT
+         AIF   ('&DATA'(1,5) EQ '<html').SETHTML
+         AIF   ('&DATA'(1,5) EQ '<link').SETLINK
+         AIF   ('&DATA'(1,5) EQ '<meta').SETMETA
+         AIF   ('&DATA'(1,6) EQ '<title').SETTITL
+         AGO   .SETDATA
+.SETCMT  ANOP  ,
+&LEN     SETA  68                      * Length for comments
+&TYP     SETC  'COMMENT'               * Set to comments
+         AGO   .SETDATA
+.SETDOCT ANOP  ,
+&TYP     SETC  'DOCTYPE'               * Set to Doctype
+         AGO   .SETDATA
+.SETTITL ANOP  ,
+&TYP     SETC  'TITLE'                 * Set to Title
+         AGO   .SETDATA
+.SETHTML ANOP  ,
+&LEN     SETA  44                      * Force a short line
+&TYP     SETC  'HTML'                  * Set to html
+         AGO   .SETDATA
+.SETLINK ANOP  ,
+&J       SETA  INDEX('&DATA','stylesheet') * Css declaration?
+         AIF   (&J NE 0).SETSTYL       * Ok: Set stylesheet
+&TYP     SETC  'LINK'                  * Set to link
+&J       SETA  INDEX('&DATA',' href=') * Break at href=
+         AIF   (&J NE 0).LOOP2XF       * Ok - found break point
+         AGO   .SETDATA                * Not found: use normal logic
+.SETSTYL ANOP  ,
+&TYP     SETC  'STYLE'                 * Set to stylesheet declaration
+&J       SETA  INDEX('&DATA',' media=') * Break at media=
+         AIF   (&J NE 0).LOOP2XF       * Ok - found break point
+         AGO   .SETDATA                * Not found: use normal logic
+.SETMETA ANOP  ,
+&TYP     SETC  'META'                  * Set to meta tag
+&J       SETA  INDEX('&DATA',' content=') * Break at content=
+         AIF   (&J NE 0).LOOP2XF       * Ok - found break point
+         AGO   .SETDATA                * Not found: use normal logic
+.SETDATA ANOP  ,
+&J       SETA  &LEN+1                  * Find last space
+.LOOP2   ANOP  ,
+&J       SETA  &J-1                    * Point prior char
+         AIF   (&J EQ 0).LOOP2XR       * Not found: exit error
+         AIF   ('&DATA'(&J,1) EQ ' ').LOOP2XF * Exit found
+         AGO   .LOOP2                  * Not found: try next char
+.LOOP2XF ANOP  ,
+&HDR     SETC  '&DATA'(1,&J-1)         * Get first part
+&DATA    SETC  '&DATA'(&J,*)           * Keep remainder
+         AIF   ('&TYP' EQ 'COMMENT').BRKCMT
+         AIF   ('&TYP' EQ 'DOCTYPE').BRKDOCT
+         AIF   ('&TYP' EQ 'LINK').BRKLINK
+         AIF   ('&TYP' EQ 'STYLE').BRKLINK * Style is a subtype of link
+         AIF   ('&TYP' EQ 'META').BRKMETA
+         AIF   ('&TYP' EQ 'TITLE').BRKTITL
+         AGO   .LP2PUN
+.* Handle comments
+.BRKCMT  ANOP  ,
+&HDR     SETC  '&HDR'.' -->'           * Add end-of-comment
+&DATA    SETC  '<!--'.'&DATA'          * Make remainder comment too
+         AGO   .LP2PUN
+.* handle links
+.BRKLINK ANOP  ,
+&DATA    SETC  '     '.'&DATA'         * Additional indent
+         AGO   .LP2PUN
+.* handle doctype declaration
+.BRKDOCT ANOP  ,
+&DATA    SETC  '   '.'&DATA'           * Extra indent
+         AGO   .LP2PUN
+.* handle title text
+.BRKTITL ANOP  ,
+&DATA    SETC  '      '.'&DATA'       * Extra indent
+         AGO   .LP2PUN
+.* handle meta tags
+.BRKMETA ANOP  ,
+&DATA    SETC  '     '.'&DATA'         * Extra indent
+         AGO   .LP2PUN
+.LP2PUN  ANOP  ,
+         PUNCH '&HDR'                  * Punch first part
+         AGO   .LOOP1GO                * And retry for remainder
+.LOOP2XR ANOP  ,
+         MNOTE 8,'No spaces found in following statement:'
+         MNOTE 8,'&DATA'
+         AGO   .LOOP1
+.*
+.ERROR1  MNOTE 8,'HTMLPUN Error 1 - unsupported operation: &OP'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLPUN Error 2 - No data to punch!'
+         AGO   .EXIT
+
+.ERROR3  ANOP  ,
+.* Temp. code for compatability **!!
+         AIF   ('&HTMLOUT(1)'(1,10) EQ '<!DOCTYPE ').LOOP1
+         MNOTE 4,'HTMLPUN Error 3 - No header to punch!'
+         AGO   .LOOP1
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

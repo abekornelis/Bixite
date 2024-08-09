@@ -1,0 +1,461 @@
+.*
+.* Define a fragment of html
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   HTMLDEF &NAM,&CSSTYP=
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLDEF                * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         GBLC  &DEFINED_LANGUAGES      * All defined language codes
+.*
+.* Local variables
+         LCLC  &NAME                   * Name-part before period
+         LCLC  &TYPE                   * Name-part after  period
+         LCLA  &I                      * Input counter
+         LCLA  &J                      * Working counter
+         LCLC  &X                      * Temp. strings
+.*
+         LCLC  &CARD                   * Input line
+         LCLC  &COMMAND                * Current command
+         LCLC  &VAR                    * Current variable name
+         LCLC  &LANG                   * Current language for value
+         LCLC  &VALUE                  * Current value for variable
+         LCLB  &UNSAVED                * On if value not saved yet
+.*
+         LCLC  &CNAM                   * Compound name for created var
+         LCLC  &NAMES(150)             * Declared GBLC created varnames
+         LCLA  &N                      * Nr of valid entries in &NAMES
+.*
+.* Check parameters:
+.* - old style: &LABEL not used; &NAM contains component id
+.* - new style: &LABEL contains page name, no parameters allowed
+         AIF   (T'&LABEL EQ 'O').OLD
+         AIF   (T'&NAM NE 'O').ERROR20
+         AIF   (T'&CSSTYP NE 'O').ERROR21
+.*
+.* Global variables
+         GBLC  &STRIPIT                *
+         GBLC  &SP_LANG                * Selected language
+.*
+.* Process input data
+&NAME    SETC  UPPER('&LABEL')         * Name of the page
+&I       SETA  0
+.INLOOP  ANOP  ,
+         ACTR  80                      * Limit on branches
+&CARD    AREAD ,                       * Get source line
+.*              * Check for end of input data
+&J       SETA  (K'&CARD)
+         AIF   (&J LT 5).INCHK         * Too short: Store
+         AIF   ('&CARD'(1,5) EQ '/HTML').INLOOPX
+.INCHK   ANOP  ,                       * Check length of line
+         AIF   (&J EQ 80).INLENOK      * Input length ok?
+         AIF   (&J GT 80).ERROR22      * Input line too long?
+.* Too short: add spaces
+&I       SETA  (80-&J)                 * Nr of missing chars
+&X       SETC  (&I)' '                 * The missing spaces
+&CARD    SETC  '&CARD.&X'              * Complete input card
+.NOERR22 ANOP  ,
+.INLENOK ANOP  ,
+&X       SETC  (9)' '                  * Col 72-80 is 9 positions
+         AIF   ('&CARD'(72,9) NE '&X').ERROR23 * Should be blank!
+.NOERR23 ANOP  ,                       * Input data valid
+&X       SETC  (80)' '                 *
+         AIF   ('&CARD' EQ '&X').INLOOP * No data!
+.*
+.* Check for command or language code
+         AIF   ('&CARD'(1,1) NE '.').INNOCMD
+         AIF   (&UNSAVED).SAVE
+.INCMD   ANOP  ,                       * Resume point after SAVE
+&J       SETA  FIND('&CARD', ' ')      * Search separator char.
+         AIF   (&J EQ 0).ERROR24
+&COMMAND SETC  '&CARD'(1,&J-1)         * Extract command
+&COMMAND SETC  '&COMMAND'(2,*)         * remove leading period
+&COMMAND SETC  UPPER('&COMMAND')       * And set to uppercase
+&VAR     SETC  ''
+         AIF   ('&COMMAND' EQ 'CHANGED').CMD_CHG
+         AIF   ('&COMMAND' EQ 'CSS').CMD_CSS
+         AIF   ('&COMMAND' EQ 'DESC').INLOOP
+         AIF   ('&COMMAND' EQ 'KEYS').INLOOP
+         AIF   ('&COMMAND' EQ 'LANG').INLOOP
+         AIF   ('&COMMAND' EQ 'ROOT-COMPONENTS').INLOOP
+         AIF   ('&COMMAND' EQ 'SITE').CMD_SITE
+         AIF   ('&COMMAND' EQ 'TITLE').INLOOP
+         AIF   ('&COMMAND' EQ 'TITLE_OWNER').INLOOP
+         AIF   ('&COMMAND' EQ 'VAR').CMD_VAR
+         AGO   .ERROR25
+.CMD_SITE ANOP ,
+.* Syntax defines two arguments: 'root' or site-name (bixoft / hlasm)
+.* For root files optional second argument is logical site designation
+&STRIPIT SETC  '&CARD'(&J+1,*)         * &J still points after command
+         STRIP TYPE=LEFT
+&J       SETA  FIND('&STRIPIT', ' ')   * Search separator char.
+         AIF   (&J EQ 0).ERROR26
+&STRIPIT SETC  '&STRIPIT'(1,&J-1)      * Reatain data only
+&J       SETA  FIND('&STRIPIT', ',')   * Search separator comma
+         AIF   (&J EQ 0).SAV_SITE
+&VAR     SETC  'LOGICAL'               * Logical site designation
+&LANG    SETC  'XX'                    * All languages
+&VALUE   SETC  '&STRIPIT'(&J+1,*)      * Copy logical site designation
+&CNAM    SETC  '&NAME._&COMMAND._&VAR._&LANG'
+&N       SETA  &N+1                    * Allocate new entry
+&NAMES(&N) SETC '&CNAM'                * Remember this varname
+         GBLC  &(&CNAM)                * Declare as global
+&(&CNAM) SETC  '&VALUE'                * Save defined value
+         MNOTE 8,'&CNAM = &VALUE' **!!
+&STRIPIT SETC  '&STRIPIT'(1,&J-1)      * Copy real site designation
+         AIF   (UPPER('&STRIPIT') NE 'ROOT').ERROR34
+.NOERR34 ANOP  ,
+.SAV_SITE ANOP ,
+&VAR     SETC  ''                      * Varname irrelevant
+&LANG    SETC  'XX'                    * All languages
+&VALUE   SETC  '&STRIPIT'              * Copy site designation
+&UNSAVED SETB  1                       * Need to save this!
+         AGO   .INLOOP
+.CMD_CSS ANOP  ,
+&STRIPIT SETC  '&CARD'(&J+1,*)         * &J still points after command
+         STRIP TYPE=LEFT
+&J       SETA  FIND('&STRIPIT', ' ')   * Search separator char.
+         AIF   (&J EQ 0).ERROR33
+&VAR     SETC  ''                      * Varname irrelevant
+&LANG    SETC  'XX'                    * All languages
+&VALUE   SETC  '&STRIPIT'(1,&J-1)      * Copy CSS designation
+&UNSAVED SETB  1                       * Need to save this!
+         AGO   .INLOOP
+.CMD_CHG ANOP  ,
+&STRIPIT SETC  '&CARD'(&J+1,*)         * &J still points after command
+         STRIP TYPE=LEFT
+&J       SETA  FIND('&STRIPIT', ' ')   * Search separator char.
+         AIF   (&J EQ 0).ERROR29
+&VAR     SETC  ''                      * Varname irrelevant
+&LANG    SETC  'XX'                    * All languages
+&VALUE   SETC  '&STRIPIT'(1,&J-1)      * Copy site designation
+         AIF   (K'&VALUE NE 10).ERROR29
+         AIF   ('&VALUE'(5,1) NE '-').ERROR29
+         AIF   ('&VALUE'(8,1) NE '-').ERROR29
+&UNSAVED SETB  1                       * Need to save this!
+         AGO   .INLOOP
+.CMD_VAR ANOP  ,
+&STRIPIT SETC  '&CARD'(&J+1,*)         * &J still points after command
+         STRIP TYPE=LEFT
+&J       SETA  FIND('&STRIPIT', ' ')   * Search separator char.
+         AIF   (&J EQ 0).ERROR27
+&VAR     SETC  '&STRIPIT'(1,&J-1)      * Copy variable name
+&VAR     SETC  UPPER('&VAR')           *  all in uppercase
+         AGO   .INLOOP
+.*
+.* This line is not a command: check for language code
+.INNOCMD ANOP  ,                       * Input is not a command
+         AIF   ('&CARD'(3,1) NE ' ').ERROR29
+&X       SETC  UPPER('&CARD'(1,2))     * Extract language code
+         AIF   ('&X' EQ '  ').INNOLAN
+         AIF   ('&LANG' NE '&X' AND &UNSAVED).SAVE
+&LANG    SETC  UPPER('&X')             * Set current language
+         AIF   ('&COMMAND' EQ 'LANG').NOERR32
+&J       SETA  INDEX('&DEFINED_LANGUAGES','&LANG')
+         AIF   (&J EQ 0).ERROR32
+.NOERR32 ANOP  ,
+.INNOLAN ANOP  ,                       * No language change
+&STRIPIT SETC  '&CARD'(4,68)           * Remove language & trail-space
+         STRIP ,
+         AIF   ('&VALUE' NE '').INADD
+&VALUE   SETC  '&STRIPIT'              * Set initial value
+&UNSAVED SETB  1                       * Need to save this!
+         AGO   .INLOOP
+.INADD   ANOP  ,                       * Add to existing value:
+&VALUE   SETC  '&VALUE'.' &STRIPIT'    * dont forget intervening space
+         AGO   .INLOOP
+.INLOOPX ANOP  ,                       * Exit from .INLOOP
+         AIF   (&UNSAVED).SAVE
+         AGO   .EXIT
+.*
+.* Need to save a value defined in the loop above:
+.* Save to global created SETC variables, naming convention:
+.* &(&NAME._&COMMAND._&VAR._&LANG)
+.* e.g. BOTLNECK_SITE___ = bixoft
+.*      BOTLNECK_TITLE__UK = Solutions for 3GL-bottlenecks
+.*      BOTLNECK_VAR_SAVED_UK = Saved from
+.* etc.
+.* After saving the value we resume inloop at the appropriate point:
+.* - if &CARD starts with a period, we'll resume at .INCMD,
+.*   otherwise at .INNOCMD
+.*
+.SAVE    ANOP  ,
+         ACTR  &N+9
+         AIF   ('&LANG' NE '').SAVLANG * If language not specified
+&LANG    SETC  'XX'                    *   then default to XX
+.SAVLANG ANOP  ,
+&I       SETA  0                       * Index into names
+&CNAM    SETC  '&NAME._&COMMAND._&VAR._&LANG'
+.SAVLOOP ANOP  ,
+&I       SETA  &I+1                    * Point next entry
+         AIF   (&I GT &N).SAVOK        * Not found: ok
+         AIF   ('&NAMES(&I)' NE '&CNAM').SAVLOOP
+         AGO   .ERROR28
+.SAVOK   ANOP  ,
+&N       SETA  &N+1                    * Allocate new entry
+&NAMES(&N) SETC '&CNAM'                * Remember this varname
+         GBLC  &(&CNAM)                * Declare as global
+.NOERR28 ANOP  ,
+&(&CNAM) SETC  '&VALUE'                * Save defined value
+         MNOTE 8,'&CNAM = &VALUE' **!!
+         AIF   ('&COMMAND' EQ 'LANG').DEFLANG * Define a language?
+.* Reset all values
+.RESET   ANOP  ,
+&LANG    SETC  ''
+&VALUE   SETC  ''
+&UNSAVED SETB  0
+.* Resume at appropriate point in INLOOP
+         AIF   ('&CARD'(1,1) EQ '.').INCMD
+         AIF   ('&CARD'(1,5) EQ '/HTML').EXIT
+         AGO   .INNOCMD
+.*
+.* Specific code for defining a language
+.DEFLANG ANOP ,
+&J       SETA  INDEX('&DEFINED_LANGUAGES','&LANG') * Language occurs?
+         AIF   (&J NE 0).ERROR31
+&DEFINED_LANGUAGES SETC '&DEFINED_LANGUAGES &LANG' * Add to list
+.* Create new definition
+&STRIPIT SETC  '&VALUE'                * Copy values (we've got 2)
+&J       SETA  FIND('&STRIPIT', ',')   * Search separator char.
+         AIF   (&J EQ 0).ERROR30
+.* Save language code
+&VAR     SETC  'CODE'                  * Varname
+&VALUE   SETC  '&STRIPIT'(1,&J-1)      * Copy language code
+&CNAM    SETC  '&NAME._&COMMAND._&VAR._&LANG'
+&N       SETA  &N+1                    * Allocate new entry
+&NAMES(&N) SETC '&CNAM'                * Remember this varname
+         GBLC  &(&CNAM)                * Declare as global
+&(&CNAM) SETC  '&VALUE'                * Save defined value
+.* Save language directory
+&VAR     SETC  'DIR'                   * Varname
+&VALUE   SETC  '&STRIPIT'(&J+1,*)      * Copy language directory
+&CNAM    SETC  '&NAME._&COMMAND._&VAR._&LANG'
+&N       SETA  &N+1                    * Allocate new entry
+&NAMES(&N) SETC '&CNAM'                * Remember this varname
+         GBLC  &(&CNAM)                * Declare as global
+&(&CNAM) SETC  '&VALUE'                * Save defined value
+&VAR     SETC  ''                      * reset varname
+         AGO   .RESET
+
+
+
+.*
+.* Old style parameter checks
+.OLD     ANOP  ,
+         AIF   (T'&NAM EQ 'O').ERROR1
+&J       SETA  FIND('&NAM', ',:;!? ()[]{}<>-+/*=''"\|%^&&')
+         AIF   (&J NE 0).ERROR2
+&J       SETA  FIND('&NAM', '.')       * Search separator char.
+         AIF   (&J EQ 0).ERROR3
+         AIF   (&J EQ K'&NAM).ERROR3
+         AIF   (&J EQ 1).ERROR4
+&TYPE    SETC  '&NAM'(&J+1,*)          * Extract type
+&NAME    SETC  '&NAM'(1,&J-1)          * Extract name
+&J       SETA  FIND('&TYPE', '.')      * More periods?
+         AIF   (&J NE 0).ERROR5
+.*
+.* CSSTYP must be omitted, only for CSS files INCLUDE is allowed
+         AIF   ('&CSSTYP' EQ '').NOERR8
+         AIF   ('&CSSTYP' NE 'PRIVATE').ERROR8
+         AIF   ('&TYPE' NE 'CSS').ERROR9
+.NOERR8  ANOP  ,
+.*
+.* Global parms to hold buffered text
+         GBLA  &(SIZE_&NAME._&TYPE.)    * Nr of entries
+         GBLC  &(HTML_&NAME._&TYPE.)(5) * Text of entries
+         GBLC  &(TYPE_&NAME._&TYPE.)    * Type of section
+&I       SETA  &(SIZE_&NAME._&TYPE.)    * Current nr of entries
+         AIF   (&I NE 0).ERROR6
+&(TYPE_&NAME._&TYPE.) SETC '&CSSTYP'
+.*
+.* Process input data
+&I       SETA  0
+.LOOP    ANOP  ,
+         ACTR  20                      * Limit on branches
+&CARD    AREAD ,                       * Get source line
+.*              * Check for end of input data
+         AIF   (K'&CARD LT 5).CHKTXT   * Too short: Store
+         AIF   ('&CARD'(1,5) EQ '/HTML').LOOPEND
+.CHKTXT  ANOP  ,                       * Check for line overflow
+         AIF   (K'&CARD LE 71).STORE
+&J       SETA  72                      * Point continuation pos.
+         AIF   ('&CARD'(&J,1) EQ ' ').COL72OK * No continuation
+         AIF   ('&CARD'(&J,1) EQ '+').COL72OK *    continuation
+         AGO   .ERROR7                 * Invalid character found
+.COL72OK ANOP  , 
+         AIF   (K'&CARD EQ 72).STORE
+&J       SETA  73                      * Point start of trailer
+.CHKCHAR ANOP  ,
+         AIF   ('&CARD'(&J,1) NE ' ').ERROR7 * Accept spaces only!
+&J       SETA  &J+1                    * point next char
+         AIF   (&J GT K'&CARD).STORE   * All chars ok!
+         AGO   .CHKCHAR
+.STORE   ANOP  ,
+&I       SETA  &I+1
+&CARD    SETC  DOUBLE('&CARD')         * Single quotes cause havoc!
+&(HTML_&NAME._&TYPE.)(&I) SETC '&CARD' * Buffer card text
+.*       MNOTE *,'&I - &(HTML_&NAME._&TYPE.)(&I)'
+         AGO   .LOOP                   * Go process next card
+.LOOPEND ANOP  ,
+         AIF   (&I EQ 0).EMPTY
+&(SIZE_&NAME._&TYPE.) SETA &I         * Copy record count
+         MEXIT
+.EMPTY   ANOP  ,
+&(SIZE_&NAME._&TYPE.) SETA -1         * Mark definition empty
+.* $NULL.ALG should be empty, all others should not:
+         AIF   ('&NAME..&TYPE' NE '$NULL.ALG').WARN1
+         MEXIT
+.*
+.WARN1   MNOTE 4,'HTMLDEF Warning1: &NAME..&TYPE marked empty'
+         MEXIT
+.*
+.ERROR1  MNOTE 8,'&HTMLDEF Error1: Missing Name on HTMLDEF invocation'
+         AGO   .ERRLOOP
+
+.ERROR2  ANOP  ,
+&X       SETC  '&NAME'(&J,1)            * Extract faulty character
+         MNOTE 8,'HTMLDEF Error2: Illegal char &X on invocation &NAM'
+         AGO   .ERRLOOP
+
+.ERROR3  MNOTE 8,'HTMLDEF Error3: Missing Type on invocation &NAM'
+         AGO   .ERRLOOP
+
+.ERROR4  MNOTE 8,'HTMLDEF Error4: Missing Name on invocation: &NAM'
+         AGO   .ERRLOOP
+
+.ERROR5  MNOTE 8,'HTMLDEF Error5: Multiple periods in name field: &NAM'
+         AGO   .ERRLOOP
+
+.ERROR6  MNOTE 8,'HTMLDEF Error6: &NAME..&TYPE already defined'
+         AGO   .ERRLOOP
+
+.ERROR7  MNOTE 8,'HTMLDEF Error7: Data line &I in &NAME..&TYPE is too l*
+               ong'
+         AGO   .STORE
+
+.ERROR8  MNOTE 8,'HTMLDEF Error8: Invalid value for CSSTYP: &CSSTYP'
+         AGO   .ERRLOOP
+
+.ERROR9  MNOTE 8,'HTMLDEF Error9: CSSTYP &CSSTYP not allowed for &TYPE-*
+               type sections'
+         AGO   .ERRLOOP
+
+.ERROR20 MNOTE 8,'HTMLDEF Error20: Label and component-name both specif*
+               ied'
+         AGO   .ERRLOOP
+
+.ERROR21 MNOTE 8,'HTMLDEF Error21: Label and CSS-type both specified'
+         AGO   .ERRLOOP
+
+.ERROR22 MNOTE 8,'HTMLDEF Error22: Input data line too long:'
+         MNOTE 8,'&CARD'
+&CARD    SETC  '&CARD'(1,80)           * Truncate data
+         AGO   .NOERR22
+
+.ERROR23 MNOTE 8,'HTMLDEF Error23: Invalid continuation on card:'
+         MNOTE 8,'&CARD'
+         AGO   .NOERR23
+
+.ERROR24 MNOTE 8,'HTMLDEF Error24: No recognizable command found in:'
+         MNOTE 8,'&CARD'
+         AGO   .INLOOP
+
+.ERROR25 MNOTE 8,'HTMLDEF Error25: Unsupported command: .&COMMAND'
+         AGO   .INLOOP
+
+.ERROR26 MNOTE 8,'HTMLDEF Error26: Unsupported site: &STRIPIT'
+         AGO   .INLOOP
+
+.ERROR27 MNOTE 8,'HTMLDEF Error27: Unsupported varname: &STRIPIT'
+         AGO   .INLOOP
+
+.ERROR28 MNOTE 8,'HTMLDEF Error28: Duplicate definition for command &CO*
+               MMAND, varname &VAR, language &LANG'
+         AGO   .NOERR28
+
+.ERROR29 MNOTE 8,'HTMLDEF Error29: Invalid date: &STRIPIT'
+         AGO   .INLOOP
+
+.ERROR30 MNOTE 8,'HTMLDEF Error30: Missing comma in language definition*
+               : &STRIPIT'
+         AGO   .INLOOP
+
+.ERROR31 MNOTE 8,'HTMLDEF Error31: &LANG duplicate language definition'
+         AGO   .INLOOP
+
+.ERROR32 MNOTE 8,'HTMLDEF Error32: &LANG undefined language'
+         AGO   .NOERR32
+
+.ERROR33 MNOTE 8,'HTMLDEF Error33: Unsupported css-file: &STRIPIT'
+         AGO   .INLOOP
+
+.ERROR34 MNOTE 8,'HTMLDEF Error34: Second argument on .site only allowe*
+               d for root files'
+         AGO   .NOERR34
+
+.ERRLOOP ANOP  ,                       * Discard data lines
+&CARD    AREAD ,
+         ACTR  20                      * Limit on branches
+         AIF   (K'&CARD LT 5).ERRLOOP
+         AIF   ('&CARD'(1,5) NE '/HTML').ERRLOOP
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

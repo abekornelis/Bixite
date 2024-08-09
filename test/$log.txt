@@ -1,0 +1,85 @@
+22-04-11 Define syntax to replace .xxh components with a single unit
+         defining required elements for each language xx.
+         Definitions:
+         - component named on label, not on pos.parm 1
+         - command identifier: a dot in column one
+         - language codes: 2 characters in column 1-2
+           or blanks to indicate continuation. Defined language codes
+           de deutsch    = german
+           es español    = spanish
+           fr francais   = french
+           fy frysk      = frysian
+           it italiano   = italian
+           nl nederlands = dutch
+           uk english    = english
+           xx not applicable / all languages
+         - Defined commands:
+           .site  for site page belongs to
+           .title for page title
+           .desc  for description
+Time:    01:00 (20:15-21:15)
+
+23-04-11 Define syntax to replace .xxh components with a single unit
+         --> in columns 1-3 to indicate a link to another location
+         .keys  for keywords
+         .var   for named variables
+         Macro HTMLDEF changed to add support for new type of
+         definition, including support for new syntax.
+         Macro STRIP changed to strip either leading spaces, trailing
+         spaces, or both leading and trailing spaces (default)
+         Copy member $Defaults added
+         .lang   for valid languages defined
+         Macro HTMLHEAD modified to include $Defaults before all else
+         Macro HTMLHEAD modified to either generate AINSERTs for
+         retrieving definitions, or to generate actual html
+Time:    04:30 (11:00-12:00, 14:00-17:30)
+
+24-04-11 Modify macro HTMLHEAD to cause HTMLBODY to get executed
+         Modify macro HTMLBODY to cause HTMLHEAD TYPE=GEN and
+         HTMLPUN TYPE=PUNCH to get executed
+         --> HTMLHEAD logic is getting unnecessarily complex:
+         Create macro HTMLPAGE to replace initial HTMLHEAD
+         Modify macro HTMLBODY to behave according to 'old' logic
+         if the type of page is not set in the new way (global var)
+         Modify HTMLHEAD to generate heading using data from the
+         the new definitions; modify HTMLPUN to accept data with
+         TYPE=HEAD
+Time:    03:30 (11:00-12:00, 16:30-18:00, 19:30-20:30)
+
+24-04-11 Continue adding data to copy member DEFAULTS in order to
+         generate a proper header, in the new way.
+         Lots of modifications for macro HTMLPUN to mimic existing
+         way of breaking various types of statements.
+         --> Creating generic logic for lay-outing the source
+             postponed until later. One thing at a time.
+         .changed for last change date added at the page level, site
+                  level, and a general default
+         Modify macro HTMLDEF to support language definitions with
+         two parameters: language codes (nl, en-gb) and directory name
+         .css     for specifying css style sheet filename, either as
+                  site default, or specific for a page
+         Modify bixoft (root page) accordingly.
+         Regression test shows all html pages assemble ok, but the
+         css and .htaccess files do not.
+         Root pages cannot easily be fit into the new schema either.
+Time:    04:30 (9:50-10:50, 13:20-15:20, 16:55-17:25, 19:30-20:00)
+
+25-04-11 Issue for css and .htaccess files resolved by modifying
+         macro HTMLPAGE - now expects filename and type, where
+         type defaults to html if unspecified.
+         .root-components defined to for specifying components to
+         use for a page in the site's root. Macro HTMLDEF modified
+         accordingly. HTMLBODY modified to use the associated var.
+Time:    02:15 (8:30-9:30, 16:15-16:45, 21:15-22:00)
+
+26-04-11 Modify HTMLHEAD, HTMLBODY to correctly handle .site root
+         while generating header data and body components.
+         Modify HTMLDEF to support dual argument on .site syntax:
+         site-designation[,logical_site] second argument for root pages
+         .title_owner defined for overriding default owner for title
+Time:     (07:50-09:15, 19:40-20:10. 20:25-20:40)
+
+
+
+
+

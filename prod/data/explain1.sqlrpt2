@@ -1,0 +1,12 @@
+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------
+QUERY  PBLK  QBLK  PLNO  OPSQ  TYPE    JOIN   METHOD  TYPE    CREATOR   TABLE               NDXNAME   ACCESS      PREF  XO  MC  GJOUGJOU  PAR  CTEREF
+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------
+114    1     3     1           TABLEX         First   Table   DSN8810   DEPT                XDEPT2    I                 XO
+114    1     3     2           TABLEX  Innr   NLjoin  Table   DSN8810   EMP                 XEMP1     I                     1
+114    1     3     3           TABLEX         Sort                                                                                 U
+114          1     1           SELECT         First   Table   DSN8810   EMP                 XEMP2     I(2)        LST       1
+114          1     2           SELECT  L/R    NLjoin  Table   DSN8810   DEPT                XDEPT1    I                     1
+114          1     3           SELECT  L/R    NLjoin  Work    TU00001   MANAGERS                      T/R                            J
+114          1     4           SELECT         Sort                                                                                O
+DSNE610I NUMBER OF ROWS DISPLAYED IS 7
+DSNE616I STATEMENT EXECUTION WAS SUCCESSFUL, SQLCODE IS 100

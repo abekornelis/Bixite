@@ -1,0 +1,214 @@
+.*
+.* Find an opcode definition for a given opcode
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   FINDOPCD &MAJOR,&MINOR,&OPCDTYPE,&FIRSTBYTE
+.*
+.* OPCDTYPE defaults to HEX
+.*          specify DEC when MAJOR,MINOR are in decimal
+.*          DEC will not work correctly with up to X'FF' = 255
+.* FIRSTBYTE used only with DEC, specifies first byte of the opcode
+.*           in hex
+.*
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC FINDOPCD               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLB  &$$OPCDOP_SORTED        * Executed indicator
+         AIF   (&$$OPCDOP_SORTED).SORT_OK * Execute only once!
+         $$OPCDOP ,                    * Sort by opcode
+.SORT_OK ANOP  ,
+         GBLC  &HEXVAL,&DECVAL         * Input, output of HEX2DEC
+         GBLA  &OPCD_START,&OPCD_END   * Output range of FINDOPCD
+         GBLC  &OPCD_ATTR              * Output attribute for range
+.*
+.* Arrays to hold parsed opcode definitions
+         GBLA  &SIZING
+         GBLA  &MNEM_LAST              * Index for tables below
+         GBLC  &MNEM(2500)             * Mnemonics
+         GBLC  &OPCD(2500)             * Opcodes
+         GBLA  &OPCDMAJ(2500)          * Major Opcodes
+         GBLA  &OPCDMIN(2500)          * Minor Opcodes
+         GBLC  &MASK(2500)             * Mask values
+         GBLC  &DESC(2500)             * Descriptor codes
+         GBLC  &NAME(2500)             * Full names
+         GBLC  &ATTR(2500)             * Attributes
+         GBLA  &OPCDPTR(2500)          * Opcode ptr in sequence
+         GBLA  &CATEGORY(2500)         * Category values
+         GBLA  &CATPTR(2500)           * Pointers per category
+.*
+.* Local variables for processing
+         LCLA  &C                      * Pointer for &CATEGORY
+         LCLA  &I                      * Pointer for &OPCDPTR
+         LCLA  &P                      * Pointer for &OPCD
+         LCLA  &MAJOPCD,&MINOPCD       * Major, minor opcodes
+         LCLA  &CAT                    * Category
+.*
+.* Opcodes defined properly?
+         AIF   (&MNEM_LAST GT 0).OPCDOK
+         MNOTE 12,'FINDOPCD: internal error - no opcodes defined!'
+         MEXIT ,
+.OPCDOK  ANOP  ,
+.*
+.* Obtain numeric value of opcode
+         AIF   ('&OPCDTYPE' EQ '').FROMHEX * Apply default if omitted
+         AIF   ('&OPCDTYPE' EQ 'HEX').FROMHEX
+         AIF   ('&OPCDTYPE' EQ 'DEC').FROMDEC
+         AGO   .ERROR01
+.FROMDEC ANOP  ,
+         AIF   (K'&FIRSTBYTE NE 2).ERROR02
+         AIF   ('&FIRSTBYTE' EQ '00').ERROR03
+&MAJOPCD SETA  D2A('&MAJOR')
+&MINOPCD SETA  -1                      * No minor opcode
+         AIF   ('&MINOR' EQ '-1').FINDCAT
+&MINOPCD SETA  D2A('&MINOR')
+         AGO   .FINDCAT
+.FROMHEX ANOP  ,
+&HEXVAL  SETC  '&MAJOR'
+         HEX2DEC ,
+&MAJOPCD SETA  D2A('&DECVAL')
+&MINOPCD SETA  -1                      * No minor opcode
+         AIF   (K'&MINOR EQ 0).MINOROK
+         AIF   ('&MINOR' EQ '-1').MINOROK
+&HEXVAL  SETC  '&MINOR'
+         HEX2DEC ,
+&MINOPCD SETA  D2A('&DECVAL')
+.MINOROK ANOP  ,
+.*
+.* Determine category
+.FINDCAT ANOP  ,
+         AIF   (&MAJOPCD LT 0).CATNEG  * Negative opcode?
+         AIF   (&MAJOPCD LT 256).CATOK * CAT=00 for opcodes 00-FF
+         AIF   ('&OPCDTYPE' EQ 'DEC').CAT_DEC
+&HEXVAL  SETC  '&MAJOR'(1,2)           * Extract first byte of opcode
+         HEX2DEC ,
+&CAT     SETA  (&DECVAL)
+         AGO   .CATOK
+.CATNEG  ANOP  ,
+&CAT     SETA  (&MAJOPCD)              * Cat = opcode (-1 or -2)
+         AGO   .CATOK
+.CAT_DEC ANOP  ,
+&HEXVAL  SETC  '&FIRSTBYTE'            * Get first byte of opcode
+         AIF   ('&DECVAL' EQ '').ERROR04
+         HEX2DEC ,
+&CAT     SETA  (&DECVAL)
+.CATOK   ANOP  ,
+.*
+.* Find correct category
+&C       SETA  0
+.CATLOOP ANOP  ,
+&C       SETA  &C+1
+         AIF   (&CATPTR(&C) EQ 0).ERROR * Table exhausted: Not found
+         AIF   (&CATEGORY(&C) EQ &CAT).CATFND
+         AGO   .CATLOOP
+.CATFND  ANOP  ,
+.*
+.* Find first entry containing relevant opcode
+&I       SETA  (&CATPTR(&C)-1)         * Point before correct section!
+.LOOP1   ANOP  ,
+&I       SETA  &I+1
+         AIF   (&I GT &MNEM_LAST).ERROR * Not found!
+&P       SETA  (&OPCDPTR(&I))          * Extract pointer
+         AIF   (&OPCDMAJ(&P) LT &MAJOPCD).LOOP1 * Not yet ok
+         AIF   (&OPCDMAJ(&P) GT &MAJOPCD).ERROR * Not found
+         AIF   (&OPCDMIN(&P) LT &MINOPCD).LOOP1 * Not yet ok
+         AIF   (&OPCDMIN(&P) GT &MINOPCD).ERROR * Not found
+&OPCD_ATTR SETC '&ATTR(&P)'            * Copy Attribute
+.*
+.* Ok - we found the start of the range. Set return parm and
+.* start looking for the end of the range.
+&OPCD_START SETA &I                    * Save starting index
+.LOOP1A  ANOP  ,
+&I       SETA  &I+1
+         AIF   (&I GT &MNEM_LAST).LOOP1X * Ok, that's all!
+&P       SETA  (&OPCDPTR(&I))          * Extract pointer
+         AIF   (&OPCDMAJ(&P) NE &MAJOPCD).LOOP1X * Ok: that's all
+         AIF   (&OPCDMIN(&P) NE &MINOPCD).LOOP1X * Ok: that's all
+.* Another valid entry - check attributes
+         AIF   ('&ATTR(&P)' EQ '&OPCD_ATTR').LOOP1A
+&OPCD_ATTR SETC 'Mix'
+         AGO   .LOOP1A                 * Check next one
+.LOOP1X  ANOP  ,
+&I       SETA  &I-1                    * Backup to last match
+&OPCD_END SETA &I                      * Save ending index
+         AGO   .EXIT
+.*
+.ERROR01 MNOTE 8,'FINDOPCD Error 1: &OPCDTYPE is not valid for OPCDTYPE*
+               . Use HEX or DEC'
+         AGO   .ERROR
+
+.ERROR02 MNOTE 8,'FINDOPCD Error 2: With OPCDTYPE=DEC a valid two-chara*
+               cter hex value must be supplied for FIRSTBYTE'
+         AGO   .ERROR
+
+.ERROR03 MNOTE 8,'FINDOPCD Error 3: FIRSTBYTE=00 is not supported'
+         AGO   .ERROR
+
+.ERROR04 MNOTE 8,'FINDOPCD Error 4: FIRSTBYTE specifies &FIRSTBYTE whic*
+               h is not a valid hex number'
+         AGO   .ERROR
+.*
+.ERROR  ANOP  ,
+&OPCD_START SETA 0                     * No starting index
+&OPCD_END   SETA 0                     * No ending index
+.*
+.EXIT    ANOP  ,
+         MEND

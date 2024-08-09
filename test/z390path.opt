@@ -1,0 +1,6 @@
+
+* Path settings for Bixoft site test environment
+syscpy(+C:\BIXOFT\www-pgms\Bixite\test\copylib\*.cpy)
+sysmac(+C:\BIXOFT\www-pgms\Bixite\test\maclib\*.mac)
+sysmac(+C:\BIXOFT\www-pgms\Bixoft\Asmplus\test\maclib\*.mac)
+@C:\BIXOFT\www-pgms\Bixite\prod\z390path.opt

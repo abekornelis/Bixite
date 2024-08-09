@@ -1,0 +1,310 @@
+.*
+.* Generate a chunk of html from a stored fragment
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLGEN &MEMBER
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLGEN                * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Local variables
+         LCLC  &LABEL                  * First part of membername
+         LCLC  &TYPE                   * Second part of membername
+         LCLA  &I                      * Line counter
+         LCLA  &END                    * Nr of entries
+         LCLC  &CARD                   * Line content
+         LCLB  &BXACOND                * BXA condition active
+         LCLB  &BXAVAL                 * BXA condition value
+         LCLC  &CONDNAM,&BUFCNAM       * Condition name
+         LCLC  &CONDVAL,&BUFCVAL       * Condition value
+         LCLA  &L                      * Char index into &CARD/&HEXDIGS
+.*
+.* Extract LABEL and TYPE from MEMBER
+&LABEL   SETC  '&MEMBER'                 * In case no period found
+&I       SETA  ('&MEMBER' FIND '.')      * Contains a period?
+         AIF   (&I EQ 0).NODOT
+&LABEL   SETC  '&MEMBER'(1,&I-1)         * First part is label
+&TYPE    SETC  '&MEMBER'(&I+1,*)         * Remainder is type
+.NODOT   ANOP  ,
+.*
+.* Check parameters
+         AIF   (K'&LABEL EQ 0).ERROR1
+         AIF   (K'&TYPE EQ 0).ERROR2
+.*
+.* Global parms to hold buffered text
+         GBLC  &SP_DEST                  * Destination from sysparm
+         GBLC  &SP_DIR                   * Target directory; . for root
+         GBLC  &SP_LANG                  * Language for current page
+         GBLA  &(SIZE_&LABEL._&TYPE.)    * Nr of entries
+         GBLC  &(HTML_&LABEL._&TYPE.)(5) * Text of entries
+         GBLB  &(COPY_&LABEL)            * On if COPY gen'ed for member
+.*
+.* Copy member has been generated?
+         AIF   (&(COPY_&LABEL)).COPYOK   * Member copied?
+         AINSERT '         HTMLGEN &LABEL..&TYPE',FRONT
+         AINSERT '         COPY  &LABEL',FRONT
+&(COPY_&LABEL) SETB 1          * Indicate COPY was generated
+         MEXIT ,
+.COPYOK  ANOP  ,
+.*
+&BXACOND SETB  0                       * No condition active
+&END     SETA  &(SIZE_&LABEL._&TYPE.)  * Get nr of entries
+         AIF   (&END EQ  0).ERROR3A    * Member defined?
+         AIF   (&END EQ -1).ERROR3B    * Text defined?
+.*
+.* Process input data
+&I       SETA  0
+.LOOP    ANOP  ,
+&I       SETA  &I+1                    * Point next entry
+&CARD    SETC  '&(HTML_&LABEL._&TYPE.)(&I)' * Extract line
+.*
+.* Now that we have a card image, we need to check for bxa-tags
+         AIF   (K'&CARD LT 6).PUNCH    * Just punch this card
+         AIF   ('&CARD'(1,1) NE '<').PUNCH * if it is not a bxa tag
+         AIF   ('&CARD'(2,4) EQ 'bxa ').BXATAG
+         AIF   ('&CARD'(2,4) EQ '/bxa').BXAEND
+         AGO   .PUNCH                  * All others: just punch
+.*
+.* This is a BXA start tag or a singleton one
+.BXATAG  ANOP  ,
+         AIFB  (&BXACOND).ERROR4       * Nested condition: error
+&L       SETA  ('&CARD' INDEX '>')     * Tag terminator found?
+         AIF   (&L EQ 0).ERROR6
+&CARD    SETC  '&CARD'(6,&L-6)         * Extract condition text
+&L       SETA  K'&CARD
+         AIF   ('&CARD'(&L-1,2) NE ' /').NOSINGL * End in /> ??
+&CARD    SETC  '&CARD'(1,&L-2)         * Ok: remove terminator
+.NOSINGL ANOP ,
+&L       SETA  ('&CARD' INDEX ' ')     * Embedded blanks?
+         AIF   (&L GT 0).ERROR7
+&BXACOND SETB  1                       * Indicate condition applies
+&BXAVAL  SETB  1                       * Assume condition will be ok
+.*
+.* Now check each condition
+.LOOP2   ANOP  ,
+&L       SETA  ('&CARD' INDEX '=')     * Find equal sign
+         AIF   (&L EQ 0).ERROR8
+&CONDNAM SETC  '&CARD'(1,&L-1)         * Extract condition name
+&CONDVAL SETC  '&CARD'(&L+1,*)         * Remainder should be value
+&CARD    SETC  ''                      * Assume no more conditions
+&L       SETA  ('&CONDVAL' INDEX ',')  * Comma present?
+         AIF   (&L EQ 0).LOOP2C        * No: CONDVAL is ok
+&CARD    SETC  '&CONDVAL'(&L+1,*)      * Remaining condition(s)
+&CONDVAL SETC  '&CONDVAL'(1,&L-1)      * Extract correct value
+.LOOP2C  ANOP  ,                       * Condnam & condval correct
+.*
+.* Condition value enclosed in double quotes?
+         AIF   ('&CONDVAL'(1,1) NE '"').ERROR9
+&CONDVAL SETC  '&CONDVAL'(2,*)         * Remove leading "
+&L       SETA  (K'&CONDVAL)            * Point last byte
+         AIF   ('&CONDVAL'(&L,1) NE '"').ERROR9
+&CONDVAL SETC  '&CONDVAL'(1,&L-1)      * Remove trailing "
+.*
+.* Handle condition according to it's name
+&CONDNAM SETC  (UPPER '&CONDNAM')      * Make condition name and
+         AIF   ('&CONDNAM'EQ 'COPY').COPYDAT
+         AIF   ('&CONDNAM'EQ 'GENOPCD').GENOPCD
+         AIF   ('&CONDNAM'EQ 'FORMAT').FORMAT
+         AIF   ('&CONDNAM'EQ 'GENLIST').GENLIST
+&CONDVAL SETC  (UPPER '&CONDVAL')      *   value uppercase for compare
+         AIF   ('&CONDNAM' EQ 'DEST').DEST
+         AIF   ('&CONDNAM' EQ 'DIR').DIR
+         AIF   ('&CONDNAM' EQ 'LANG').LANG
+         AGO   .ERROR10                * Issue error
+
+.DEST    ANOP  ,                       * Check destination parm
+.*       MNOTE 8,'&MEMBER: &CONDVAL EQ &SP_DEST?'
+         AIF   ('&CONDVAL' EQ '&SP_DEST').LOOP2NX * Condition ok
+&BXAVAL  SETB  0                       * Condition is false!
+         AGO   .LOOP2NX                * Mainly for syntax checking
+
+.DIR     ANOP  ,                       * Check target directory
+.*       MNOTE 8,'&MEMBER: &CONDVAL EQ &SP_DIR?'
+         AIF   ('&CONDVAL' EQ '&SP_DIR').LOOP2NX * Condition ok
+&BXAVAL  SETB  0                       * Condition is false!
+         AGO   .LOOP2NX                * Mainly for syntax checking
+
+.LANG    ANOP  ,                       * Check language parm
+.*       MNOTE 8,'&MEMBER: &CONDVAL EQ &SP_LANG?'
+         AIF   ('&CONDVAL' EQ '&SP_LANG').LOOP2NX * Condition ok
+&BXAVAL  SETB  0                       * Condition is false!
+         AGO   .LOOP2NX                * Mainly for syntax checking
+
+.*
+.* More entries in bxa tag to be processed?
+.LOOP2NX ANOP  ,
+&L       SETA  (K'&CARD)               * Anything left?
+         AIF   (&L GT 0).LOOP2         * Yes: check next condition
+         AGO   .NOPUNCH                * No: get on with next card
+.*
+.* This is a BXA end tag
+.BXAEND  ANOP  ,
+         AIFB  (NOT &BXACOND).ERROR5   * End of no prior bxa tag
+&L       SETA  ('&CARD' INDEX '>')     * Tag terminator found?
+         AIF   (&L EQ 0).ERROR6
+&BXACOND SETB  0                       * End condition
+         AGO   .NOPUNCH                * And go process next card
+.*
+.* Punch an html card image - unless active condition is false
+.PUNCH   ANOP  ,
+         AIF   (&BXACOND AND NOT &BXAVAL).NOPUNCH
+         HTMLPUN '&CARD'
+.NOPUNCH ANOP  ,
+         ACTR  20
+         AIF   (&I LT &END).LOOP       * Go process next entry
+.*
+.* Issue error if bxa-tag unclosed
+         AIFB  (&BXACOND).ERROR11
+         MEXIT
+.*
+.* Generate an opcodes table
+.*
+.GENOPCD ANOP  ,
+&BXACOND SETB  0                       * No condition active!
+         AIF   (K'&CARD GT 0).GENOPCB  * more args: buffer command
+         HTMLGENO &CONDVAL
+         AGO   .NOPUNCH
+.GENOPCB ANOP  ,                       *
+&BUFCNAM SETC  '&CONDNAM'              * Buffer command name
+&BUFCVAL SETC  '&CONDVAL'              * Buffer command value
+         AGO   .LOOP2NX
+.*
+.* Generate an opcodes table using explicit format
+.*
+.FORMAT  ANOP  ,
+         AIF   ('&BUFCNAM' NE 'GENOPCD').ERROR12
+         HTMLGENF &BUFCVAL,&CONDVAL
+         AGO   .NOPUNCH
+.*
+.* Generate an opcodes list
+.*
+.GENLIST ANOP  ,
+&BXACOND SETB  0                       * No condition active!
+.*
+.* Invoke HTMLGENL to generate the List of opcodes
+         HTMLGENL &CONDVAL
+         AGO   .NOPUNCH
+.*
+.* Copy command to include another member
+.*
+.COPYDAT ANOP  ,
+&BXACOND SETB  0                        * No condition active!
+         HTMLPUN '>COPY &CONDVAL'
+         AGO   .NOPUNCH
+.*
+.ERROR1  MNOTE 8,'HTMLGEN error 1: Missing label on HTMLGEN invocation'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLGEN error 2: Missing Type on HTMLGEN invocation'
+         AGO   .EXIT
+
+.ERROR3A MNOTE 8,'HTMLGEN error 3A: &LABEL..&TYPE not defined'
+         AGO   .EXIT
+
+.ERROR3B ANOP  ,                        * *Exception: $NULL.ALG
+         AIF   ('&LABEL..&TYPE' EQ '$NULL.ALG').EXIT * should be empty!
+         MNOTE 4,'HTMLGEN warning 3B: No text defined for &LABEL..&TYPE*
+               '
+         AGO   .EXIT
+
+.ERROR4  MNOTE 8,'HTMLGEN error 4: Nested bxa tag for &LABEL..&TYPE on *
+               line &I'
+         AGO   .NOPUNCH                 * Ignore line
+
+.ERROR5  MNOTE 8,'HTMLGEN error 5: Superfluous bxa endtag for &LABEL..&*
+               TYPE on line &I'
+         AGO   .NOPUNCH                 * Ignore line
+
+.ERROR6  MNOTE 8,'HTMLGEN error 6: Missing > character for &LABEL..&TYP*
+               E on line &I'
+&BXACOND SETB  1                        * Enable as a valid condition
+&BXAVAL  SETB  0                        *  assume condition invalid
+         AGO   .NOPUNCH                 * Ignore line
+
+.ERROR7  MNOTE 8,'HTMLGEN error 7: Embedded blank(s) for &LABEL..&TYPE *
+               on line &I'
+&BXACOND SETB  1                        * Enable as a valid condition
+&BXAVAL  SETB  0                        *  assume condition invalid
+         AGO   .NOPUNCH                 * Ignore line
+
+.ERROR8  MNOTE 8,'HTMLGEN error 8: Missing = sign for &LABEL..&TYPE on *
+               line &I'
+&BXACOND SETB  1                        * Enable as a valid condition
+&BXAVAL  SETB  0                        *  assume condition invalid
+         AGO   .NOPUNCH                 * Ignore line
+
+.ERROR9  MNOTE 8,'HTMLGEN error 9: Missing " for &LABEL..&TYPE on line *
+               &I'
+         AGO   .LOOP2NX                 * Ignore condition
+
+.ERROR10 MNOTE 8,'HTMLGEN error 10: Unknown condition name &CONDNAM for*
+                &LABEL..&TYPE on line &I'
+         AGO   .LOOP2NX                 * Ignore condition
+
+.ERROR11 MNOTE 8,'HTMLGEN error 11: Unclosed bxa tag for &LABEL..&TYPE'
+         AGO   .EXIT
+
+.ERROR12 MNOTE 8,'HTMLGEN error 12: FORMAT command must be preceded by *
+               GENOPCD'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

@@ -1,0 +1,321 @@
+.*
+.* Define the body of an html document
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLBODY &NAME,&LANG,&PAGTYP,&SEP=,&ASSOC=,&SEP2=,            *
+               &ALTLOGO=,&ALTFTR=,&OPCODES=,&COMPNENT=
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLBODY               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         GBLC  &SP_DEST                * Destination: Local / Upload
+         LCLA  &CTR                    * Component counter
+         LCLA  &I                      * Counter
+         LCLC  &T_NAME,&L_NAME,&F_NAME * Suffixes
+.*
+.* Check parameters
+         AIF   (K'&NAME EQ 0).ERROR1
+         AIF   (K'&PAGTYP EQ 0).ERROR2
+         AIF   ('&PAGTYP' EQ 'BIXOFT').NOERR3
+         AIF   ('&PAGTYP' EQ 'HLASM').NOERR3
+         AIF   ('&PAGTYP' EQ 'ROOT').NOERR3
+         AGO   .ERROR3
+.NOERR3  ANOP  ,
+.*
+.* ALTLOGO only valid for BIXOFT
+         AIF   (K'&ALTLOGO EQ 0).NOERR6
+         AIF   ('&PAGTYP' NE 'BIXOFT').ERROR6
+.NOERR6  ANOP  ,
+.*
+.* ALTFTR only valid for BIXOFT
+         AIF   (K'&ALTFTR EQ 0).NOERR7
+         AIF   ('&PAGTYP' NE 'BIXOFT').ERROR7
+         AIF   ('&ALTFTR' EQ '*NONE').NOERR8
+         AIF   ('&ALTFTR' EQ 'INTROALT').NOERR8
+         AGO   .ERROR8
+.NOERR7  ANOP  ,
+.NOERR8  ANOP  ,
+.*
+.* OPCODES only valid for HLASM
+         AIF   (K'&OPCODES EQ 0).NOERR11
+         AIF   ('&PAGTYP' NE 'HLASM').ERROR11
+         AIF   ('&OPCODES' EQ 'GEN').NOERR12
+         AGO   .ERROR12
+.NOERR11 ANOP  ,
+.NOERR12 ANOP  ,
+.*
+.* COMPNENT only valid for ROOT
+         AIF   (K'&COMPNENT EQ 0).NOERR13
+         AIF   ('&PAGTYP' NE 'ROOT').ERROR13
+.NOERR13 ANOP  ,
+         AIF   ('&PAGTYP' NE 'ROOT').NOERR14
+         AIF   (K'&COMPNENT EQ 0).ERROR14
+.NOERR14 ANOP  ,
+.*
+.* Copy member for this page defined using HTMLDEF ?
+         GBLB  &(COPY_&NAME)            * On if COPY gen'ed for member
+         AIF   (NOT &(COPY_&NAME)).ERROR5 * Member copied?
+.*
+.* How many components for this page? (Check English only)
+&CTR     SETA  0
+.CTRLOOP ANOP  ,
+&CTR     SETA  &CTR+1
+         GBLA  &(SIZE_&NAME._UK&CTR.)   * Nr of entries
+         AIF   (&(SIZE_&NAME._UK&CTR.) NE 0).CTRLOOP
+&CTR     SETA  &CTR-1                   * Reduce to actual count
+.*
+.* Further logic depends on type of page
+         AIF   ('&PAGTYP' EQ 'BIXOFT').BIXOFT
+         AIF   ('&PAGTYP' EQ 'HLASM').HLASM
+         AIF   ('&PAGTYP' EQ 'ROOT').ROOT
+         AGO   .ERROR4
+.*
+.* Generate body for a BIXOFT page
+.BIXOFT  ANOP    ,
+         LCLC  &LOGO                   * Logo component name
+&LOGO    SETC  '$LOGO.&LANG'           * Default component
+         AIF   (K'&ALTLOGO EQ 0).LOGOOK
+&LOGO    SETC  '&ALTLOGO'              * Use alternate logo
+.LOGOOK  ANOP  ,
+.*
+         AINSERT '         HTMLGEN $BODY.ALG',BACK
+         AINSERT '         HTMLGEN &LOGO',BACK
+         AINSERT '         HTMLGEN &NAME..&LANG.T',BACK
+&I       SETA    0
+         AIF     (&CTR NE 0).BIXLOOP * Execute loop for body parts
+         HTMLPART &NAME,0,SEP=&SEP,ASSOC=&ASSOC,SEP2=&SEP2
+         AGO     .BIXOFT2
+.BIXLOOP ANOP    ,
+&I       SETA    &I+1
+         HTMLPART &NAME,&I,SEP=&SEP,ASSOC=&ASSOC,SEP2=&SEP2
+         AIF     (&I LT &CTR).BIXLOOP
+.BIXOFT2 ANOP    ,
+.* Footer part 1 - general
+         AIF     ('&ALTFTR' EQ '*NONE').BIXOFT4 * Skip footer part 1
+         AIF     ('&ALTFTR' EQ 'INTROALT').BIXOFTA * Alternate sequence
+         AINSERT '         HTMLGEN $HR.ALG',BACK
+         AINSERT '         HTMLGEN $EMAIL.&LANG',BACK
+         AIF     (&CTR EQ 0).BIXOFT3            * Subcomponent links?
+         AINSERT '         HTMLGEN $P.ALG',BACK
+         AINSERT '         HTMLGEN &NAME..&LANG.L',BACK
+.BIXOFT3 ANOP    ,
+         AINSERT '         HTMLGEN $HR50.ALG',BACK
+         AINSERT '         HTMLGEN $LINKS.&LANG',BACK
+.* Footer part 2 - Counters
+.BIXOFT4 ANOP    ,
+         AINSERT '         HTMLGEN $P.ALG',BACK
+.*       insert counters here (only for &SP_DEST = UPLOAD)
+.* Footer part 3 - Webring / copyright notice
+         AINSERT '         HTMLGEN $WEBRING.&LANG',BACK
+         AINSERT '         HTMLGEN $P.ALG',BACK
+         AINSERT '         HTMLGEN $COPYRT.&LANG',BACK
+         AINSERT '         HTMLGEN $BODYEND.ALG',BACK
+         AGO     .EXIT
+.BIXOFTA ANOP    ,         * Alternate sequence for footer part 1
+         AINSERT '         HTMLGEN $HR.ALG',BACK
+         AINSERT '         HTMLGEN $EMAIL2.&LANG',BACK
+         AINSERT '         HTMLGEN $FLAGS2.&LANG',BACK
+         AINSERT '         HTMLGEN &NAME..&LANG.L',BACK
+         AGO     .BIXOFT4  * Resume at part 2 of footer
+.*
+.* Generate body for a HLASM page
+.HLASM   ANOP    ,
+.* Opcode definitions required?
+         AIF    ('&OPCODES' NE 'GEN').NOOPCD
+         AINSERT '         COPY    $$OPCD',BACK
+.NOOPCD  ANOP    ,
+.* Which T-component to use?
+&T_NAME  SETC    '&LANG.T'
+         GBLA    &(SIZE_&NAME._&T_NAME.)   * Nr of entries
+         AIF     (&(SIZE_&NAME._&T_NAME.) NE 0).TNAMEOK
+         AIF     ('&LANG' EQ 'UK').TNAME_
+&T_NAME  SETC    'UKT'
+         GBLA    &(SIZE_&NAME._&T_NAME.)   * Nr of entries
+         AIF     (&(SIZE_&NAME._&T_NAME.) NE 0).TNAMEOK
+.TNAME_  ANOP    ,
+&T_NAME  SETC    ''
+.TNAMEOK ANOP    ,
+.* Which L-component to use?
+&L_NAME  SETC    '&LANG.L'
+         GBLA    &(SIZE_&NAME._&L_NAME.)   * Nr of entries
+         AIF     (&(SIZE_&NAME._&L_NAME.) NE 0).LNAMEOK
+         AIF     ('&LANG' EQ 'UK').LNAME_
+&L_NAME  SETC    'UKL'
+         GBLA    &(SIZE_&NAME._&L_NAME.)   * Nr of entries
+         AIF     (&(SIZE_&NAME._&L_NAME.) NE 0).LNAMEOK
+.LNAME_  ANOP    ,
+&L_NAME  SETC    ''
+         AIF     (&CTR NE 0).ERROR9
+.NOERR9  ANOP    ,
+.LNAMEOK ANOP    ,
+.* Which F-component to use?
+&F_NAME  SETC    '&LANG.F'
+         GBLA    &(SIZE_&NAME._&F_NAME.)   * Nr of entries
+         AIF     (&(SIZE_&NAME._&F_NAME.) NE 0).FNAMEOK
+         AIF     ('&LANG' EQ 'UK').FNAME_
+&F_NAME  SETC    'UKF'
+         GBLA    &(SIZE_&NAME._&F_NAME.)   * Nr of entries
+         AIF     (&(SIZE_&NAME._&F_NAME.) NE 0).FNAMEOK
+.FNAME_  ANOP    ,
+&F_NAME  SETC    ''
+         AGO     .ERROR10
+.NOERR10 ANOP    ,
+.FNAMEOK ANOP    ,
+.* Start generating the body components
+         AINSERT '         HTMLGEN $BODY.ALG',BACK
+         AINSERT '         HTMLGEN &NAME..&T_NAME',BACK
+&I       SETA    0
+         AIF     (&CTR NE 0).HLALOOP * Execute loop for body parts
+         HTMLPART &NAME,0,SEP=&SEP,ASSOC=&ASSOC,SEP2=&SEP2
+         AGO     .HLASM2
+.HLALOOP ANOP    ,
+&I       SETA    &I+1
+         HTMLPART &NAME,&I,SEP=&SEP,ASSOC=&ASSOC,SEP2=&SEP2
+         AIF     (&I LT &CTR).HLALOOP
+.HLASM2  ANOP
+.* Footer part 1 - Webring
+         AINSERT '         HTMLGEN $P.ALG',BACK
+         AINSERT '         HTMLGEN $WEBRING.&LANG',BACK
+.* Footer part 2 - subcomponment links + Copyright notice
+         AIF     ('&L_NAME' EQ '').HLASM3         * Subcomponent links?
+         AINSERT '         HTMLGEN &NAME..&L_NAME',BACK
+         AINSERT '         HTMLGEN $HR80.ALG',BACK
+.HLASM3  ANOP    ,
+         AIF     ('&F_NAME' EQ '').HLASM4         * Copyright notice?
+         AINSERT '         HTMLGEN &NAME..&F_NAME',BACK
+         AINSERT '         HTMLGEN $HR80.ALG',BACK
+.HLASM4  ANOP    ,
+.* Footer part 3 - Sponsor + logo
+         AINSERT '         HTMLGEN $SPONSOR.&LANG',BACK
+         AINSERT '         HTMLGEN $LOGO.&LANG',BACK
+         AINSERT '         HTMLGEN $BODYEND.ALG',BACK
+         AGO     .EXIT
+.*
+.* Generate body for a ROOT page
+.ROOT    ANOP    ,
+&CTR     SETA    (N'&COMPNENT)
+         AIF     (&CTR LT 3).ERROR15
+.NOERR15 ANOP    ,
+         AIF     ('&COMPNENT(1)' NE '$BODY.ALG').ERROR16
+.NOERR16 ANOP    ,
+         AIF     ('&COMPNENT(&CTR)' NE '$BODYEND.ALG').ERROR17
+.NOERR17 ANOP    ,
+&I       SETA    0
+.RTLOOP  ANOP    ,
+&I       SETA    &I+1
+         AINSERT '         HTMLGEN &COMPNENT(&I)',BACK
+         AIF     (&I LT &CTR).RTLOOP
+         AGO     .EXIT
+.*
+.ERROR1  MNOTE 8,'HTMLBODY Error 1: Missing page name on invocation'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLBODY Error 2: Missing page type on invocation'
+         AGO   .EXIT
+
+.ERROR3  MNOTE 8,'HTMLBODY Error 3: Invalid page type on invocation'
+         AGO   .EXIT
+
+.ERROR4  MNOTE 12,'HTMLBODY Error 4: Undetected invalid page type'
+         AGO   .EXIT
+
+.ERROR5  MNOTE 12,'HTMLBODY Error 5: Copy member &NAME not expanded'
+         AGO   .EXIT
+
+.ERROR6  MNOTE 8,'HTMLBODY Error 6: ALTLOGO valid only for BIXOFT'
+         AGO   .NOERR6
+
+.ERROR7  MNOTE 8,'HTMLBODY Error 7: ALTFTR valid only for BIXOFT'
+         AGO   .NOERR7
+
+.ERROR8  MNOTE 8,'HTMLBODY Error 8: ALTFTR=&ALTFTR not supported'
+         AGO   .NOERR8
+
+.ERROR9  MNOTE 8,'HTMLBODY Error 9: No component with links to sub-comp*
+               onents'
+         AGO   .NOERR9
+
+.ERROR10 MNOTE 8,'HTMLBODY Error 10: No copyright notice for &NAME'
+         AGO   .NOERR10
+
+.ERROR11 MNOTE 8,'HTMLBODY Error 11: OPCODES valid only for HLASM'
+         AGO   .NOERR11
+
+.ERROR12 MNOTE 8,'HTMLBODY Error 12: OPCODES=&OPCODES not supported'
+         AGO   .NOERR12
+
+.ERROR13 MNOTE 8,'HTMLBODY Error 13: COMPNENT valid only for ROOT'
+         AGO   .NOERR13
+
+.ERROR14 MNOTE 8,'HTMLBODY Error 14: COMPNENT required for ROOT'
+         AGO   .NOERR14
+
+.ERROR15 MNOTE 8,'HTMLBODY Error 15: COMPNENT list too short'
+         AGO   .NOERR15
+
+.ERROR16 MNOTE 8,'HTMLBODY Error 16: First COMPNENT must be $BODY.ALG'
+         AGO   .NOERR16
+
+.ERROR17 MNOTE 8,'HTMLBODY Error 17: Last COMPNENT must be $BODYEND.ALG*
+               '
+         AGO   .NOERR17
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

@@ -1,0 +1,5 @@
+
+* Path settings for Bixoft site prod environment
+syscpy(+C:\BIXOFT\www-pgms\Bixite\prod\copylib\*.cpy)
+sysmac(+C:\BIXOFT\www-pgms\Bixite\prod\maclib\*.mac)
+sysmac(+C:\BIXOFT\www-pgms\Bixoft\Asmplus\prod\maclib\*.mac)

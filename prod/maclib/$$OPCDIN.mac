@@ -1,0 +1,740 @@
+.*
+.* Read and Process a list of opcodes
+.* Store details in global SETx arrays for use by other macros
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   $$OPCDIN ,
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC $$OPCDIN               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLC  &STRIPIT                * String to be stripped
+         GBLC  &BINVAL                 * Binary string
+         GBLC  &HEXVAL                 * Hexadecimal string
+         GBLC  &DECVAL                 * Decimal string
+.*
+.* Variables for processing opcode definitions
+         LCLA  &LINE                   * Line counter for input
+         LCLA  &I,&J                   * Char ptrs in strings
+         LCLC  &DATA                   * Temp string
+         LCLC  &MNEMON                 * Mnemonic
+         LCLC  &OPCODE                 * Opcode
+         LCLA  &MAJOPCD                * Major Opcode
+         LCLA  &MINOPCD                * Minor Opcode
+         LCLC  &MASKVAL                * Mask value
+         LCLC  &DESCCD                 * Descriptor Code
+         LCLC  &FULLNM                 * Full Name
+         LCLC  &PAGNAM                 * Page name
+         LCLC  &ATTRIB                 * Attributes
+         LCLC  &PREV,&PRVMAJ,&PRVMIN   * Previous mnemonic
+         LCLC  &NEXT,&NXTMAJ,&NXTMIN   * Next mnemonic
+         LCLC  &NXT,&PRV               * For actual comparison
+         LCLA  &PTR                    * Char index into NXT, PRV
+         LCLC  &COLLATE,&COLLHEX,&COLL * Comparable chars
+&COLLATE SETC  'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+&COLLHEX SETC  'mx0123456789ABCDEF'    * mx allowed for extensions
+         LCLC  &TAB                    * Tab character (Ascii X'09')
+&TAB     SETC  '	'                  * 
+         LCLC  &DBLAMP                 * Holds double ampersand
+&DBLAMP  SETC  '&&'                    * HLASM accepts 2 ampersands
+.*
+.* Additional fields for processing
+         LCLC  &X,Y                    * Extracted characters
+         LCLB  &HASDIG                 * Mnemonic has digits
+         LCLB  &HASDASH                * Full name has a dash
+         LCLC  &MNEMON2                * Mnem from full name
+         LCLC  &FULLNM2                * Working copy of name
+         LCLC  $MASKV2                 * Working copy of mask value
+         LCLC  &SEARCH,&DIGITS         * Searchable chars
+&SEARCH  SETC  'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/'
+&DIGITS  SETC  '0123456789'            * Valid digit charaters
+.*
+.* Arrays to hold parsed opcode definitions
+         LCLA  &INDEX                  * Index for tables below
+         GBLA  &SIZING
+&SIZING  SETA  9999                    * Expected array size
+         GBLA  &MNEM_LAST              * Index for tables below
+         GBLC  &MNEM(9999)             * Mnemonics
+         GBLC  &OPCD(9999)             * Opcodes
+         GBLA  &OPCDMAJ(9999)          * Major Opcodes
+         GBLA  &OPCDMIN(9999)          * Minor Opcodes
+         GBLC  &MASK(9999)             * Mask values
+         GBLC  &DESC(9999)             * Descriptor codes
+         GBLC  &NAME(9999)             * Full names
+         GBLB  &GEND(9999)             * Generated on opcdxxxx pages
+         GBLC  &PAGE(9999)             * Page name for details
+         GBLC  &ATTR(9999)             * Attributes:
+.*                                     * Value 'Old' when:
+.*                                     *        not HLASM-supported
+.*                                     *     or not current on z10 ff.
+.*
+.* Arrays to hold parsed text definitions
+         LCLA  &TXT_NDX                * Index for tables below
+         LCLC  &SECTION(50)            * Section names
+         LCLA  &SECT_NDX(50)           * Section start index for &TEXT
+         LCLA  &TEXT_NDX               * Index for &TEXT
+         LCLC  &TEXT(500)              * Text lines
+.*
+.* Read and buffer all input data
+.* Format of input data part 1 (opcode definitions):
+.* BER         = 07    % 1000 $ B # Branch on Equal
+.*                                + Register
+.* Comment lines start with a '*' in column 1
+.* The opcodes definition table ends with a marker line
+.* that contains '@ OPCODES' starting in column 1
+.*
+&LINE    SETA  1                       * Line 1 is $$OPCDIN invocation
+.RDLOOP  ANOP  ,
+         ACTR  1024                    * Allow lots of loops!
+.* Read from designated input file
+&DATA    AREAD ,
+&LINE    SETA  &LINE+1                 * Adjust line counter
+         AIF   ('&DATA'(1,1) EQ '*').RDLOOP  * Skip comment lines
+         MNOTE *,'&DATA'
+&I       SETA  K'&DATA                 * Length of input
+.*
+.* Process first line of opcode definition
+         AIF   ('&DATA'(1,1) EQ ' ').CONTIN  * Continuation line
+         AIF   ('&DATA'(1,1) EQ '@').RDLOOPX * End of opcode list?
+         AIF   ('&DATA'(1,1) EQ '&TAB').ERROR0F * Tabs not supported!
+         AGO   .NORMAL                       * Assume normal line
+.CONTIN  ANOP  ,
+.*
+.* Add continuation line to results from previous line
+&I       SETA  ('&DATA' INDEX '+')     * Find continuation delimiter
+         AIF   (&I EQ 0).ERROR0A       * Issue error if missing
+&STRIPIT SETC  '&DATA'                 * Copy text and
+         STRIP ,                       * Remove spaces
+         AIF   ('&STRIPIT'(1,1) NE '+').ERROR0C
+&STRIPIT SETC  '&STRIPIT'(2,*)         * Remove leading '+'
+         STRIP ,                       * Remove spaces
+&I       SETA  K'&STRIPIT              * How much text left?
+         AIF   (&I EQ 0).ERROR0D
+&J       SETA  K'&FULLNM               * Preceding text
+         AIF   (&I+&J GT 250).ERROR0E  * Too long!
+&FULLNM  SETC  '&FULLNM'.' '.'&STRIPIT'  * Add to existing string
+         AGO   .RDLOOP ,
+.NORMAL  ANOP  ,
+.*
+.* Assume this is a normal line: Validate & store previous line
+.*
+.* Check correct sequencing (comparison includes length of string!)
+&PREV    SETC  '&NEXT'                 * Shove previous value
+&NEXT    SETC  '&MNEMON'               * Copy new mnemonic
+.* To check correct sequencing, we need to allow for either
+.* ascii or ebcdic coded input. Solution: translate character
+.* to index, independent of coding scheme.
+.* Furthermore, any opcodes containing a period need to be
+.* together, so must be compared by compartment
+.* To determine applicable case we need to know for each mnemonic
+.* whether or not there's a period involved
+&I       SETA  ('&PREV' FIND '.')      * Contains a period?
+&J       SETA  ('&NEXT' FIND '.')      * Contains a period?
+         AIF   (&J GT 0).CHK1C1        * Period in &NEXT?
+.* No period in &NEXT
+         AIF   (K'&NEXT GT 8).ERROR1F  * Oops, too long!
+.NOERR1F ANOP  ,
+         AIF   (&I GT 0).CHK1C2        * Period in &PREV?
+.* Combination 1:
+.* No period in either mnemonic: no special processing
+&NXT     SETC  '&NEXT'                 * Copy new mnemonic
+&PRV     SETC  '&PREV'                 * Copy prior mnemonic
+         AGO   .CHK1CLC                * Perform CLC-like operation
+.* We do have a period in &NEXT: Split into major/minor
+.CHK1C1  ANOP  ,
+&NXTMAJ  SETC  '&NEXT'(1,&J-1)         * Get major mnemonic
+&NXTMIN  SETC  '&NEXT'(&J+1,*)         * Get minor mnemonic
+         AIF   (K'&NXTMAJ GT 8).ERROR1G * Major mnemonic too long
+.NOERR1G ANOP  ,
+         AIF   (K'&NXTMIN GT 16).ERROR1H * Minor mnemonic too long
+.NOERR1H ANOP  ,
+         AIF   (&I GT 0).CHK1C3        * Period in &PREV?
+.* Combination 2:
+.* &NEXT has a period, but &PREV has not: start of subcodes for &PREV
+.* The part before the period needs to be equal to the prior mnemonic
+         AIF   ('&NXTMAJ' NE '&PREV').ERROR1C 
+         AGO   .NOERR1C                * Check complete
+.CHK1C2  ANOP  ,
+.* &NEXT has no period, but &PREV has: end of subcodes section
+.* Compare only major mnemonics, minor is irrelevant
+&PRVMAJ  SETC  '&PREV'(1,&I-1)         * Get major mnemonic
+&NXT     SETC  '&NEXT'                 * Copy new mnemonic
+&PRV     SETC  '&PRVMAJ'               * Copy prior major
+         AGO   .CHK1CLC                * Perform CLC-like operation
+.CHK1C3  ANOP  ,
+.* Combination 4:
+.* A period in both mnemonics: majors must be equal
+.* and minor mnemonics must be compared
+&PRVMAJ  SETC  '&PREV'(1,&I-1)         * Get major mnemonic
+&PRVMIN  SETC  '&PREV'(&I+1,*)         * Get minor mnemonic
+         AIF   ('&NXTMAJ' NE '&PRVMAJ').ERROR1C 
+&NXT     SETC  '&NXTMIN'               * Copy new minor
+&PRV     SETC  '&PRVMIN'               * Copy prior minor
+.CHK1CLC ANOP  ,
+.*
+.* Need to compare &PRV to &NXT, according to collating sequence
+         AIF   ('&NXT' EQ '&PRV').NOERR1C * Equals are allowed!
+&PTR     SETA  0
+&COLL    SETC  '&COLLATE'              * EBCDIC upper sequence
+.CHK1CLP ANOP  ,                       * Loop re-entry point
+&PTR     SETA  &PTR+1
+         AIF   (&PTR GT K'&PRV).NOERR1C * End of string?
+         AIF   (&PTR LE 4).CHK1CGO
+         AIF   ('&NXT'(1,4) NE 'OPCD').CHK1CGO
+&COLL    SETC  '&COLLHEX'              * Extended Hex collating
+.CHK1CGO ANOP  ,
+&X       SETC  '&NXT'(&PTR,1)          * Extract 1 char from nxt
+&Y       SETC  '&PRV'(&PTR,1)          * Extract 1 char from prv
+&I       SETA  ('&COLL' INDEX '&X')    * Find collating value for nxt
+         AIF   (&I EQ 0).ERROR1I       * Illegal character!
+.NOERR1I ANOP  ,
+         AIF   ('&X' EQ '&Y').CHK1CLP  * Equal: try next character
+&J       SETA  ('&COLL' INDEX '&Y')    * Find collating value for prv
+         AIF   (&I LT &J).ERROR1C      * New less than prior?
+.* No, new value compares higher: ok
+.NOERR1C ANOP  ,
+.*
+.* Check to make sure mnemonic matches full name
+.* Skip this section for unknown operations UNK...
+         AIF   ('&OPCODE' NE '????').START1D
+         AIF   (K'&MNEMON LE 3).START1D
+         AIF   ('&MNEMON'(1,3) EQ 'UNK').OPCDOK
+.START1D ANOP  ,
+         AIF   ('&FULLNM' EQ '???').OPCDOK * Cannot check
+&I       SETA  ('&MNEMON' FIND '&DIGITS')  * Digits in mnemonic?
+&HASDIG  SETB  (&I NE 0)
+&I       SETA  ('&FULLNM' INDEX ' - ') * Name has a separator dash?
+&HASDASH SETB  (&I GT 0 AND &I LT 9)   * Indicate validity
+&MNEMON2 SETC  ''
+&FULLNM2 SETC  '&FULLNM'
+.* Start Inner ReaD LooP to extract relevant chars
+.IRDLP   ANOP  ,
+&I       SETA  ('&FULLNM2' FIND '&SEARCH')
+         AIF   (&I EQ 0).IRDLPX        * Go exit inner loop
+&X       SETC  '&FULLNM2'(&I,1)        * Extract character
+         AIF   (&I EQ K'&FULLNM2).IRDLPLS * Ok - got last character
+&FULLNM2 SETC  '&FULLNM2'(&I+1,*)      * Keep only remainder
+         AGO   .IRDLPDO                * Go process located character
+.IRDLPLS ANOP  ,                       * Extracted last character
+&FULLNM2 SETC  ''                      * Input exhausted
+.IRDLPDO ANOP  ,                       * Do process located character
+         AIF   ('&X' EQ '-').IRDLPD    * Go handle dash
+         AIF   (&HASDIG).IRDLPAD       * Digits: add regardless
+&I       SETA  ('&DIGITS' FIND '&X')
+         AIF   (&I EQ 0).IRDLPAD       * Not a digit: Add
+         AGO   .IRDLP                  * Digit not needed: Skip
+.IRDLPAD ANOP  ,                       * Add char
+&MNEMON2 SETC  '&MNEMON2'.'&X'         * Add to reconstructed mnemonic
+         AGO   .IRDLP                  * Go find next char
+.IRDLPD  ANOP  ,                       * Handle dash
+         AIF   (NOT &HASDASH).IRDLP    * Skip if not expected
+&HASDASH SETB  0                       * Max. 1 per opcode!
+&MNEMON2 SETC  '&MNEMON2'.'.'          * Add period to mnemonic
+&I       SETA  ('&MNEMON' FIND '.')    * Locate corresponding period
+&X       SETC  '&MNEMON'(&I+1,*)       * Extract minor opcode
+         AIF   ('&X' NE '???').IRDLP   * Ok: go find next char
+&MNEMON2 SETC  '&MNEMON2'.'???'        * Add question marks
+         AGO   .IRDLPX                 * and abort loop!
+.IRDLPX  ANOP  ,
+         AIF   ('&MNEMON' EQ '&MNEMON2').OPCDOK
+.*
+.* Non-matching entries: check for slash (alternative meanings)
+.* If preceding and following char are equal, replace entire
+.* substring x/x by a single occurrence of character x
+&I       SETA  ('&MNEMON2' FIND '/')   * Contains a slash?
+         AIF   (&I LE 1).ERR1DOP       * No: check unnamed opcode
+         AIF   (&I EQ K'&MNEMON2).ERR1DOP * Must be in the middle
+&X       SETC  '&MNEMON2'(&I-1,1)      * Get preceding char
+&Y       SETC  '&MNEMON2'(&I+1,1)      * Get following char
+         AIF   ('&X' NE '&Y').ERR1DS
+.* Ok: alternatives - condense into 1 character
+&MNEMON2 SETC  '&MNEMON2'(1,&I-2).'&MNEMON2'(&I+1,*)
+         AIF   ('&MNEMON' EQ '&MNEMON2').NOERR1D
+         AGO   .ERR1DOP
+.ERR1DS  ANOP  ,                       * Only remove slash at &I
+&MNEMON2 SETC  '&MNEMON2'(1,&I-1).'&MNEMON2'(&I+1,*)
+         AIF   ('&MNEMON' EQ '&MNEMON2').NOERR1D
+         AGO   .ERR1DOP
+.ERR1DOP ANOP  ,                       * Could be unnamed opcode
+         AIF   (K'&MNEMON LT 6).ERR1DX * Required length 6 or more
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').ERR1DX
+&MNEMON2 SETC  'OPCD'.'&OPCODE'        * Normal case
+         AIF   ('&MNEMON' EQ '&MNEMON2').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.m').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.x').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.xx').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.0x').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.mm').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.fc').NOERR1D
+         AIF   ('&MNEMON' EQ '&MNEMON2.mmm').NOERR1D
+         AIF   (K'&OPCODE NE 3).ERR1DX
+&X       SETC  '&OPCODE'(1,2)          * Leading two digits
+&Y       SETC  '&OPCODE'(3,1)          * Final digit
+&MNEMON2 SETC  'OPCD'.'&X.m&Y'
+         AIF   ('&MNEMON' EQ '&MNEMON2').NOERR1D
+         AGO   .ERR1DX
+.* Exception case: if the mnemonic has digits, they may occur in
+.* multiple locations. Ignore the first digit if followed by non-digit
+.* Example: KIMD.SHAKE128 has SHA3 protocol, but 3 is to be ignored
+.ERR1DX  ANOP  ,
+         AIF   (NOT &HASDIG).ERROR1D
+&I       SETA  ('&MNEMON2' FIND '&DIGITS')  * locate first digit
+         AIF   (&I EQ K'&MNEMON2).ERROR1D   * Last char is 1st digit
+&X       SETC  '&MNEMON2'(&I+1,1)           * Get subsequent character
+&I       SETA  ('&X' FIND '&DIGITS')        * is it a digit?
+         AIF   (&I NE 0).ERROR1D            * Yes: cannot suppress
+.* So we found a digit followed by a non-digit: remove and retry
+&I       SETA  ('&MNEMON2' FIND '&DIGITS')  * locate first digit
+&MNEMON2 SETC  '&MNEMON2'(1,&I-1).'&MNEMON2'(&I+1,*)
+         AIF   ('&MNEMON' EQ '&MNEMON2').NOERR1D
+         AGO   .ERROR1D
+.NOERR1D ANOP  ,                       * Ok mnemonic matches full name
+.*
+.* Check for multiple periods in the acronym
+&I       SETA  ('&MNEMON' FIND '.')    * Contains a period?
+         AIF   (&I EQ 0).NOERR1E       * Ok - no periods at all
+&MNEMON2 SETC  '&MNEMON'(&I+1,*)       * Extract remainder
+&I       SETA  ('&MNEMON2' FIND '.')   * Contains another period?
+         AIF   (&I GT 0).ERROR1E       * Error - second period found
+.NOERR1E ANOP  ,
+.*
+.OPCDOK  ANOP  ,
+         AIF   ('&MNEMON' EQ '').NOOPCD  * Skip if meaningless
+&INDEX   SETA  &INDEX+1                * Increment index
+&I       SETA  &INDEX                  * Copy index
+         MNOTE *,'&MNEMON = &OPCODE % &MASKVAL $ &DESCCD # &FULLNM'
+&MNEM(&I) SETC '&MNEMON'               * Save mnemonic
+&OPCD(&I) SETC '&OPCODE'               * Save opcode
+&MASK(&I) SETC '&MASKVAL'              * Save mask value
+&DESC(&I) SETC '&DESCCD'               * Save descriptor code
+&NAME(&I) SETC '&FULLNM'               * Save full name
+&PAGE(&I) SETC '&PAGNAM'               * Save page name
+&OPCDMAJ(&I) SETA &MAJOPCD
+&OPCDMIN(&I) SETA &MINOPCD
+&ATTR(&I) SETC  '&ATTRIB'              * Save Atrributes
+&ATTRIB   SETC  ''                     * Reset attrributes
+.NOOPCD  ANOP  ,
+.*
+.* This entry processed completely
+.* Now we can process the new line
+         AIF   ('&DATA' EQ 'OPCODES').RDLOOPY
+&I       SETA  ('&DATA' INDEX '=')     * Find mnemonic delimiter
+         AIF   (&I EQ 0).ERROR1A       * Issue error if missing
+&STRIPIT SETC  '&DATA'(1,&I-1)         * Extract mnemonic
+&DATA    SETC  '&DATA'(&I+1,*)         *   and remove from string
+         STRIP ,                       * Remove spaces
+&MNEMON  SETC  '&STRIPIT'              * Obtain result
+         AIF   (K'&MNEMON EQ 0).ERROR1B
+.*
+.* Extract opcode
+.NOERR1A ANOP  ,
+.NOERR1B ANOP  ,
+&I       SETA  ('&DATA' INDEX '%')     * Find opcode delimiter
+         AIF   (&I EQ 0).ERROR2A       * Issue error if missing
+&STRIPIT SETC  '&DATA'(1,&I-1)         * Extract opcode
+&DATA    SETC  '&DATA'(&I+1,*)         *   and remove from string
+         STRIP ,                       * Remove spaces
+&OPCODE  SETC  '&STRIPIT'              * Obtain result
+         AIF   (K'&OPCODE EQ 0).ERROR2B
+.* if negative, then mark as 'Old'
+         AIF   ('&OPCODE' EQ '--').CHK2C * No opcode: continue
+         AIF   ('&OPCODE'(1,1) NE '-').CHK2C * Non-negative: Continue
+&OPCODE  SETC  '&OPCODE'(2,*)          * remove minus sign
+&ATTRIB  SETC  'Old'                   * Mark as outdated
+.* If mnemonic starts with OPCD, then mnemonic and opcode must match
+.CHK2C   ANOP  ,
+         AIF   (K'&MNEMON LE 4).NOERR2C
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE').NOERR2C
+.* Mismatch! Last legal option - is it a subset definition?
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.m').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.x').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.xx').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.0x').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.mm').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.fc').NOERR2C
+         AIF   ('&MNEMON'(5,*) EQ '&OPCODE.mmm').NOERR2C
+         AIF   (K'&OPCODE NE 3).ERROR2C
+&X       SETC  '&OPCODE'(1,2)          * Leading two digits
+&Y       SETC  '&OPCODE'(3,1)          * Final digit
+         AIF   ('&MNEMON'(5,*) EQ '&X.m&Y').NOERR2C
+         AGO   .ERROR2C
+.NOERR2B ANOP  ,
+.NOERR2C ANOP  ,
+.* Check validity of value: must be a hex string
+.* If mnemonic contains period, opcode might as well
+         AIF   ('&OPCODE' EQ '--').ERR2DD
+         AIF   ('&OPCODE' EQ '&DBLAMP').ERR2DA
+         AIF   ('&OPCODE' EQ '????').ERR2DQ
+         AIF   ('&OPCODE' EQ '????.??').ERR2DQ
+&HEXVAL  SETC  '&OPCODE'               * Set input value
+&I       SETA  ('&OPCODE' INDEX '.')   * Period in opcode?
+         AIF   (&I EQ 0).ERR2DOP       * No period: check opcode
+&HEXVAL  SETC  '&OPCODE'(1,&I-1)       * Major opcode only
+         AGO   .ERR2CHK
+.* Single opcode starting with OPCD needs special treatment
+.ERR2DOP ANOP  ,
+         AIF   ('&HEXVAL'(K'&HEXVAL,1) EQ 'm').ERR2DM
+         AIF   ('&HEXVAL'(K'&HEXVAL,1) EQ 'x').ERR2DX
+         AGO   .ERR2CHK
+.ERR2DM  ANOP  ,
+&HEXVAL  SETC  '&HEXVAL'(1,K'&HEXVAL-1) * Strip mask indicator
+         AGO   .ERR2CHK
+.ERR2DX  ANOP  ,
+&HEXVAL  SETC  '&HEXVAL'(1,K'&HEXVAL-1) * Strip ending x
+         AIF   ('&HEXVAL'(K'&HEXVAL,1) NE 'x').ERR2CHK
+&HEXVAL  SETC  '&HEXVAL'(1,K'&HEXVAL-1) * Strip second x
+.ERR2CHK ANOP  ,
+         HEX2DEC ,                     * Convert to decimal
+         AIF   ('&DECVAL' EQ '').ERROR2D * Invalid?
+&MAJOPCD SETA  (&DECVAL)
+&MINOPCD SETA  -1                      * Set unassigned
+&I       SETA  ('&OPCODE' INDEX '.')   * Period in opcode?
+         AIF   (&I EQ 0).NOERR2D       * No period: done
+&HEXVAL  SETC  '&OPCODE'(&I+1,*)       * Without period
+         HEX2DEC ,                     * Convert to decimal
+         AIF   ('&DECVAL' EQ '').ERROR2D * Invalid?
+&MINOPCD SETA  (&DECVAL)
+         AGO   .NOERR2D
+.ERR2DA  ANOP  ,                       * Ampersands
+&MAJOPCD SETA  -2                      * Major opcode unassigned
+&MINOPCD SETA  -2                      * macro directive
+         AGO   .NOERR2D
+.ERR2DD  ANOP  ,                       * Dashes
+&MAJOPCD SETA  -2                      * Major opcode unassigned
+&MINOPCD SETA  -1                      * assembler directive
+         AGO   .NOERR2D
+.ERR2DQ  ANOP  ,                       * Question marks
+&MAJOPCD SETA  -1                      * Major opcode unknown
+&MINOPCD SETA  -1                      * Fake minor opcode for sort
+         AGO   .NOERR2D
+.NOERR2D ANOP  ,
+.NOERR2A ANOP  ,
+.*
+.* Extract mask value
+&I       SETA  ('&DATA' INDEX '$')     * Find opcode delimiter
+         AIF   (&I EQ 0).ERROR3A       * Issue error if missing
+&STRIPIT SETC  '&DATA'(1,&I-1)         * Extract mask value
+&DATA    SETC  '&DATA'(&I+1,*)         *   and remove from string
+         STRIP ,                       * Remove spaces
+&MASKVAL SETC  '&STRIPIT'              * Obtain result
+         AIF   (K'&MASKVAL EQ 0).NOERR3A
+         AIF   ('&MASKVAL' EQ '--').ERR3DSH * Ok - two dashes
+         AIF   ('&MASKVAL'(1,1) NE '[').ERR3CHK
+         AIF   ('&MASKVAL'(k'&MASKVAL,1) NE ']').ERR3CHK
+&MINOPCD SETA  (-1)                    * Assign arbitrary value
+         AGO   .NOERR3B
+.ERR3DSH ANOP  ,
+         AIF   (&MINOPCD NE -1).NOERR3B * Minor opcode already there
+&MINOPCD SETA  (-1)                    * Assign arbitrary value
+         AGO   .NOERR3B
+.ERR3CHK ANOP  ,                       * check real mask(s)
+&MASKV2  SETC  '&MASKVAL'              * Copy complete mask
+&I       SETA  ('&MASKV2' INDEX '.')   * Multi-part mask value?
+         AIF   (&I NE 0).ERR3B_1       * Period indicates complex mask
+&BINVAL  SETC  '&MASKV2'               * no period: Copy entire mask
+&MASKV2  SETC  ''                      * Indicate mask fully consumed
+         BIN2DEC ,                     * Convert to number
+         AIF   ('&DECVAL' EQ '').ERROR3B
+         AIF   (K'&BINVAL NE 4).ERROR3C
+         AIF   (&MINOPCD NE -1).NOERR3B * Minor opcode already there
+&MINOPCD SETA  (&DECVAL)               * Set minor opcode
+         AGO   .NOERR3A                * Done for simple mask
+.* Multi-part mask: extract either part 1 and 2 or 1, 2, and 3
+.ERR3B_1 ANOP  ,                       * &I points to separator period
+&BINVAL  SETC  '&MASKV2'(1,&I-1)       * Extract first mask part
+&MASKV2  SETC  '&MASKV2'(&I+1,*)       * And keep remainder of mask
+         BIN2DEC ,                     * Convert to number
+         AIF   ('&DECVAL' EQ '').ERROR3B
+         AIF   (K'&BINVAL NE 4).ERROR3C
+&J       SETA  (&DECVAL)               * Save value of mask part 1
+&I       SETA  ('&MASKV2' INDEX '.')   * Multi-part mask value?
+         AIF   (&I EQ 0).ERR3B_2       * No period: two parts
+         AGO   .ERR3B_3                * Period: three parts
+.ERR3B_2 ANOP  ,                       * Just two parts
+&BINVAL  SETC  '&MASKV2'               * no period: Copy mask remainder
+&MASKV2  SETC  ''                      * Indicate mask fully consumed
+         BIN2DEC ,                     * Convert to number
+         AIF   ('&DECVAL' EQ '').ERROR3B
+         AIF   (K'&BINVAL NE 4).ERROR3C
+&J       SETA  (16*&J+&DECVAL)         * Calculate 2-part mask value
+         AIF   (&MINOPCD NE -1).NOERR3B * Minor opcode already there
+&MINOPCD SETA  (&J)                    * Set minor opcode
+         AGO   .NOERR3A                * Done for simple mask
+.ERR3B_3 ANOP  ,                       * Extract parts 2 and 3
+&BINVAL  SETC  '&MASKV2'(1,&I-1)       * Extract second mask part
+&MASKV2  SETC  '&MASKV2'(&I+1,*)       * And keep remainder of mask
+         BIN2DEC ,                     * Convert to number
+         AIF   ('&DECVAL' EQ '').ERROR3B
+         AIF   (K'&BINVAL NE 4).ERROR3C
+&J       SETA  (16*&J+&DECVAL)         * Calculate 2-part mask value
+&I       SETA  ('&MASKV2' INDEX '.')   * Multi-part mask value?
+         AIF   (&I NE 0).ERROR3D       * Cannot have 4 mask parts
+&BINVAL  SETC  '&MASKV2'               * Copy remainder of mask
+&MASKV2  SETC  ''                      * Mark mask consumed
+         BIN2DEC ,                     * Convert to number
+         AIF   ('&DECVAL' EQ '').ERROR3B
+         AIF   (K'&BINVAL NE 4).ERROR3C
+&J       SETA  (16*&J+&DECVAL)         * Calculate 3-part mask value
+         AIF   (&MINOPCD NE -1).NOERR3B * Minor opcode already there
+&MINOPCD SETA  (&J)                    * Set minor opcode
+         AGO   .NOERR3A                * Done for simple mask
+.NOERR3D ANOP  ,
+.NOERR3C ANOP  ,
+.NOERR3B ANOP  ,
+.NOERR3A ANOP  ,
+.*
+.* Extract descriptor code
+&I       SETA  ('&DATA' INDEX '#')     * Find opcode delimiter
+         AIF   (&I EQ 0).ERROR4A       * Issue error if missing
+&STRIPIT SETC  '&DATA'(1,&I-1)         * Extract mask value
+&DATA    SETC  '&DATA'(&I+1,*)         *   and remove from string
+         STRIP ,                       * Remove spaces
+&DESCCD  SETC  '&STRIPIT'              * Obtain result
+.NOERR4A ANOP  ,
+.*
+.* Extract full name
+&STRIPIT SETC  '&DATA'                 * Extract full name
+         STRIP ,                       * Remove spaces
+&FULLNM  SETC  '&STRIPIT'              * Obtain result
+         AIF   (K'&FULLNM EQ 0).ERROR5A
+.* Extract page name
+&PAGNAM  SETC  ''                      * Assume default applies
+         AIF   ('&FULLNM'(1,1) NE '@').NOERR5A
+&I       SETA  ('&FULLNM' INDEX ' ')   * Find first space
+         AIF   (&I EQ 0).NOERR5A
+&PAGNAM  SETC  '&FULLNM'(2,&I-2)       * Extract page name
+&FULLNM  SETC  '&FULLNM'(&I+1,*)       *  and remove from description
+.NOERR5A ANOP  ,
+.*
+.* We've extracted all fields
+         AGO   .RDLOOP                 * Go process next opcode line
+.*
+.* End of read loop: correct syntax?
+.RDLOOPX ANOP  ,                       * Exit point for read loop
+&STRIPIT SETC  '&DATA'(2,*)            * Remove leading @-sign
+         STRIP ,                       * Remove spaces
+&DATA    SETC  '&STRIPIT'              * Get result
+&I       SETA  ('&DATA' INDEX ' ')     * Find first embedded space
+         AIF   (&I EQ 0).CHKOPCD       * No embedded spaces!
+&DATA    SETC  '&DATA'(1,&I-1)         * Extract first word
+.CHKOPCD ANOP  ,
+         AIF   ('&DATA' NE 'OPCODES').ERROR6A
+         AGO   .NORMAL                 * Process last opcode buffered
+.RDLOOPY ANOP  ,
+&MNEM_LAST SETA &INDEX                 * Save nr of valid entries
+         MNOTE *,'&MNEM_LAST opcode definitions processed'
+         AIF   (&MNEM_LAST LT &SIZING).TXLOOP
+         MNOTE 8,'&MNEM_LAST opcode definitions processed'
+.*
+.* Now we need to process and store all defined text fragments
+.*
+.* Syntax: * name =
+.*         text line 1
+.*         text line 2, etc
+.*
+.TXLOOP  ANOP  ,
+         ACTR  1024                    * Allow lots of loops!
+.* Read from designated input file
+&DATA    AREAD ,
+&LINE    SETA  &LINE+1
+&I       SETA  K'&DATA                 * Length of input
+.*
+.* Process first line of text block definition
+         AIF   (&I EQ 0).TXLOOP        * Skip empty line
+         AIF   ('&DATA'(1,1) EQ '*').COMMENT * Comment line?
+         AIF   ('&DATA'(1,1) EQ '@').TXLOOPX * End of text fragments?
+.*
+.* Must be a normal text line
+&STRIPIT SETC  '&DATA'                 * Copy text
+         STRIP ,                       * Remove spaces
+&DATA    SETC  '&STRIPIT'              * Obtain result
+&I       SETA  &TEXT_NDX+1             * Point next text entry
+&TEXT(&I) SETC '&DATA'                 * Save text entry
+&TEXT_NDX SETA &I                      * Make new entry real
+         AGO   .TXLOOP
+.*
+.* Line starts with * check whether comment or not
+.COMMENT ANOP  ,
+         AIF   (K'&DATA LT 3).TXLOOP   * Comment
+         AIF   ('&DATA'(2,1) NE ' ').TXLOOP  * Comment
+&STRIPIT SETC  '&DATA'(3,*)            * Remove lead 2 chars
+         STRIP ,                       * Remove spaces
+&DATA    SETC  '&STRIPIT'              * Obtain result
+&I       SETA  K'&DATA                 * How much left?
+         AIF   (&I LT 3).TXLOOP        * Must be true comment
+         AIF   ('&DATA'(&I-1,2) NE ' =').TXLOOP * True comment!
+&DATA    SETC  '&DATA'(1,&I-2)         * Strip trailing 2 chars
+&I       SETA  ('&DATA' INDEX ' ')     * Embedded blanks?
+         AIF   (&I NE 0).TXLOOP        * Must be a true comment
+.*
+.* Ok, label name; check whether it is unique
+&I       SETA  0                       * Index into existing names
+.ERR7ALP ANOP  ,                       * Loop re-entry point
+&I       SETA  &I+1                    * Point next entry
+         AIF   (&I GT &TXT_NDX).NOERR7A  * Not found: label unique
+         AIF   ('&DATA' EQ '&SECTION(&I)').ERROR7A
+         AGO   .ERR7ALP                * Try next entry
+.NOERR7A ANOP  ,
+&I       SETA  &TXT_NDX+1              * Create new entry
+&SECTION(&I)   SETC '&DATA'            * Define section
+&SECT_NDX(&I)  SETA &TEXT_NDX+1        *   and start in &TEXT array
+&TXT_NDX SETA  &I                      * Make new entry final
+         AGO   .TXLOOP
+.*
+.* End of text processing loop: correct syntax?
+.TXLOOPX ANOP  ,                       * Exit point for read loop
+&STRIPIT SETC  '&DATA'(2,*)            * Remove leading @-sign
+         STRIP ,                       * Remove spaces
+&DATA    SETC  '&STRIPIT'              * Get result
+&I       SETA  ('&DATA' INDEX ' ')     * Find first embedded space
+         AIF   (&I EQ 0).CHKTEXT       * No embedded spaces!
+&DATA    SETC  '&DATA'(1,&I-1)         * Extract first word
+.CHKTEXT ANOP  ,
+         AIF   ('&DATA' NE 'TEXT').ERROR6B
+         AGO   .EXIT
+.*
+.* Error messages
+.ERROR0A MNOTE 8,'Error 0A: Line nr &LINE mnemonic &MNEMON has no ''+''*
+               -sign'
+         AGO   .RDLOOP
+.ERROR0C MNOTE 8,'Error 0C: Line nr &LINE mnemonic &MNEMON has data bef*
+               ore ''+''-sign'
+         AGO   .RDLOOP
+.ERROR0D MNOTE 8,'Error 0D: Line nr &LINE menmonic &MNEMON has no data *
+               after ''+''-sign'
+         AGO   .RDLOOP
+.ERROR0E MNOTE 8,'Error 0E: Line nr &LINE mnemonic &MNEMON makes full n*
+               ame too long'
+         AGO   .RDLOOP
+.ERROR0F MNOTE 8,'Error 0F: Line nr &LINE mnemonic &MNEMON has tab char*
+               acter. Use spaces instead.'
+         AGO   .RDLOOP
+.ERROR1A MNOTE 8,'Error 1A: Line nr &LINE contains no ''=''-sign'
+         AGO   .NOERR1A
+.ERROR1B MNOTE 8,'Error 1B: Line nr &LINE contains no mnemonic'
+         AGO   .NOERR1B
+.ERROR1C MNOTE 8,'Error 1C: Line nr &LINE mnemonic &MNEMON out of seque*
+               nce'
+         AGO   .NOERR1C
+.ERROR1D MNOTE 8,'Error 1D: Line nr &LINE mnemonic &MNEMON does not mat*
+               ch description: &MNEMON2'
+         AGO   .NOERR1D
+.ERROR1E MNOTE 8,'Error 1E: Line nr &LINE mnemonic &MNEMON has more tha*
+               n one period'
+         AGO   .NOERR1E
+.ERROR1F ANOP  ,
+.* Suppress for OPCD opcodes
+         AIF   (K'&MNEMON LT 5).ERR1F
+         AIF   ('&MNEMON'(1,4) EQ 'OPCD').NOERR1F
+.ERR1F   MNOTE 8,'Error 1F: Line nr &LINE mnemonic &MNEMON is longer th*
+               an 8 characters'
+         AGO   .NOERR1F
+.ERROR1G MNOTE 8,'Error 1G: Line nr &LINE mnemonic &MNEMON has &NXTMAJ *
+               longer than 8 characters'
+         AGO   .NOERR1G
+.ERROR1H MNOTE 8,'Error 1H: Line nr &LINE mnemonic &MNEMON has &NXTMIN *
+               longer than 16 characters'
+         AGO   .NOERR1H
+.ERROR1I MNOTE 8,'Error 1I: Line nr &LINE mnemonic &MNEMON has illegal *
+               character &X'
+         AGO   .NOERR1I
+.ERROR2A MNOTE 8,'Error 2A: Line nr &LINE mnemonic &MNEMON contains no *
+               ''%''-sign'
+         AGO   .NOERR2A
+.ERROR2B MNOTE 8,'Error 2B: Line nr &LINE mnemonic &MNEMON contains no *
+               opcode'
+         AGO   .NOERR2B
+.ERROR2C MNOTE 8,'Error 2C: Line nr &LINE mnemonic &MNEMON does not mat*
+               ch opcode &OPCODE'
+         AGO   .NOERR2C
+.ERROR2D MNOTE 8,'Error 2D: Line nr &LINE mnemonic &MNEMON opcode &OPCO*
+               DE is invalid hexadecimal string'
+         AGO   .NOERR2D
+.ERROR3A MNOTE 8,'Error 3A: Line nr &LINE mnemonic &MNEMON contains no *
+               ''$''-sign'
+         AGO   .NOERR3A
+.ERROR3B MNOTE 8,'Error 3B: Line nr &LINE mnemonic &MNEMON has invalid *
+               mask'
+         AGO   .NOERR3B
+.ERROR3C MNOTE 8,'Error 3C: Line nr &LINE mnemonic &MNEMON has mask wit*
+               h incorrectly sized section'
+         AGO   .NOERR3C
+.ERROR3D MNOTE 8,'Error 3D: Line nr &LINE mnemonic &MNEMON has mask wit*
+               h more than three sections'
+         AGO   .NOERR3D
+.ERROR4A MNOTE 8,'Error 4A: Line nr &LINE mnemonic &MNEMON contains no *
+               ''#''-sign'
+         AGO   .NOERR4A
+.ERROR5A MNOTE 8,'Error 5A: Line nr &LINE mnemonic &MNEMON contains no *
+               full name'
+         AGO   .NOERR5A
+.ERROR6A MNOTE 8,'Error 6A: Line nr &LINE has &DATA where OPCODES expec*
+               ted'
+         AGO   .RDLOOP
+.ERROR6B MNOTE 8,'Error 6B: Line nr &LINE has &DATA where TEXT expected*
+               '
+         AGO   .TXLOOP
+.ERROR7A MNOTE 8,'Error 7A: Line nr &LINE has &DATA which is not a uniq*
+               ue section name'
+         AGO   .TXLOOP
+.*
+.EXIT    MEND

@@ -1,0 +1,98 @@
+$DEFAULT HTMLDEF ,
+.changed 2011-03-30
+
+.lang
+de    de,deutsch
+es    es,espanol
+fr    fr,francais
+fy    fy,frysk
+it    it,italiano
+nl    nl,hollands
+uk    en-GB,english
+
+.var  generator
+      BLDWWW
+
+.var  doctype
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+.var  saved
+nl    Gekopieerd van
+
+uk    Saved from
+
+.var  html
+de    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="de" lang="de">
+es    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="es" lang="es">
+fr    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="fr" lang="fr">
+fy    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="fy" lang="fy">
+it    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="it" lang="it">
+nl    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="nl" lang="nl">
+uk    <html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en-gb" lang="en-gb">
+
+/HTML
+
+$ROOT HTMLDEF ,
+.changed 2011-03-30
+
+.css  bixoft.css
+
+.var  comment
+uk    <!-- Thanks for reading the source of this document. Hope you
+      enjoy what you find here. Please let us know if you find any
+      errors. -->
+
+.var  icon
+      <link rel="shortcut icon"
+      href="images/bixoft.ico" type="image/x-icon" />
+
+.var  reply
+      abe@bixoft.nl (Abe Kornelis)
+
+/HTML
+
+$BIXOFT HTMLDEF ,
+.changed 2011-03-30
+
+.css  bixoft.css
+
+.var  comment
+uk    <!-- Thanks for reading the source of this document. Hope you
+      enjoy what you find here. Please let us know if you find any
+      errors. -->
+
+.var  icon
+      <link rel="shortcut icon"
+      href="../images/bixoft.ico" type="image/x-icon" />
+
+.var  reply
+      abe@bixoft.nl (Abe Kornelis)
+
+/HTML
+
+$HLASM HTMLDEF ,
+.changed 2011-03-30
+
+.css  bixoft.css
+
+.var  comment
+uk    <!-- Thanks for reading the source of this document. Hope you
+      enjoy what you find here. Please let us know if you find any
+      errors. -->
+
+.var  icon
+      <link rel="shortcut icon"
+      href="../images/bixoft.ico" type="image/x-icon" />
+
+.var  reply
+      abe@bixoft.nl (Abe Kornelis)
+
+/HTML

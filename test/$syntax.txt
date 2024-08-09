@@ -1,0 +1,60 @@
+- command identifier: a dot in column one
+- language codes: 2 characters in column 1-2
+  or blanks to indicate continuation. Defined languuage codes
+  de deutsch    = german
+  es español    = spanish
+  fr francais   = french
+  fy frysk      = frysian
+  it italiano   = italian
+  nl nederlands = dutch
+  uk english    = english
+  xx not applicable / all languages
+- Defined commands:
+  .changed     for last change date; format yyyy-mm-dd
+                   level: page / site / default
+  .css         for css style sheet filename
+                   level: page / site / default
+  .desc        for description for page
+                   level: page (per language)
+  .keys        for keywords
+                   level: page (per language)
+  .lang        for valid languages defined.
+                   language-code (1-2) + full_code,directory
+                   level: default
+  .root-components defined to for specifying components explicitly
+                   level: page
+  .site        for site the page belongs to
+                   args: physical(=directory),logical
+                   level: site
+  .title       for page title
+                   level: page (per language)
+  .title_owner for overriding default owner for title
+                   level: page (per language)
+  .var         for named variables
+               comment      = Initial comment in html
+                              level: site (per language)
+               doctype      = doctype declaration
+                              level: default
+               generator    = generator name
+                              level: default
+               html         = html tag definition
+                              level: default (per language)
+               icon         = icon file name
+                              level: site / page
+               reply        = email address
+                              level: site
+               saved        = saved from comment text
+                              level: default (per language)
+
+Reserved for future use:
+--> in columns 1-3 to indicate a link to another location
+.a  to define an anchor
+.ul to define an unnumbered list
+.ol to define a numbered list
+-   to define a list item
+- - to define a nested list item
+- - - two levels of nesting
+
+
+
+

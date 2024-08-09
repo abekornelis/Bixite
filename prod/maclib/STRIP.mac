@@ -1,0 +1,93 @@
+.*                                                                      00170000
+.* Strip leading and trailing spaces from a SETC variable               00180000
+.*                                                                      00190000
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   STRIP
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC STRIP                  * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Variables for processing a single opcode definition
+         GBLC  &STRIPIT                * Input/Output variable
+         LCLA  &I                      * Char ptr in string
+.*
+.* String is blanks only?
+         AIF   ((K'&STRIPIT)' ' NE '&STRIPIT').LOOP1
+&STRIPIT SETC  ''                      * Remove all spaces
+         AGO   .EXIT
+.*
+.* Loop1 removes leading spaces, if any
+.LOOP1   ANOP  ,
+         AIF   (K'&STRIPIT EQ 0).LOOP1X
+         AIF   ('&STRIPIT'(1,1) NE ' ').LOOP1X
+&STRIPIT SETC  '&STRIPIT'(2,*)
+         AGO   .LOOP1
+.LOOP1X  ANOP  ,
+.*
+.* Loop2 removes trailing spaces, if any
+.LOOP2   ANOP  ,
+&I       SETA  K'&STRIPIT
+         AIF   (&I EQ 0).LOOP2X
+         AIF   ('&STRIPIT'(&I,1) NE ' ').LOOP2X
+&STRIPIT SETC  '&STRIPIT'(1,&I-1)
+         AGO   .LOOP2
+.LOOP2X  ANOP  ,
+.*
+.EXIT    MEND

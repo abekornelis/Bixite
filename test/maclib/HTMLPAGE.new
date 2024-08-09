@@ -1,0 +1,129 @@
+.*
+.* Generate a complete html page
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2011
+.**********************************************************************
+         MACRO
+         HTMLPAGE &NAME
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLPAGE               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         GBLC  &SP_LANG                * Requested language
+         LCLC  &LANG                   * Define language for page
+         LCLA  &I
+         LCLC  &PAGNAM                 * Proper name of page
+         LCLC  &PAGETYP                * Type of page
+.*
+.* Check parameters
+         AIF   (K'&NAME EQ 0).ERROR1
+.*
+&LANG    SETC  '&SP_LANG'
+         AIF   ('&LANG' EQ '').ERROR2
+.*
+.* If name contains a period: split into name (proper) and type
+&I       SETA  INDEX('&NAME','.')        * Is there a period?
+         AIF   (&I EQ 0).NODOT           * No: use defaults
+&PAGTYP  SETC  '&NAME'(&I+1,*)           * Extract type
+         AIF   (&I EQ 1).TYPOK           * No name - type only
+&PAGNAM  SETC  '&NAME'(1,&I-1)           * Extract proper name
+         AGO   .TYPOK
+.NODOT   ANOP  ,
+&PAGNAM  SETC  '&NAME'                   * Extract proper name
+&PAGTYP  SETC  'HTML'                    * And default to html-type
+.TYPOK   ANOP  ,
+.*
+.* Obtain definitions for this page:
+.* First bring in all $DEFAULTs
+.* Then bring in copy member for requested page
+.* Then execute HTMLHEAD to generate heading, body, and punch the lot
+.* If not HTML, then just HTMLGEN the pertinent component, then punch
+         GBLB  &(COPY_&NAME)             * On if COPY gen'ed for member
+         AIF   (&(COPY_&NAME)).COPYOK    * Member copied?
+         AIF   ('&PAGTYP' NE 'HTML').NOHEAD
+         AINSERT '         HTMLHEAD &PAGNAM,&LANG',FRONT
+         AINSERT '         COPY     &PAGNAM',FRONT
+         AINSERT '         COPY     $DEFAULT',FRONT
+         AGO   .SETCOPY
+.NOHEAD  ANOP  ,
+         AIF   ('&PAGNAM' EQ '').NONAME
+         AINSERT '         HTMLGEN  &NAME',FRONT
+         AINSERT '         COPY     $DEFAULT',FRONT
+         AINSERT '         HTMLPUN  OP=PUNCH',BACK
+         AGO   .SETCOPY
+.NONAME  ANOP  ,
+         AIF   ('&PAGTYP' NE 'HTACCESS').ERROR3
+         AINSERT '         HTMLGEN  HTACCESS.ALG',FRONT
+         AINSERT '         COPY     $DEFAULT',FRONT
+         AINSERT '         HTMLPUN  OP=PUNCH',BACK
+.SETCOPY ANOP  ,
+&(COPY_&NAME) SETB 1                     * Indicate COPY was generated
+.COPYOK  ANOP  ,
+         AGO   .EXIT
+.*
+.ERROR1  MNOTE 8,'HTMLPAGE Error 1: Missing name of page'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLPAGE Error 2: Missing Language for page'
+         AGO   .EXIT
+
+.ERROR3  MNOTE 8,'HTMLPAGE Error 3: Unsupported name: &NAME'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

@@ -1,0 +1,6 @@
+-LC:\BIXOFT\www-pgms\Bixite\test\copylib\*.cpy
+-LC:\BIXOFT\www-pgms\Bixite\test\maclib\*.mac
+-LC:\BIXOFT\www-pgms\Bixoft\Asmplus\test\maclib\*.mac
+-LC:\BIXOFT\www-pgms\Bixite\prod\copylib\*.cpy
+-LC:\BIXOFT\www-pgms\Bixite\prod\maclib\*.mac
+-LC:\BIXOFT\www-pgms\Bixoft\Asmplus\prod\maclib\*.mac

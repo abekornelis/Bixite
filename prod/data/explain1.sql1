@@ -1,0 +1,36 @@
+--
+   with     managers
+           (mgrno,
+            mgrname
+            )
+   as      (select   distinct
+                     mgr.empno
+                   , strip(coalesce(firstnme, '')) CONCAT
+                     ' ' CONCAT
+                     strip(coalesce(lastname, '???')) as mgrname
+            from     DSN8810.DEPT dept
+            join     DSN8810.EMP  mgr
+                 on  mgr.empno = dept.mgrno
+            )
+   select   mgr.mgrname
+          , dept.deptname
+          , emp.lastname
+          , emp.firstnme
+   from     DSN8810.EMP emp
+   left outer join
+            DSN8810.DEPT dept
+        on  dept.deptno = emp.workdept
+   left outer join
+            managers mgr
+        on  mgr.mgrno = dept.mgrno
+   where    emp.empno between '000000' and '150000'
+        and emp.workdept between 'A' and 'EEE'
+   order by case when dept.deptno IS NULL
+                 then '*No dept'
+                 when mgr.mgrno IS NULL
+                 then '*No mgr'
+                 else mgr.mgrname
+            end,
+            emp.empno
+  ;
+--

@@ -1,0 +1,111 @@
+HLASM - TRT = Translate and test.
+The opcode of the TRT instruction is X'DD'.
+
+Usage
+
+    Scan a field, looking for presence, or absence, and location, of one or more characters.
+    Requires a field to scan and,
+    a 256 byte table to identify characters to be ignored and found.
+    If a target byte is round, reg-1 will point to the location of the found character in the field scanned.
+    The low byte of reg-2 will contain the non-zero byte in the table used for scanning.
+
+Arguments
+
+    Data field to scan.
+    Table to identify characters to be scanned for.
+
+    If nothing is found, then regs remain unchanged, and COND 0 is set
+    If a character is found as the last byte of the data field, COND 2 is set.
+    If a character is found before the last byte, then COND 1 is set.
+    If a character is found, then reg-1 will point to the data field location of the character,
+    and, the byte from test table will be loaded into the low byte of reg-2.
+    (This is why reg-2 should not be used as a base register.)
+
+Remarks
+
+    TR (translate) changes data.  TRT (translate and test) scans, looking for data, but does not change anything.
+
+    TRT is a very powerful instruction, when processing character strings.  It can be used among other things to:
+    Test for non-0, or non-blank, or all numeric, or all spaces, or all upper level or lower level, chars.
+    TRT is often used to find the length of a string eg.  c'variable length string of characters'
+    by looking for the ending quote that matches the starting quote.
+    Quite clearly, one could do that in a 2-3 instruction loop, but the microcode implementation of TRT is much faster.
+    After a TRT, conditional branch instructions can be used.  EG.
+    BC  8,not-found    (BZ)
+    BC  4,found-not last.   (BL)
+    BC  2,found-on-last-data-field-byte.  (BH)
+    BC  7,found     (BNZ)
+
+Examples
+
+* TEST FOR A 4 CHARACTER NUMERIC FIELD AT THE START OF A CARD IMAGE
+ 
+DATA     DC    CL80'1234, IS A 4 BYTE NUMERIC FIELD TO TEST. '
+ 
+         TRT   DATA(5),TRT##
+         BC    2,GOOD              FOUND NON-NUMERIC IN BYTE 5.
+TRT##    DC    CL240' ',XL10'00',CL6' '
+ 
+
+ 
+* GIVEN A STRING, FIND THE ENDING DELIMITER (FANCIER USE OF TRT)
+
+DATA     DC    C'C"THIS IS A QUOTED STRING"  '
+ 
+         SR    R2,R2              CALC ADDR TO FIND "
+         IC    R2,DATA+1          IN THE GENERIC TRT TABLE.
+         LA    R1,TRTABLE+256
+         SR    R1,R2
+         TRT   DATA+2(L'DATA-2),0(R1)
+         BC    8,NOTFOUND
+         LR    R2,R1
+         S      R2,=A(DATA+3)       (LENGTH OF DATA-1 FOR USE IN MVC
+         MVC   NEWLOC(0),DATA+2
+         EX    R2,*-6                        MOVE THE STRING TO WORKING STORAGE.
+         ST    R2,DATALENG          SAVE STRING LENGTH-1 FOR LATER.
+TRTABLE  DC    XL256'00',C' ',XL256'00'
+ 
+
+
+* LOOK FOR 'ZENITH' IN A LONG STRING OF CHARACTERS.
+
+         TRT   DATAREC,LOOKFORZ
+         BZ    NOTFOUND
+         CLC   =C'ZENITH',0(R1)
+         BE    FOUND
+NOTFOUND ....
+
+LOOKFORZ DC XL256'00'
+         ORG   LOOKFORZ+C'Z'
+         DC    '?'
+         ORG
+ 
+
+ 
+* TEST FOR A 4 BYTE PACKED NUMERIC FIELD.  (REAL UPTOWN USE OF TRT)
+DATA     DC    PL4'1234',CL8' '
+ 
+         LA    R2,3                LENGTH OF DATA-1
+         LA    R3,DATA
+         BAL   R9,TESTPACK         GO DO THE TRT TEST
+         LTR   R1,R1               IF R1=0, NOT A PACKED FIELD.
+         BZ    NOTPACKD
+
+*
+         TRT   0(0,R3),TRTPACK
+TESTPACK EX    R2,TESTPACK-6
+         BC    13,TESTPKN          NOT FOUND LAST, ERROR
+TESTPACB B     TESTPACB(R2)        INDEX TO GOOD OR BAD RETURN.
+         B     0(R9)
+*
+TESTPKN  SR    R1,R1               SIGN NOT FOUND LAST, ERROR.
+         BR    R9
+*
+TRTPACK  DC    10X'00000000000000000000080804040804'
+         DC    96X'08'
+
+*IN THE TRT TABLE, DECIMAL PACKED-# LOCATIONS ARE X'00'
+* DECIMAL # AND VALID SIGN ARE  X'04'  (GOOD)
+* BYTES THAT ARE NOT PACKED # OR #-AND SIGN ARE X'08' (BAD)
+ 
+ 

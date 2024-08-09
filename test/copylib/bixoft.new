@@ -1,0 +1,852 @@
+BIXOFT  HTMLDEF ,
+
+.site root,Bixoft
+.changed 2010-08-30
+
+.title
+uk    Mainframe assembler specialists
+.desc
+uk    Bixoft homepage on HLASM
+.keys
+uk    Macro, Structured Programming Macros,
+      Mainframe, Assembler, Programming,
+      MVS, OS/390, z/OS,
+      Assembly, High Level Assembler, HLASM
+
+.root-components
+      $BODY.ALG
+      $LOGO.UK2
+      BIXOFT.UKT
+      $FLAGSB.UK1
+      $HR.ALG
+      $EMAIL.UK1
+      BIXOFT.UKL
+      $WEBRING.UK1
+      $P.ALG
+      $COPYRT.ALG
+      $BODYEND.ALG
+
+/HTML
+
+         HTMLDEF BIXOFT.UKH
+<link rev="Bixoft frysian entry"   href="frysk/index.htm" />
+<link rev="Bixoft homepage"        href="index.htm" />
+<link rel="Bixoft dutch sitemap"   href="hollands/intro.htm" />
+<link rel="Bixoft english sitemap" href="english/intro.htm" />
+<link rel="Bixoft german introduction"  href="deutsch/introalt.htm" />
+<link rel="Bixoft french introduction"  href="francais/introalt.htm" />
+<link rel="Bixoft frysian introduction" href="frysk/introalt.htm" />
+<link rel="Bixoft assembler humor"      href="english/humor.htm" />
+/HTML
+
+         HTMLDEF BIXOFT.UKT
+<!-- UK -->
+<h1 align="center">Bixoft - Mainframe Assembler Specialists</h1>
+
+<p class="root" align="center">
+ B.V. Bixoft is a dutch firm, specialized in mainframe assembler
+ programming. Not just for z/OS (also known as MVS or OS/390), but
+ also for VM/CMS and DOS/VSE environments.</p>
+
+<p class="root" align="center">
+ The high level assembler or HLASM supports a macro facility, which we
+ have used to develop a powerful set of structured programming macros,
+ implementing - amongst others - strong type checking and dynamic
+ register assignment.</p>
+
+<p class="root" align="center">
+ These macros facilitate rapid development of programs. Common errors
+ are signalled during assembly, avoiding time-consuming debug
+ sessions.</p>
+
+<p class="root" align="center">
+ <a href="whatsnew.htm"><img src="images/new.gif" border="0"
+                             alt="NEW!" /></a>
+ <a href="whatsnew.htm">What's new</a> on hlasm.com and bixoft.com.</p>
+
+<p class="root" align="center">
+ The flags below will bring you to the version of this site
+ in the flag's associated language.<br />
+ Lost? Go to the <a href="sitemap.htm">combined sitemap</a> to find the
+ pages that are most relevant to you.</p>
+
+<p class="root" align="center">
+ Many pages have not (yet) been translated;
+ the English version is the one that is most complete.<br />
+ Information about <a href="translat.htm">translations</a>
+ is available on a separate page.</p>
+
+/HTML
+
+         HTMLDEF BIXOFT.UKL
+<!-- UK -->
+<p>
+ To the
+ <a href="hollands/intro.htm">Dutch</a>
+ version of this site.<br />
+ To the
+ <a href="english/intro.htm">English</a>
+ version of this site.<br />
+ To the
+ <a href="francais/introalt.htm">French</a>
+ version of this site.<br />
+ To the
+ <a href="frysk/introalt.htm">Frysian</a>
+ version of this site.<br />
+ To the
+ <a href="deutsch/introalt.htm">German</a>
+ version of this site.<br />
+ To the
+ <a href="espanol/introalt.htm">Spanish</a>
+ version of this site.
+</p>
+
+/HTML
+
+         HTMLDEF BIXOFT.CSS
+/* text properties to be defined with span */
+
+/* italic texts */
+.bold {
+  font-style      : bold }
+
+/* subentry captions in tables in macro documentation */
+/* also occurs in resumes and links pages             */
+.caption {
+  font-weight     : bold }
+
+/* Changed texts anywhere */
+.changed {
+ color            : red }
+
+/* bold texts in the webring footer area   */
+.dinobold {
+  font-weight     : bold }
+
+/* word 'default' in macro documentation   */
+.docdeflt {
+  font-weight     : bold }
+
+/* variable names in macro documentation   */
+.docvar {
+  font-style      : italic }
+
+/* italic texts */
+.italic {
+  font-style      : italic }
+
+/* underlined texts */
+.underline {
+  text_decoration : underline }
+
+/* link properties:                         */
+/* active links   : light grey on dark blue */
+/* unvisited links: yellow on dark blue     */
+/* visited links  : light grey on dark blue */
+/* usage          : throughout the site     */
+a { }
+a:active {
+  background      : #000098;
+  background-color: #000098;
+  color           : #C0C0C0 }
+a:link {
+  background      : #000098;
+  background-color: #000098;
+  color           : #EEEE00 }
+a:visited {
+  background      : #000098;
+  background-color: #000098;
+  color           : #C0C0C0 }
+
+/* text properties: white on dark blue     */
+/* this is the default for the entire site */
+body {
+  background      : #000098;
+  background-color: #000098;
+  background-image: none;
+  color           : #FFFFFF;
+  font-family     : 'Times New Roman', serif, verdana, sans-serif }
+
+/* definition list properties are inherited from body */
+dl { }
+
+/* parameter descriptions in documentation */
+dl.docparms { }
+dl.docparms dt {
+  font-weight     : bold }
+
+/* headers: use as much as possible the user's */
+/*          or the browser's default settings  */
+h1 {
+  text-align      : center }
+
+/* chapter headers for asmplus documentation */
+h2 {
+  text-align      : center }
+
+/* subchapter headers for asmplus documentation */
+/* and course dsecsriptions */
+h3 {
+  text-align      : left }
+
+/* subchapters for Nielsen's document */
+/* and course descriptions */
+h4 {
+  text-align      : left }
+
+/* subchapters for course descriptions */
+h5 {
+  text-align      : left }
+
+/* Horizontal rules */
+hr { }
+hr.long {
+  width           : 100% }
+hr.medium {
+  width           : 80% }
+hr.short {
+  width           : 50% }
+
+/* image properties: no borders, etc.      */
+/* this is the default for the entire site */
+img {
+  border          : 0;
+  margin          : 0;
+  padding         : 0 }
+
+/* ordered lists use numbers, sublists letters */
+ol {
+  list-style-type : decimal }
+ol ol {
+  list-style-type : lower-alpha }
+
+ol.alpha {
+  list-style-type : lower-alpha }
+
+/* paragraph properties are normally inherited from body */
+p { }
+
+/* Some paragraphs need indentation */
+p.indent {
+  margin-left     : 5% }
+
+/* Blockquotes are indented left and right */
+p.blockquote {
+  margin-left     : 5%;
+  margin-right    : 5% }
+
+/* copyright notice in sample programs */
+p.copy {
+  font-size       : larger;
+  font-weight     : bold;
+  text-align      : center }
+
+/* footers & headers appear centered */
+p.footer {
+  text-align      : center;
+  font-weight     : bold }
+
+p.header {
+  text-align      : center;
+  font-weight     : bold }
+
+/* remarks: underline first line and indent remainder */
+p.remark {
+  margin-left     : 2%;
+  text-indent     : -2% }
+p.remark:first-line {
+  text-decoration : underline }
+
+/* root pages have centered text */
+p.root {
+  text-align      : center }
+
+/* pre-formatted text properties: white on very dark blue */
+/* pre-formatted text is used for code samples            */
+pre {
+  background      : #000060;
+  background-color: #000060;
+  color           : #FFFFFF;
+  font-family     : 'Courier New', monospace, serif, verdana,
+                     sans-serif }
+
+/* table properties: none                   */
+/* all tables should have a class specified */
+table { }
+
+/* table for condition code relations as in BCR instruction */
+table.condcode {
+  text-align      : left }
+table.condcode tr th {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold }
+table.condcode tr th.col1 {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold }
+table.condcode tr td {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  vertical-align  : top }
+table.condcode tr td.col1 {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold;
+  vertical-align  : top }
+
+/* table for webring logo (running dino)    */
+/* this element occurs near the bottom of   */
+/* every page                               */
+/* The left-hand part contains some text    */
+/* The midle part has the running dino      */
+/* The right-hand part contains more text   */
+table.dino {
+  border-style    : ridge;
+  margin-bottom   : 0;
+  margin-left     : 10%;
+  margin-right    : 10%;
+  margin-top      : 0;
+  padding         : 2em;
+  text-align      : center;
+  width           : 80% }
+table.dino tr td.left {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : 0;
+  border-style    : ridge;
+  border-top      : 0;
+  text-align      : left;
+  vertical-align  : middle;
+  width           : 30% }
+table.dino tr td.middle {
+  border-bottom   : thin;
+  border-left     : thin;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  text-align      : center;
+  vertical-align  : middle;
+  width           : 30% }
+table.dino tr td.right {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : 0;
+  border-style    : ridge;
+  border-top      : 0;
+  text-align      : left;
+  vertical-align  : middle;
+  width           : 40% }
+table.dino tr td.bottom {
+  text-align      : center;
+  vertical-align  : middle }
+
+/* Environment specifications  */
+/* used in macro documentation */
+table.docenv { }
+table.docenv tr th {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.docenv tr td {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top }
+table.docenv tr td.col1 {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 10em }
+
+/* flags tables in introalt pages */
+table.flags2 {
+  background      : #0000FF;
+  background-color: #0000FF;
+  border          : thick;
+  border-style    : outset;
+  margin-bottom   : 2%;
+  margin-left     : 25%;
+  margin-right    : 25%;
+  margin-top      : 2%;
+  padding         : 5%;
+  width           : 50% }
+table.flags2 tr th {
+  text-align      : center }
+table.flags2 tr td {
+  border-style    : ridge;
+  margin          : 5%;
+  padding         : 5%;
+  text-align      : center}
+
+/* link properties for flags:                */
+/* active links   : light grey on light blue */
+/* unvisited links: yellow on light blue     */
+/* visited links  : light grey on light blue */
+/* usage          : on pages featuring flags */
+table.flags2 a:active {
+  background      : #0000FF;
+  background-color: #0000FF;
+  color           : #C0C0C0 }
+table.flags2 a:link {
+  background      : #0000FF;
+  background-color: #0000FF;
+  color           : #EEEE00 }
+table.flags2 a:visited {
+  background      : #0000FF;
+  background-color: #0000FF;
+  color           : #C0C0C0 }
+
+/* flags tables in index pages */
+table.flags3 {
+  background      : #0000FF;
+  background-color: #0000FF;
+  border          : thick;
+  border-style    : outset;
+  margin-bottom   : 2%;
+  margin-left     : 20%;
+  margin-right    : 20%;
+  margin-top      : 2%;
+  padding         : 5%;
+  width           : 60% }
+table.flags3 tr th {
+  text-align      : center }
+table.flags3 tr td {
+  border-style    : ridge;
+  margin          : 5%;
+  padding         : 5%;
+  text-align      : center }
+
+/* link properties for flags:                */
+/* active links   : light grey on light blue */
+/* unvisited links: yellow on light blue     */
+/* visited links  : light grey on light blue */
+/* usage          : on pages featuring flags */
+table.flags3 a:active {
+  background      : #0000FF;
+  background-color: #0000FF;
+  color           : #C0C0C0 }
+table.flags3 a:link {
+  background      : #0000FF;
+  background-color: #0000FF;
+  color           : #EEEE00 }
+table.flags3 a:visited {
+  background      : #0000FF;
+  background-color: #0000FF;
+  color           : #C0C0C0 }
+
+/* flags tables in header of index and indexall pages */
+table.flags4 {
+  border          : thick;
+  border-style    : outset;
+  margin-bottom   : 2%;
+  margin-left     : 10%;
+  margin-right    : 10%;
+  margin-top      : 2%;
+  padding         : 5%;
+  width           : 80% }
+table.flags4 tr th {
+  text-align      : center }
+table.flags4 tr td {
+  border-style    : ridge;
+  margin          : 5%;
+  padding         : 5%;
+  text-align      : center }
+
+/* table for links in root page indexall */
+/* also used for addresses in headers for sample programs */
+table.index {
+  margin-bottom   : 0;
+  margin-left     : 10%;
+  margin-right    : 10%;
+  margin-top      : 0;
+  text-align      : left;
+  width           : 80% }
+table.index tr th {
+  font-size       : larger;
+  padding         : 2% }
+table.index tr td {
+  padding         : 2% }
+
+/* table for the list of links          */
+/* this table occurs in the footer area */
+/* of every non-root page               */
+table.links {
+  border          : 0;
+  margin-left     : 25%;
+  margin-right    : 25%;
+  text-align      : left;
+  width           : 50% }
+table.links tr th {
+  font-size       : larger;
+  padding         : 2%;
+  text-align      : center }
+table.links tr td {
+  padding         : 2%;
+  text-align      : left }
+table.links tr td.top {
+  padding         : 2%;
+  text-align      : center }
+
+/* table for logo and associated icons         */
+/* this element occurs at the top of every page*/
+/* The left-hand part contains Bixoft's logo   */
+/* The right-hand part contains various icons  */
+/* such as conformance and accessibility icons */
+table.logo {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  width           : 100% }
+table.logo tr td.bixoft {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : right;
+  vertical-align  : middle;
+  width           : 75% }
+table.logo tr td.topleft {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : right;
+  vertical-align  : bottom;
+  width           : 15% }
+table.logo tr td.topright {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : bottom;
+  width           : 10% }
+table.logo tr td.botleft {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : right;
+  vertical-align  : top;
+  width           : 15% }
+table.logo tr td.botright {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 10% }
+
+/* Macro descriptions in         */
+/* programs in goodies directory */
+table.macdesc { }
+table.macdesc tr th {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.macdesc tr th.col1 {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 6em }
+table.macdesc tr td {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top }
+
+/* macro tables */
+table.maclib { }
+table.maclib tr th {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.maclib tr td {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top }
+
+/* Main page - new format */
+table.newindex {
+  background      : #0000C0;
+  background-color: #0000C0;
+  border          : thick;
+  border-style    : outset;
+  font-size       : larger;
+  margin-bottom   : 2%;
+  margin-left     : 5%;
+  margin-right    : 5%;
+  margin-top      : 2%;
+  padding         : 2%;
+  width           : 90% }
+table.newindex tr td {
+  border-style    : ridge;
+  margin          : 2%;
+  padding         : 2%;
+  text-align      : left;
+  width           : 50% }
+table.newindex tr td a:active {
+  background      : #0000C0;
+  background-color: #0000C0;
+  color           : #D0D0D0 }
+table.newindex tr td a:link {
+  background      : #0000C0;
+  background-color: #0000C0;
+  color           : #EEEE00 }
+table.newindex tr td a:visited {
+  background      : #0000C0;
+  background-color: #0000C0;
+  color           : #D0D0D0 }
+
+/* Opcodes tables */
+table.opcodes { }
+table.opcodes tr th {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.opcodes tr td {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : center;
+  vertical-align  : middle;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 5em }
+table.opcodes .old {
+  background      : #000060;
+  font-style      : italic }
+table.opcodes .old a:active {
+  background      : #000060;
+  background-color: #000060;
+  color           : #C0C0C0 }
+table.opcodes .old a:link {
+  background      : #000060;
+  background-color: #000060;
+  color           : #EEEE00 }
+table.opcodes .old a:visited {
+  background      : #000060;
+  background-color: #000060;
+  color           : #C0C0C0 }
+
+/* Opcode lists */
+table.oplist { }
+table.oplist tr th {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.oplist tr td {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : center;
+  vertical-align  : middle;
+  text-align      : left;
+  vertical-align  : top }
+table.oplist .old {
+  background      : #000060;
+  font-style      : italic }
+table.oplist .old a:active {
+  background      : #000060;
+  background-color: #000060;
+  color           : #C0C0C0 }
+table.oplist .old a:link {
+  background      : #000060;
+  background-color: #000060;
+  color           : #EEEE00 }
+table.oplist .old a:visited {
+  background      : #000060;
+  background-color: #000060;
+  color           : #C0C0C0 }
+
+/* Products page table for logos               */
+table.prodlogo { }
+table.prodlogo tr th {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  width           : 50% }
+table.prodlogo tr td {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  width           : 50% }
+
+/* Profile tables */
+table.profile { }
+table.profile tr th {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.profile tr th.col1 {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 12em }
+table.profile tr td {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top }
+
+/* table for return codes in macro documentation */
+table.retcodes { }
+table.retcodes tr th {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.retcodes tr th.col1 {
+  width           : 6em;
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.retcodes tr td {
+  text-align      : left;
+  vertical-align  : top }
+
+/* Sitemap overviews */
+table.sitemap { }
+table.sitemap tr th {
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : top }
+table.sitemap tr td {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top }
+table.sitemap tr td.col1 {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 6em }
+table.sitemap tr td.col2 {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 60% }
+table.sitemap tr td.col3 {
+  border          : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top }
+
+/* SVClist tables */
+table.svclist { }
+table.svclist tr th {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold;
+  text-align      : Center;
+  vertical-align  : top;
+  width           : 15% }
+table.svclist tr td {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  margin          : 0;
+  padding         : 0;
+  text-align      : left;
+  vertical-align  : top;
+  width           : 15% }
+table.svclist .col1 {
+  width           : 5em }
+
+/* table for syntax specification in macro documentation */
+table.syntax {
+  text-align      : center }
+table.syntax tr td {
+  text-align      : left;
+  vertical-align  : top }
+table.syntax tr td.col1 {
+  width           : 10em;
+  text-align      : left;
+  vertical-align  : top }
+
+/* table with overview of topics */
+/* used in the index pages       */
+table.topics {
+  text-align      : left }
+table.topics tr td {
+  text-align      : left;
+  vertical-align  : top }
+table.topics tr td.col1 {
+  text-align      : left;
+  vertical-align  : top;
+  width           : 10em }
+
+/* table for the lists of links             */
+/* this table occurs only in the links page */
+table.wwwlinks {
+  border          : 0;
+  padding         : 2%;
+  text-align      : left;
+  vertical-align  : middle }
+table.wwwlinks tr th {
+  font-size       : larger;
+  padding         : 2%;
+  vertical-align  : bottom }
+table.wwwlinks tr th.logo {
+  font-size       : larger;
+  padding         : 2%;
+  text-align      : center;
+  vertical-align  : bottom }
+table.wwwlinks tr td {
+  padding         : 2% }
+table.wwwlinks tr td.logo {
+  padding         : 2%;
+  text-align      : center;
+  vertical-align  : bottom }
+
+/* unordered lists use bullets, sublists circles */
+ul {
+  list-style-type : disc }
+ul ul {
+  list-style-type : circle }
+/HTML

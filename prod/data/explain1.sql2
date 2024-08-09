@@ -1,0 +1,138 @@
+--
+-- Query on PLAN_TABLE with Page-Range info
+--
+   SELECT   SUBSTR(STRIP(CHAR(PLAN.QUERYNO)), 1, 5) AS QUERY
+          , CASE PLAN.PARENT_QBLOCKNO
+                 WHEN 0 THEN ' '
+                        ELSE
+                        SUBSTR(STRIP(CHAR(PLAN.PARENT_QBLOCKNO)), 1, 4)
+            END AS PBLK
+          , SUBSTR(STRIP(CHAR(PLAN.QBLOCKNO)), 1, 4) AS QBLK
+          , SUBSTR(STRIP(CHAR(PLAN.PLANNO)), 1, 4) AS PLNO
+          , CASE PLAN.MIXOPSEQ
+                 WHEN 0 THEN ' '
+                        ELSE SUBSTR(STRIP(CHAR(PLAN.MIXOPSEQ)), 1, 4)
+            END AS OPSQ
+          , PLAN.QBLOCK_TYPE AS TYPE
+          , CASE PLAN.JOIN_TYPE
+                 WHEN 'F' THEN 'Full'
+                 WHEN 'P' THEN 'Pair'
+                 WHEN 'S' THEN 'Star'
+                 WHEN 'L' THEN CASE PLAN.METHOD
+                                    WHEN 1 THEN 'L/R'
+                                    WHEN 2 THEN 'L/R'
+                                    WHEN 4 THEN 'L/R'
+                                           ELSE '?'
+                                    END
+                 WHEN ' ' THEN CASE PLAN.METHOD
+                                    WHEN 1 THEN 'Innr'
+                                    WHEN 2 THEN 'Innr'
+                                    WHEN 4 THEN 'Innr'
+                                           ELSE ' '
+                                    END
+                          ELSE '*ERR*'
+            END AS JOIN
+          , CASE PLAN.METHOD
+                 WHEN 0 THEN 'First'
+                 WHEN 1 THEN 'NLjoin'
+                 WHEN 2 THEN 'MSjoin'
+                 WHEN 3 THEN 'Sort'
+                 WHEN 4 THEN 'Hybrid'
+                        ELSE 'UNKNWN'
+            END AS METHOD
+          , CASE PLAN.TABLE_TYPE
+                 WHEN 'B' THEN 'Buffer'
+                 WHEN 'C' THEN 'CTE'
+                 WHEN 'F' THEN 'TabFun'
+                 WHEN 'M' THEN 'MQT'
+                 WHEN 'Q' THEN 'Temp'
+                 WHEN 'R' THEN 'Recurs'
+                 WHEN 'T' THEN 'Table'
+                 WHEN 'W' THEN 'Work'
+                          ELSE ' '
+            END AS TYPE
+          , SUBSTR(PLAN.CREATOR, 1, 8) AS CREATOR
+          , SUBSTR(PLAN.TNAME, 1, 18) AS TABLE
+          , SUBSTR(PLAN.ACCESSNAME, 1, 8) AS NDXNAME
+          , CASE PLAN.PRIMARY_ACCESSTYPE
+                 WHEN 'D' THEN 'D/'
+                 WHEN 'T' THEN 'T/'
+                          ELSE ''
+            END CONCAT
+            STRIP(PLAN.ACCESSTYPE) CONCAT
+            CASE WHEN PLAN.PAGE_RANGE = 'Y'
+                 THEN '(' CONCAT
+                      STRIP(SUBSTR(STRIP(CHAR(RANGE.NUMPARTS)), 1, 4))
+                      CONCAT ')'
+                 ELSE ''
+            END AS ACCESS
+          , CASE PLAN.PREFETCH
+                 WHEN 'S' THEN 'SEQ'
+                 WHEN 'L' THEN 'LST'
+                 WHEN 'D' THEN 'DYN'
+                          ELSE ' '
+            END AS PREF
+          , CASE PLAN.INDEXONLY
+                 WHEN 'Y' THEN 'XO'
+                          ELSE ' '
+            END AS XO
+          , CASE PLAN.MATCHCOLS
+                 WHEN 0 THEN ''
+                        ELSE SUBSTR(STRIP(CHAR(PLAN.MATCHCOLS)), 1, 2)
+            END AS MC
+          , CASE PLAN.SORTC_GROUPBY
+                 WHEN 'Y' THEN 'G'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTC_JOIN
+                 WHEN 'Y' THEN 'J'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTC_ORDERBY
+                 WHEN 'Y' THEN 'O'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTC_UNIQ
+                 WHEN 'Y' THEN 'U'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTN_GROUPBY
+                 WHEN 'Y' THEN 'G'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTN_JOIN
+                 WHEN 'Y' THEN 'J'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTN_ORDERBY
+                 WHEN 'Y' THEN 'O'
+                          ELSE ' '
+            END CONCAT
+            CASE PLAN.SORTN_UNIQ
+                 WHEN 'Y' THEN 'U'
+                          ELSE ' '
+            END AS GJOUGJOU
+          , CASE PLAN.PARALLELISM_MODE
+                 WHEN 'I' THEN 'I/O'
+                 WHEN 'C' THEN 'CPU'
+                 WHEN 'X' THEN 'SYS'
+                          ELSE ' '
+            END AS PAR
+          , CASE PLAN.CTEREF
+                 WHEN 0 THEN ' '
+                 ELSE STRIP(CHAR(PLAN.CTEREF))
+            END AS CTEREF
+   FROM     PLAN_TABLE PLAN
+   LEFT OUTER JOIN
+            DSN_PGRANGE_TABLE RANGE
+        ON  RANGE.QUERYNO  = PLAN.QUERYNO
+        AND RANGE.QBLOCKNO = PLAN.QBLOCKNO
+        AND RANGE.TABNO    = PLAN.TABNO
+   WHERE    PLAN.QUERYNO = 114
+   ORDER BY PLAN.QUERYNO
+          , PLAN.PARENT_QBLOCKNO DESC
+          , PLAN.QBLOCKNO
+          , PLAN.PLANNO
+          , PLAN.MIXOPSEQ
+  ;
+--

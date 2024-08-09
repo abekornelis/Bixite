@@ -1,0 +1,97 @@
+.*                                                                      00170000
+.* Replace all spaces in a string with &nbsp; markers
+.* where &nbsp; is the html code for a non-breaking space
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   SPC2NBSP
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC SPC2NBSP               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Variables
+         GBLC  &SPC2NBSP               * Input/output variable
+         LCLC  &CARD                   * Input/output variable
+         LCLA  &L                      * Position in string
+         LCLC  &HEAD,&TAIL             * before/after blank
+.*
+.* Loop through string replacing blanks 1 by 1
+&CARD    SETC  '&SPC2NBSP'             * Copy input
+.LOOP    ANOP  ,
+&L       SETA  ('&CARD' FIND ' ')      * Find first blank
+         AIF   (&L EQ 0).LOOPX         * No blanks left
+         AIF   (&L EQ 1).NOHEAD
+&HEAD    SETC  '&CARD'(1,&L-1)         * Extract head portion
+.HEADOK  ANOP  ,
+         AIF   (&L EQ K'&CARD).NOTAIL
+&TAIL    SETC  '&CARD'(&L+1,*)         * Extract tail portion
+.TAILOK  ANOP  ,
+&CARD    SETC  '&HEAD.&&nbsp;&TAIL'    * Replace blank
+         AGO   .LOOP                   * Check for more blanks
+.NOHEAD  ANOP  ,
+&HEAD    SETC  ''                      * No head
+         AGO   .HEADOK
+.NOTAIL  ANOP  ,
+&TAIL    SETC  ''                      * Empty tail
+         AGO   .TAILOK
+.LOOPX   ANOP  ,
+&SPC2NBSP SETC '&CARD'
+.*
+.EXIT    ANOP  ,
+         MEND

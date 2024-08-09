@@ -1,0 +1,1267 @@
+.*
+.* Generate a Format-specific Opcode table in html format
+.*
+.* Supported format codes:
+.* ndx           Index to extension tables
+.* list          List-like table of extended mnemonic
+.* ves           Vertical  (element size)
+.* ves.cs        Vertical  (element size)
+.*               Horizontal(conditon code set)
+.* ves.[cs]      Vertical  (element size)
+.*               Horizontal(optional conditon code set)
+.* ves.zs        Vertical  (element size)
+.*               Horizontal(single element control + conditioncode set)
+.* ves.[zs]      Vertical  (element size)
+.*               Horizontal(opt. single element control + cc set)
+.* ves.[z]       Vertical  (element size)
+.*               Horizontal(opt. zero search)
+.* vfs           Vertical  (floating point format)
+.*               Horizontal(single element control)
+.* vsf           Vertical  (floating point format)
+.*               Horizontal(single element control)
+.* vf0           Vertical  (floating point format)
+.* vfs.SO        Vertical  (floating point format)
+.*               Horizontal(sign operation)
+.*               Table by  (single element control)
+.* vfs.[SO]      Vertical  (floating point format)
+.*               Horizontal(optional sign operation)
+.*               Table by  (single element control)
+.* vfssq.cs      Vertical  (floating point format)
+.*               Horizontal(single element control)
+.*               Table by  (condition code set)
+.* x             Horizontal(index value)
+.*
+.* Note: vfs and vsf are identical in fucntion
+.*       vsf occurrences should be changed to vfs
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLGENF &RANGE,&FORMAT
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLGENF               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLC  &HEXVAL                  * Input for HEX2DEC
+         GBLC  &DECVAL                  * Output from HEX2DEC
+         GBLA  &OPCD_START,&OPCD_END    * Output from FINDOPCD/FINDMNEM
+         GBLC  &OPCD_ATTR               * Output attribute for range
+.*
+.* Arrays to hold parsed opcode definitions
+         GBLA  &MNEM_LAST               * Index for tables below
+         AIF   (&MNEM_LAST EQ 0).ERROR27
+         GBLC  &MNEM(2500)              * Mnemonics
+         GBLC  &OPCD(2500)              * Opcodes
+         GBLC  &NAME(2500)              * Full names
+         GBLC  &MASK(2500)              * Mask values
+         GBLB  &GEND(2500)              * Generated on opcdxxxx pages
+         GBLC  &PAGE(2500)              * Page names
+         GBLC  &ATTR(2500)              * Attributes
+         GBLA  &OPCDPTR(2500)           * Opcode ptr in sequence
+         LCLA  &P                       * Pointer
+.*
+.* Local variables for genopcd handling
+         LCLC  &URANGE                  * Unsigned copy of RANGE
+         LCLC  &ARG1                    * First argument
+         LCLC  &ARG2                    * Second argument
+         LCLC  &FIRSTBYTE               * First byte of ARG1
+         LCLA  &LBOUND1,&UBOUND1        * Lower, Upper bounds (major)
+         LCLA  &LBOUND2,&UBOUND2        * Lower, Upper bounds (minor)
+         LCLB  &ONLYPOS,&ONLYNEG        * indicators for +/- opcodes
+.*                                      * where + indicates current ...
+.*                                      *   and - indicates old opcodes
+         LCLB  &RNG16,&RNG256,&RNG4096  * Range indicators
+         LCLC  &CARD                    * Line content
+         LCLC  &CARD1,&CARD2,&CARD3,&CARD4 * Row content (index table)
+         LCLA  &L                       * Index into &CARD/&HEXDIGS
+         LCLC  &X                       * A character
+         LCLC  &PREFIX,&SAVPFX          * Prefix for opcode table
+         LCLC  &PFX                     * Prefix for column headings
+         LCLA  &L0                      * Dummy counter - unused dim
+         LCLA  &L1                      * Loop counter - table index
+         LCLA  &L2                      * Loop counter - row index
+         LCLA  &L3                      * Loop counter - column index
+         LCLA  &L4                      * Loop counter - mnemonic index
+         LCLC  &HDRTYPE                 * Header type indicator
+         LCLC  &TBLDESC,ROWDESC,CELDESC * Descriptive definitions
+         LCLC  &MAJOR,&MINOR            * Major, minor opcode
+         LCLC  &MNEMON,MNEMONL,&MNEMONS * Mnemonic
+         LCLC  &OPCODE,&OPCD1,&OPCD2    * Opcode
+         LCLA  &OPCDV,&OPCDV1,&OPCDV2   * Opcode value
+         LCLC  &ATTRIB                  * Attributes
+         LCLC  &FULLNM                  * Full Name
+         LCLC  &MASKVAL                 * Mask value string
+         LCLB  &SUBPAGE                 * Opcode points to subpage
+         LCLB  &OLDPAGE                 * All opcodes on page are old
+         LCLC  &HEXDIGS                 * Valid hex digits
+         LCLC  &nbsp,&Q
+.* counters used for format=ndx
+         LCLA  &MNEM_NM                 * Count of non-masked mnemonics
+         LCLA  &MNEM_OP                 * Count of OPCD* entries
+.* Init special vars
+&HEXDIGS SETC  '0123456789ABCDEF'
+&nbsp    SETC  '&&nbsp'                 * Must contain it's own value!
+&Q       SETC  ''''''                   * This is two quotes
+
+.*
+.* format control variables
+.*
+.* Each table has up to three dimensions:
+.*      X - this is the horizontal - values are listed in the top row
+.*      Y - this is the vertical   - values are listed in the leftmost
+.*                                                              column
+.*      Z - this is the 'height'   - each value deserves a separate
+.*                                                              table
+.*
+         LCLC  &DIMX,&DIMY,&DIMZ        * Attribute per table dimension
+.*                                      * Values: FPF,SEC
+.*                                      *         NUL if not present
+         LCLA  &NUMX,&NUMY,&NUMZ        * Mask number per dimension
+.*                                      * Values: 1, 2, or 3 if used
+.*                                      *         0 if not used
+         LCLB  &COMBHOR                 * Combine tables horizontally
+         LCLA  &ARGOPT                  * Optional argument number
+         LCLA  &FIRSTZ                  * First usable table index
+         LCLA  &MASKLEN                 * Length of mask in characters
+.*
+.* format code -: NUL = unused
+          LCLC  &XNUL(16)               * headers for f in format-code
+&XNUL(01) SETC ' '                      * Dummy row
+&XNUL(02) SETC ''                       * unused
+&XNUL(03) SETC ''                       * unused
+&XNUL(04) SETC ''                       * unused
+&XNUL(05) SETC ''                       * unused
+&XNUL(06) SETC ''                       * unused
+&XNUL(07) SETC ''                       * unused
+&XNUL(08) SETC ''                       * unused
+&XNUL(09) SETC ''                       * unused
+&XNUL(10) SETC ''                       * unused
+&XNUL(11) SETC ''                       * unused
+&XNUL(12) SETC ''                       * unused
+&XNUL(13) SETC ''                       * unused
+&XNUL(14) SETC ''                       * unused
+&XNUL(15) SETC ''                       * unused
+&XNUL(16) SETC ''                       * unused
+&XNUL(17) SETC ''                       * unused
+.*
+.* format code 0: required 0 value
+          LCLC  &X000(16)               * headers for required 0
+&X000(01) SETC '0&nbsp;Required'        * unused
+&X000(02) SETC ''                       * unused
+&X000(03) SETC ''                       * unused
+&X000(04) SETC ''                       * unused
+&X000(05) SETC ''                       * unused
+&X000(06) SETC ''                       * unused
+&X000(07) SETC ''                       * unused
+&X000(08) SETC ''                       * unused
+&X000(09) SETC ''                       * unused
+&X000(10) SETC ''                       * unused
+&X000(11) SETC ''                       * unused
+&X000(12) SETC ''                       * unused
+&X000(13) SETC ''                       * unused
+&X000(14) SETC ''                       * unused
+&X000(15) SETC ''                       * unused
+&X000(16) SETC ''                       * unused
+&X000(17) SETC ''                       * cannot be omitted
+.*
+.* format code f: FPF = Floating Point Format
+          LCLC  &XFPF(16)               * headers for f in format-code
+&XFPF(01) SETC ''                       * unused
+&XFPF(02) SETC ''                       * unused
+&XFPF(03) SETC 'FPF=2&nbsp;-&nbsp;Short'    * for fpf=2
+&XFPF(04) SETC 'FPF=3&nbsp;-&nbsp;Long'     * for fpf=3
+&XFPF(05) SETC 'FPF=4&nbsp;-&nbsp;Extended' * for fpf=4
+&XFPF(06) SETC ''                       * unused
+&XFPF(07) SETC ''                       * unused
+&XFPF(08) SETC ''                       * unused
+&XFPF(09) SETC ''                       * unused
+&XFPF(10) SETC ''                       * unused
+&XFPF(11) SETC ''                       * unused
+&XFPF(12) SETC ''                       * unused
+&XFPF(13) SETC ''                       * unused
+&XFPF(14) SETC ''                       * unused
+&XFPF(15) SETC ''                       * unused
+&XFPF(16) SETC ''                       * unused
+&XFPF(17) SETC ''                       * cannot be omitted
+.*
+.* format code s: S = Single Element Control
+          LCLC  &XSEC(16)               * headers for s in format-code
+&XSEC(01) SETC 'S=0&nbsp;-&nbsp;Vector'   * for s=0
+&XSEC(02) SETC ''                       * unused
+&XSEC(03) SETC ''                       * unused
+&XSEC(04) SETC ''                       * unused
+&XSEC(05) SETC ''                       * unused
+&XSEC(06) SETC ''                       * unused
+&XSEC(07) SETC ''                       * unused
+&XSEC(08) SETC ''                       * unused
+&XSEC(09) SETC 'S=1&nbsp;-&nbsp;Single'   * for s=1 (mask=8)
+&XSEC(10) SETC ''                       * unused
+&XSEC(11) SETC ''                       * unused
+&XSEC(12) SETC ''                       * unused
+&XSEC(13) SETC ''                       * unused
+&XSEC(14) SETC ''                       * unused
+&XSEC(15) SETC ''                       * unused
+&XSEC(16) SETC ''                       * unused
+&XSEC(17) SETC ''                       * cannot be omitted
+.*
+.* format code cs: Condition Code Set
+          LCLC  &XCCS(16)               * headers for format-code cs
+&XCCS(01) SETC 'CS=0&nbsp;-&nbsp;Keep&nbsp;CC' * for cs=0
+&XCCS(02) SETC 'CS=1&nbsp;-&nbsp;Set&nbsp;CC'  * for cs=1
+&XCCS(03) SETC ''                       * unused
+&XCCS(04) SETC ''                       * unused
+&XCCS(05) SETC ''                       * unused
+&XCCS(06) SETC ''                       * unused
+&XCCS(07) SETC ''                       * unused
+&XCCS(08) SETC ''                       * unused
+&XCCS(09) SETC ''                       * unused
+&XCCS(10) SETC ''                       * unused
+&XCCS(11) SETC ''                       * unused
+&XCCS(12) SETC ''                       * unused
+&XCCS(13) SETC ''                       * unused
+&XCCS(14) SETC ''                       * unused
+&XCCS(15) SETC ''                       * unused
+&XCCS(16) SETC ''                       * unused
+.* if not optional below entry is overwritten to suppress
+&XCCS(17) SETC 'CS&nbsp;Not&nbsp;Implied<br />Default=0'
+.*
+.* format code ssq: S = Single Element Control; sq=Signal-on-QNaN
+          LCLC  &XSSQ(16)               * headers for format-code ssq
+&XSSQ(01) SETC 'S=0&nbsp;-&nbsp;Vector<br />SQ=0&nbsp;-&nbsp;Suppress&n*
+               bsp;QNaN'                * for ssq=0
+&XSSQ(02) SETC ''                       * unused
+&XSSQ(03) SETC ''                       * unused
+&XSSQ(04) SETC ''                       * unused
+&XSSQ(05) SETC 'S=0&nbsp;-&nbsp;Vector<br />SQ=1&nbsp;-&nbsp;Signal&nbs*
+               p;QNaN'                 * for ssq=4
+&XSSQ(06) SETC ''                       * unused
+&XSSQ(07) SETC ''                       * unused
+&XSSQ(08) SETC ''                       * unused
+&XSSQ(09) SETC 'S=1&nbsp;-&nbsp;Single<br />SQ=0&nbsp;-&nbsp;Suppress&n*
+               bsp;QNaN'                * for ssq=8
+&XSSQ(10) SETC ''                       * unused
+&XSSQ(11) SETC ''                       * unused
+&XSSQ(12) SETC ''                       * unused
+&XSSQ(13) SETC 'S=1&nbsp;-&nbsp;Single<br />SQ=1&nbsp;-&nbsp;Signal&nbs*
+               p;QNaN'                 * for ssq=C
+&XSSQ(14) SETC ''                       * unused
+&XSSQ(15) SETC ''                       * unused
+&XSSQ(16) SETC ''                       * unused
+&XSSQ(17) SETC ''                       * cannot be omitted
+.*
+.* format code SO: SGN = Sign Operation
+          LCLC  &XSGN(16)               * headers for SO in format-code
+&XSGN(01) SETC 'Operation=0<br />Complement' * for SGN=0
+&XSGN(02) SETC 'Operation=1<br />Negative'   * for SGN=1
+&XSGN(03) SETC 'Operation=2<br />Positive'   * for SGN=2
+&XSGN(04) SETC ''                       * unused
+&XSGN(05) SETC ''                       * unused
+&XSGN(06) SETC ''                       * unused
+&XSGN(07) SETC ''                       * unused
+&XSGN(08) SETC ''                       * unused
+&XSGN(09) SETC ''                       * unused
+&XSGN(10) SETC ''                       * unused
+&XSGN(11) SETC ''                       * unused
+&XSGN(12) SETC ''                       * unused
+&XSGN(13) SETC ''                       * unused
+&XSGN(14) SETC ''                       * unused
+&XSGN(15) SETC ''                       * unused
+&XSGN(16) SETC ''                       * unused
+&XSGN(17) SETC 'Operation<br />Not&nbsp;Implied' * has to be hard coded
+.*
+.* format code es: Element Size
+          LCLC  &XESZ(16)               * headers for format-code es
+&XESZ(01) SETC 'Size=0&nbsp;-&nbsp;Byte'       * for es=0
+&XESZ(02) SETC 'Size=1&nbsp;-&nbsp;Halfword'   * for es=1
+&XESZ(03) SETC 'Size=2&nbsp;-&nbsp;Fullword'   * for es=2
+&XESZ(04) SETC 'Size=3&nbsp;-&nbsp;Doubleword' * for es=3
+&XESZ(05) SETC 'Size=4&nbsp;-&nbsp;Quadword'   * for es=4
+&XESZ(06) SETC ''                       * unused
+&XESZ(07) SETC 'Size=6&nbsp;-&nbsp;Word<br />(Left&nbsp;Aligned)'
+&XESZ(08) SETC ''                       * unused
+&XESZ(09) SETC ''                       * unused
+&XESZ(10) SETC ''                       * unused
+&XESZ(11) SETC ''                       * unused
+&XESZ(12) SETC ''                       * unused
+&XESZ(13) SETC ''                       * unused
+&XESZ(14) SETC ''                       * unused
+&XESZ(15) SETC ''                       * unused
+&XESZ(16) SETC ''                       * unused
+&XESZ(17) SETC ''                       * cannot be omitted
+.*
+.* format code x: index value
+          LCLC  &XNDX(16)               * headers for format-code x
+&XNDX(01) SETC 'x=0'                    * for x=0
+&XNDX(02) SETC 'x=1'                    * for x=1
+&XNDX(03) SETC 'x=2'                    * for x=2
+&XNDX(04) SETC 'x=3'                    * for x=3
+&XNDX(05) SETC 'x=4'                    * for x=4
+&XNDX(06) SETC 'x=5'                    * for x=5
+&XNDX(07) SETC 'x=6'                    * for x=6
+&XNDX(08) SETC 'x=7'                    * for x=7
+&XNDX(09) SETC 'x=8'                    * for x=8
+&XNDX(10) SETC 'x=9'                    * for x=9
+&XNDX(11) SETC 'x=A'                    * for x=10
+&XNDX(12) SETC 'x=B'                    * for x=11
+&XNDX(13) SETC 'x=C'                    * for x=12
+&XNDX(14) SETC 'x=D'                    * for x=13
+&XNDX(15) SETC 'x=E'                    * for x=14
+&XNDX(16) SETC 'x=F'                    * for x=15
+&XNDX(17) SETC ''                       * cannot be omitted
+.*
+.* format code z: zero search
+          LCLC  &XZSR(16)               * headers for format-code z
+&XZSR(01) SETC 'ZS=0&nbsp;-&nbsp;No&nbsp;Zero&nbsp;Search' * for z=0
+&XZSR(02) SETC ''                       * unused
+&XZSR(03) SETC 'ZS=1&nbsp;-&nbsp;Zero&nbsp;Search'         * for z=2
+&XZSR(04) SETC ''                       * unused
+&XZSR(05) SETC ''                       * unused
+&XZSR(06) SETC ''                       * unused
+&XZSR(07) SETC ''                       * unused
+&XZSR(08) SETC ''                       * unused
+&XZSR(09) SETC ''                       * unused
+&XZSR(10) SETC ''                       * unused
+&XZSR(11) SETC ''                       * unused
+&XZSR(12) SETC ''                       * unused
+&XZSR(13) SETC ''                       * unused
+&XZSR(14) SETC ''                       * unused
+&XZSR(15) SETC ''                       * unused
+&XZSR(16) SETC ''                       * unused
+.* if not optional below entry is overwritten to suppress
+&XZSR(17) SETC 'Not&nbsp;Implied<br />Default=0'
+.*
+.* format code zs: zero search + condition code set
+          LCLC  &XZSC(16)               * headers for format-code zs
+&XZSC(01) SETC 'ZS=0&nbsp;-&nbsp;No&nbsp;Zero&nbsp;Search<br />CS=0&nbs*
+               p;-&nbsp;Keep&nbsp;CC'   * for zs=0
+&XZSC(02) SETC 'ZS=0&nbsp;-&nbsp;No&nbsp;Zero&nbsp;Search<br />CS=1&nbs*
+               p;-&nbsp;Set&nbsp;CC'    * for zs=1
+&XZSC(03) SETC 'ZS=1&nbsp;-&nbsp;Zero&nbsp;Search<br />CS=0&nbsp;-&nbsp*
+               ;Keep&nbsp;CC'           * for zs=2
+&XZSC(04) SETC 'ZS=1&nbsp;-&nbsp;Zero&nbsp;Search<br />CS=1&nbsp;-&nbsp*
+               ;Set&nbsp;CC'            * for zs=3
+&XZSC(05) SETC ''                       * unused
+&XZSC(06) SETC ''                       * unused
+&XZSC(07) SETC ''                       * unused
+&XZSC(08) SETC ''                       * unused
+&XZSC(09) SETC ''                       * unused
+&XZSC(10) SETC ''                       * unused
+&XZSC(11) SETC ''                       * unused
+&XZSC(12) SETC ''                       * unused
+&XZSC(13) SETC ''                       * unused
+&XZSC(14) SETC ''                       * unused
+&XZSC(15) SETC ''                       * unused
+&XZSC(16) SETC ''                       * unused
+.* if not optional below entry is overwritten to suppress
+&XZSC(17) SETC 'Not&nbsp;Implied<br />Default=0'
+.*
+.* Check args - find range & size of table to generate
+         AIF   (K'&FORMAT EQ 0).ERROR1  * Omitted
+         AIF   ('&FORMAT' EQ 'list').FMT_OK
+         AIF   ('&FORMAT' EQ 'ndx').FMT_OK
+         AIF   ('&FORMAT' EQ 'ves').FMT_VES
+         AIF   ('&FORMAT' EQ 'ves.cs').FMT_VESCS
+         AIF   ('&FORMAT' EQ 'ves.[cs]').FMT_VESCS
+         AIF   ('&FORMAT' EQ 'ves.zs').FMT_VESZS
+         AIF   ('&FORMAT' EQ 'ves.[z]').FMT_VESZ
+         AIF   ('&FORMAT' EQ 'ves.[zs]').FMT_VESZS
+         AIF   ('&FORMAT' EQ 'vfs').FMT_VFS
+         AIF   ('&FORMAT' EQ 'vfs.SO').FMT_VFSSO
+         AIF   ('&FORMAT' EQ 'vfs.[SO]').FMT_VFSSO
+         AIF   ('&FORMAT' EQ 'vfssq.cs').FMT_VFSSQCS
+         AIF   ('&FORMAT' EQ 'vf0').FMT_VF0
+         AIF   ('&FORMAT' EQ 'vsf').FMT_VSF
+         AIF   ('&FORMAT' EQ 'x').FMT_X
+         AGO   .ERROR2                  * Invalid format
+.FMT_VF0 ANOP  ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  '000'                    * Required zero value
+&DIMY    SETC  'FPF'                    * Floating Point Format
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  3                        * Use L3=first mask value
+&NUMY    SETA  2                        * Use L2=second mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  0                        * Irrelevant
+         AGO   .FMT_OK
+.FMT_VFS ANOP  ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'SEC'                    * Single Element Control
+&DIMY    SETC  'FPF'                    * Floating Point Format
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  3                        * Use L3=first mask value
+&NUMY    SETA  2                        * Use L2=second mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  0                        * Irrelevant
+         AGO   .FMT_OK
+.FMT_VES ANOP  ,
+&HDRTYPE SETC  'OPCD|MNEM'              * OPCD+MNEM in separate columns
+&DIMX    SETC  'NUL'                    * Unused
+&DIMY    SETC  'ESZ'                    * Element Size
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  0                        * Unused
+&NUMY    SETA  1                        * Use L1=first mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  0                        * Irrelevant
+         AGO   .FMT_OK
+.FMT_VESCS ANOP ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'CCS'                    * Condition Code Set
+&DIMY    SETC  'ESZ'                    * Element Size
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  2                        * Use L2=second mask value
+&NUMY    SETA  1                        * Use L1=first mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  2                        * mask 2 (cc set) is optional
+&COMBHOR SETB  0                        * Irrelevant
+         AIF   ('&FORMAT' EQ 'ves.[cs]').FMT_OK * optional is default
+&ARGOPT  SETA  0                        * No optional argument
+&XCCS(17) SETC ''                       * mark unused
+         AGO   .FMT_OK
+.FMT_VESZ ANOP ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'ZSR'                    * Zero Search
+&DIMY    SETC  'ESZ'                    * Element Size
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  2                        * Unused
+&NUMY    SETA  1                        * Use L1=first mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  2                        * Second mask is optional
+&COMBHOR SETB  0                        * Irrelevant
+         AIF   ('&FORMAT' EQ 'ves.[z]').FMT_OK * optional is default
+&ARGOPT  SETA  0                        * No optional argument
+&XZSR(17) SETC ''                       * mark unused
+         AGO   .FMT_OK
+.FMT_VESZS ANOP ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'ZSC'                    * Zero Search + CC set
+&DIMY    SETC  'ESZ'                    * Element Size
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  2                        * Unused
+&NUMY    SETA  1                        * Use L1=first mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  2                        * Second mask is optional
+&COMBHOR SETB  0                        * Irrelevant
+         AIF   ('&FORMAT' EQ 'ves.[zs]').FMT_OK * optional is default
+&ARGOPT  SETA  0                        * No optional argument
+&XZSC(17) SETC ''                       * mark unused
+         AGO   .FMT_OK
+.FMT_VSF ANOP  ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'SEC'                    * Single Element Control
+&DIMY    SETC  'FPF'                    * Floating Point Format
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  2                        * Use L3=first mask value
+&NUMY    SETA  3                        * Use L2=second mask value
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  0                        * Irrelevant
+         AGO   .FMT_OK
+.FMT_VFSSO ANOP ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'SGN'                    * Sign operation code
+&DIMY    SETC  'FPF'                    * Floating Point Format
+&DIMZ    SETC  'SEC'                    * Single Element Control
+&NUMX    SETA  3                        * Use L3=third mask value
+&NUMY    SETA  1                        * Use L1=first mask value
+&NUMZ    SETA  2                        * Use L2=second mask value
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  1                        * Make a single wide table
+         AIF   ('&FORMAT' EQ 'vfs.SO').FMT_OK
+&ARGOPT  SETA  3                        * Sign Operation is optional
+         AGO   .FMT_OK
+.FMT_VFSSQCS ANOP ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'SSQ'                    * Single-element + Signal-QNaN
+&DIMY    SETC  'FPF'                    * Floating Point Format
+&DIMZ    SETC  'CCS'                    * Conditon Code Set
+&NUMX    SETA  2                        * Use L3=second mask value
+&NUMY    SETA  1                        * Use L1=first mask value
+&NUMZ    SETA  3                        * Use L2=third mask value
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  0                        * Make a single wide table
+         AGO   .FMT_OK
+.FMT_X   ANOP  ,
+&HDRTYPE SETC  'OPCD+MNEM'              * Gen OPCD and Mnemonics in hdr
+&DIMX    SETC  'NDX'                    * Index value
+&DIMY    SETC  'NUL'                    * Unused
+&DIMZ    SETC  'NUL'                    * Unused
+&NUMX    SETA  1                        * Use L1=index
+&NUMY    SETA  0                        * Unused
+&NUMZ    SETA  0                        * Unused
+&ARGOPT  SETA  0                        * No optional argument
+&COMBHOR SETB  0                        * Irrelevant
+         AGO   .FMT_OK
+.FMT_OK  ANOP  ,
+&ONLYPOS SETB  0                        * Assume old and new
+&ONLYNEG SETB  0                        *    opcodes in a single table
+&URANGE  SETC  '&RANGE'                 * Assume no explicit sign
+         AIF   ('&RANGE'(1,1) EQ '+').GENPOS * set explicit + only0
+         AIF   ('&RANGE'(1,1) EQ '-').GENNEG * set explicit - only0
+         AGO   .NOSIGN
+.GENPOS  ANOP  ,
+&ONLYPOS SETB  1                        * include only current opcodes
+         AGO   .SIGNOK
+.GENNEG  ANOP  ,
+&ONLYNEG SETB  1                        * include only old opcodes
+.SIGNOK  ANOP  ,
+&URANGE  SETC  '&RANGE'(2,*)            * Remove leading sign
+.NOSIGN  ANOP  ,                        * Sign done, check range
+         AIF   (K'&URANGE LT 3).ARGDASH * Cannot end in .*
+         AIF   ('&URANGE'(K'&URANGE-1,2) NE '.*').ARGDASH
+&ARG1    SETC  '&URANGE'(1,K'&URANGE-2) * Strip tailing .* qualifier
+&ARG2    SETC  '&ARG1'
+.* Get major/minor from &ARG1
+&HEXVAL  SETC  '&ARG1'                  * Extract major opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13
+&LBOUND1 SETA  (&DECVAL)                * Set lower bound
+&LBOUND2 SETA  -1                       * Minor opcode irrelevant
+&UBOUND1 SETA  (&DECVAL)                * Set upper bound
+&UBOUND2 SETA  -1                       * Minor opcode irrelevant
+         AGO  .OPRNG_F
+.ARGDASH ANOP  ,                        * Range must have a sdash
+&L       SETA  ('&URANGE' FIND '-')     * Find separator dash
+         AIF   (&L EQ 0).ERROR12
+&ARG1    SETC  '&URANGE'(1,&L-1)        * Extract lower bound
+&ARG2    SETC  '&URANGE'(&L+1,*)        *     and upper bound
+.* Get major/minor from &ARG1
+&L       SETA  ('&ARG1' FIND '.')       * Contains a period?
+         AIF   (&L EQ 0).OPRNG_A        * Only major opcode
+&HEXVAL  SETC  '&ARG1'(1,&L-1)          * Extract major opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13
+&LBOUND1 SETA  (&DECVAL)                * Set lower bound
+&HEXVAL  SETC  '&ARG1'(&L+1,*)          * Extract minor opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&LBOUND2 SETA  (&DECVAL)                * Set lower bound
+         AGO   .OPRNG_B                 * Go find upper bound
+.OPRNG_A ANOP  ,
+&HEXVAL  SETC  '&ARG1'
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&LBOUND1 SETA  (&DECVAL)                * Set lower bound
+&LBOUND2 SETA  -1                       * No minor opcode
+.OPRNG_B ANOP  ,
+.* Get major/minor from &ARG2
+&L       SETA  ('&ARG2' FIND '.')       * Contains a period?
+         AIF   (&L EQ 0).OPRNG_C        * Only major opcode
+&HEXVAL  SETC  '&ARG2'(1,&L-1)          * Extract major opcode
+         HEX2DEC ,                      * Should be an opcode
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid!
+&UBOUND1 SETA  (&DECVAL)                * Set upper bound
+&HEXVAL  SETC  '&ARG2'(&L+1,*)          * Extract minor opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&UBOUND2 SETA  (&DECVAL)                * Set upper bound
+         AGO   .OPRNG_D                 * upper and lower bound found
+.OPRNG_C ANOP  ,
+&HEXVAL  SETC  '&ARG2'
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&UBOUND1 SETA  (&DECVAL)                * Set lower bound
+&UBOUND2 SETA  -1                       * No minor opcode
+.OPRNG_D ANOP  ,
+.* Need to establish size of interval between lower and upper bounds
+         AIF   (&LBOUND2 EQ -1 AND &UBOUND2 NE -1).ERROR14
+         AIF   (&LBOUND2 NE -1 AND &UBOUND2 EQ -1).ERROR14
+         AIF   (&LBOUND2 NE -1).OPRNG_E * Minor opcodes
+.* Checking major opcodes (no minors)
+         AIF   (&LBOUND1 GE &UBOUND1).ERROR14
+&L       SETA  (&UBOUND1-&LBOUND1+1)
+         AGO   .OPRNG_F
+.OPRNG_E ANOP  ,
+.* Checking major and minor opcodes
+         AIF   (&LBOUND1 NE &UBOUND1).ERROR14
+         AIF   (&LBOUND2 GE &UBOUND2).ERROR14
+&L       SETA  (&UBOUND2-&LBOUND2+1)
+.OPRNG_F ANOP  ,
+.* Check validity of calculated interval
+         AIF   ('&FORMAT' EQ 'list').OPRNGOK * create h3 header
+         AIF   ('&FORMAT' EQ 'ndx').GEN_NDX
+         AIF   (&L EQ 16).OPRNG16
+         AIF   (&L EQ 4096).OPRNG4K
+         AIF   (&L NE 256).ERROR14
+&RNG16   SETB  0                        * Range is not 16
+&RNG256  SETB  1                        * Range is 256
+&RNG4096 SETB  0                        * Range is not 4096
+&L       SETA  2                        * Size is 2 hex digits
+&PFX     SETC  '_'                      * Add underscores
+         AIF   (&LBOUND2 EQ -1).OPRNGOK * Simple major opcodes
+&L       SETA  3                        * Exclude period from prefix
+         AGO   .OPRNGOK
+.OPRNG16 ANOP  ,
+&RNG4096 SETB  0                        * Range is not 4096
+&RNG256  SETB  0                        * Range is not 256
+&RNG16   SETB  1                        * Range is 16
+&L       SETA  1                        * Size is 1 hex digit
+&PFX     SETC  ''                       * No underscores
+         AIF   (&LBOUND2 EQ -1).OPRNGOK * Simple major opcodes
+&L       SETA  2                        * Exclude period from prefix
+         AGO   .OPRNGOK
+.OPRNG4K ANOP  ,
+&RNG4096 SETB  1                        * Range is 4096
+&RNG256  SETB  0                        * Range is not 256
+&RNG16   SETB  0                        * Range is not 16
+&L       SETA  3                        * Size is 3 hex digits
+&PFX     SETC  ''                       * No underscores
+         AIF   (&LBOUND2 EQ -1).OPRNGOK * Simple major opcodes
+&L       SETA  4                        * Exclude period from prefix
+.OPRNGOK ANOP  ,
+&L2      SETA  (K'&ARG1-&L)             * Prefix length
+&L3      SETA  (K'&ARG2-&L)             * same
+&PREFIX  SETC  '&ARG1'(1,&L2)           * Extract prefix
+&SAVPFX  SETC  '&PREFIX'                * Save original value
+         AIF   ('&PREFIX' NE '&ARG2'(1,&L3)).ERROR14
+         AIF   ('&PREFIX' NE '').CHKPFX
+&PREFIX  SETC  '&&nbsp;'
+         AGO   .OPGO
+.CHKPFX  ANOP  ,
+.* Need to find the mnemonic associated with the entire table
+         FINDOPCD &PREFIX,-1
+         AIF   (&OPCD_START NE 0).OPPFX1 * Ok: found
+.* Could it be this is an opcode nn with range nn00-nn0F ??
+         AIF   (NOT &RNG16).ERROR16     * Range must be 16 to qualify
+         AIF   (&LBOUND1 EQ &UBOUND1).ERROR16 * Skip sub-opcodes
+&L       SETA  K'&ARG1
+         AIF   (&L NE 4).ERROR16        * nn00 ?
+         AIF   ('&ARG1'(&L-1,2) NE '00').ERROR16
+&L       SETA  K'&ARG2
+         AIF   (&L NE 4).ERROR16        * nn0F ?
+         AIF   ('&ARG2'(&L-1,2) NE '0F').ERROR16
+&L       SETA  K'&PREFIX
+         AIF   (&L NE 3).ERROR16        * Wrong length: cannot qualify
+&X       SETC  '&PREFIX'(1,&L-1)        * Remove trailing 0
+         FINDOPCD &X,-1                 * This opcode exists?
+         AIF   (&OPCD_START EQ 0).ERROR16 * Oops: not found
+.OPPFX1  ANOP  ,
+&L2      SETA  (&OPCD_START-1)          * Pre-point first entry
+.OPPFX   ANOP  ,                        * Loop over relevant entries
+&L2      SETA  (&L2+1)
+         AIF   (&L2 GT &OPCD_END).ERROR16 * Not found: error
+&L3      SETA  &OPCDPTR(&L2)            * Extract opcode pointer
+&MNEMON  SETC  '&MNEM(&L3)'             * Extract mnemonic
+         AIF   (K'&MNEMON LE 4).OPPFX   * Too short for OPCDxxxx
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').OPPFX * Not the right one!
+&L       SETA  K'&MNEMON
+.* If range is 256, then the format is OPCD..xx
+         AIF   (&RNG256 AND '&MNEMON'(&L-1,2) EQ 'xx').PFXOK
+         AIF   (&RNG256 AND '&MNEMON'(&L-1,2) EQ 'mm').PFXOK
+         AIF   (&RNG256 AND '&MNEMON'(&L-2,3) EQ 'mmm').PFXOK
+         AIF   (&RNG256).OPPFX          * Not the one we're looking for
+.* Range is 16; if majors are unequal, then format is OPCD.x/..x/...x
+         AIF   (&RNG16 AND '&MNEMON'(&L,1) EQ 'x').PFXOK
+         AIF   (&RNG16 AND '&MNEMON'(&L,1) EQ 'm').PFXOK
+         AIF   (&RNG16).OPPFX           * Not the right one!
+.* Range is 16 and majors are equal: format is OPCD..m / OPCD..m.
+         AIF   ('&MNEMON'(&L,1) EQ 'm').PFXOK
+&PREFIX  SETC  '&MNEMON'(1,&L-2).'.'.'&MNEMON'(&L,1)
+&PREFIX  SETC  '&PREFIX'(5,*)           * Remove leading OPCD
+.PFXOK   ANOP  ,
+&ATTRIB  SETC  '&ATTR(&L3)'             * Extract page attribute
+&OLDPAGE SETB  ('&ATTRIB' EQ 'Old' OR &ONLYNEG) * Set status
+.NOERR16 ANOP  ,
+.*
+.* Now we can start punching the actual html
+.* First a header for every mnemonic, then the full table
+.OPGO    ANOP  ,                        * Start OPcode handling
+         ACTR  400                      * For the h3 loop
+&MNEMONS SETC  ''                       * Combined mnemonics
+&PREFIX  SETC  '&SAVPFX'                * Reset to proper prefix
+         FINDOPCD &PREFIX,-1
+         AIF   (&OPCD_START EQ 0).LPH3SKP * Skip the whole loop
+&L4      SETA  &OPCD_START
+.LPH3    ANOP  ,
+&P       SETA  &OPCDPTR(&L4)            * Extract opcode pointer
+&MNEMON  SETC  '&MNEM(&P)'              * Extract mnemonic
+&MASKVAL SETC  '&MASK(&P)'              * Extract mask value
+         AIF   (K'&MASKVAL NE 0).LPH3NXT * Skip extended mnemonic
+         AIF   (K'&MNEMON LE 4).LPH3PUN * Too short for OPCDxxxx
+         AIF   ('&MNEMON'(1,4) EQ 'OPCD').LPH3NXT * Skip this one!
+.LPH3PUN ANOP  ,
+         HTMLPUN '<h3>Extended Mnemonics for <a name="&MNEMON" id="&MNE*
+               MON">&MNEMON</a>'
+         HTMLPUN '    (&NAME(&P))</h3>'
+.* Add mnemonic to saved list
+&MNEMON  SETC  '<a href="opcd/'.'&MNEMON'.'.htm">&MNEMON.</a>'
+         AIF   ('&MNEMONS' EQ '').LPH3F * First entry
+&MNEMONS SETC  '&MNEMONS.<br />&MNEMON'
+         AGO   .LPH3NXT
+.LPH3F   ANOP  ,
+&MNEMONS SETC  '&MNEMON'
+         AGO   .LPH3NXT
+.LPH3NXT ANOP  ,
+&L4      SETA  (&L4+1)
+         AIF   (&L4 LE &OPCD_END).LPH3
+.LPH3SKP ANOP  ,
+         AIF   ('&FORMAT' EQ 'list').GEN_LST
+.*
+.* Guesstimate a reasonable ACTR value for the entire loop stuff
+&L       SETA  1                        * Estimate ACTR value
+         AIF   (&NUMZ EQ 0).ACTRNOZ
+&L       SETA  (&L*20)                  * Max 16 tables
+.ACTRNOZ ANOP  ,
+         AIF   (&NUMY EQ 0).ACTRNOY
+&L       SETA  (&L*20)                  * Max 16 rows per table
+.ACTRNOY ANOP  ,
+         AIF   (&NUMX EQ 0).ACTRNOX
+&L       SETA  (&L*20)                  * Max 16 cells per row
+.ACTRNOX ANOP  ,
+         ACTR  16*&L                    * Max 16 AGOs per cell
+&L4      SETA  0                        * Reset  ...
+&L3      SETA  0                        *  all   ...
+&L2      SETA  0                        *   loop ...
+&L1      SETA  0                        *    counters
+.*
+.* Table loop - if needed
+&FIRSTZ  SETA  0
+         AIF   (&NUMZ EQ 0).NEWTBL      * We have no table dimension
+&(L&NUMZ) SETA 0                        * Table index
+.LPOTB   ANOP  ,                        * Outer table loop
+&(L&NUMZ) SETA (&(L&NUMZ)+1)
+         AIF   (&(L&NUMZ) GT 17).LPOTBEX * exit from outer table loop
+&TBLDESC SETC  '&(X&DIMZ)(&(L&NUMZ))'   * Get description
+         AIF   ('&TBLDESC' EQ '').LPOTB * Skip entry
+.* Save first valid index value
+         AIF   (&FIRSTZ NE 0).NEWTBL    * We already have a value
+&FIRSTZ  SETA  &(L&NUMZ)                * Save first table index value
+.*
+.* If we are to generate multiple tables that are not combined
+.*    horizontally, then we enclose the tables in a DIV tag pair
+.*    to provide a vertical bar on the left hand side.
+.* This is done to visually group the tables together
+         AIF   (&NUMZ EQ 0 OR &COMBHOR EQ 1).NEWTBL
+         HTMLPUN '<div class=vertical_line>'
+.*
+.* Start a table
+.NEWTBL  ANOP  ,                        * Start an html table
+         AIF   (&(L&NUMZ) EQ &FIRSTZ).NEWTBL2
+         HTMLPUN '<p>&nbsp;</p>'        * Separate tables
+.NEWTBL2 ANOP  ,
+         HTMLPUN '<!-- UK -->'
+         HTMLPUN '<table class="opcodes">'
+         HTMLPUN ' <tr>'
+.* loop to create column headers
+&(L&NUMX) SETA 0                        * Column index (header row)
+         AIF   (&NUMZ EQ 0).LPHTB1      * Topleft cell is just prefix
+         AIF   (NOT &COMBHOR).LPHTBMT   * &TBLDESC holds description
+&(L&NUMZ) SETA 0                        * Table index
+.LPHTB   ANOP  ,                        * For each table
+&(L&NUMZ) SETA (&(L&NUMZ)+1)
+         AIF   (&(L&NUMZ) GT 17).LPHTBEX * no more tables
+&TBLDESC SETC  '&(X&DIMZ)(&(L&NUMZ))'   * Get description
+         AIF   ('&TBLDESC' EQ '').LPHTB * Skip entry
+         AIF   (&(L&NUMZ) EQ &FIRSTZ).LPHTBMT * Skip empty column
+         HTMLPUN '  <th>&nbsp;</th>'
+.LPHTBMT ANOP  ,
+         HTMLPUN '  <th>&PREFIX<br />'
+         HTMLPUN '      &TBLDESC.</th>'
+         AGO   .LPHDR                   * Go create header columns
+.LPHTB1  ANOP ,                         * We have only one table
+         HTMLPUN '  <th>&PREFIX</th>'
+         AGO   .LPHDR                   * Go create header columns
+.*
+.* Loop across all columns to create cells in header row
+.LPHDR   ANOP  ,                        * Loop over all headers
+&(L&NUMX) SETA &(L&NUMX)+1
+         AIF   (&(L&NUMX) GT 17).LPHDREX * All columns listed
+&X       SETC  '&(X&DIMX)(&(L&NUMX))'   * Get description
+         AIF   ('&X' EQ '').LPHDR       * Skip entry
+&L       SETA  ('&X' INDEX '<br />')    * Contains a break?
+         AIF   (&L EQ 0).LPHDRP1        * Go punch just one line
+&CARD    SETC  '&X'(1,&L+5)             * Get first part including br
+         HTMLPUN '  <th>&CARD'
+&CARD    SETC  '&X'(&L+6,*)             * Get remainder of header
+         HTMLPUN '      &CARD</th>'
+         AGO   .LPHDR
+.LPHDRP1 ANOP  ,                        * Punch one line
+         AIF   ('&X' EQ ' ' AND '&HDRTYPE' EQ 'OPCD|MNEM').LPHDRP2
+.* default case: just use &X
+         HTMLPUN '  <th>&X.</th>'
+         AGO   .LPHDR
+.* Case for HDRTYPE=OPCD|MNEM
+.LPHDRP2 ANOP  ,
+         HTMLPUN '  <th>&MNEMONS</th>'
+&HDRTYPE SETC  '*Suppress'
+         AGO   .LPHDR
+.LPHDREX ANOP  ,                        * Exit point for header loop
+&(L&NUMX) SETA 0                        * Reset columnn counter
+         AIF   (&NUMZ GT 0 AND &COMBHOR).LPHTB * Next table
+.LPHTBEX ANOP  ,                        * Exit point for hdr table loop
+         HTMLPUN ' </tr>'               * Terminate header row
+.*
+.* Use &(L&NUMZ) as helper loop variable (count logical tables)
+.*               Either separate or joined into 1 physical table
+.* Use &(L&NUMY) as outer loop variable (count rows of 16/32 entries)
+.* Use &(L&NUMX) as inner loop variable (count 16 cells for each row)
+.* Use &L4 as innermost loop var. (count opcodes inside each cell)
+.*
+.* Note: the loop by table should normally be the outermost loop.
+.*       This is the case when creating multiple tables, or when
+.*       combining tables vertically.
+.*       However, when combining tables horizontally (extending rows)
+.*       we need to implement the 'outer' within the LPROW loop.
+.*
+.NEWROW  ANOP  ,                        * Start a new data row
+&(L&NUMY) SETA 0                        * Generate rows
+.LPROW   ANOP  ,                        * Row loop
+&(L&NUMY) SETA (&(L&NUMY)+1)
+         AIF   (&(L&NUMY) GT 17).LPROWEX
+&ROWDESC SETC  '&(X&DIMY)(&(L&NUMY))'   * Get description
+         AIF   ('&ROWDESC' EQ '').LPROW * Skip unused entry
+         HTMLPUN ' <tr>'
+.*
+.* Inner loop across tables - applies only when &COMBHOR is on
+         AIF   (&NUMZ EQ 0 OR NOT &COMBHOR).LPITBSK
+&(L&NUMZ) SETA 0                        * Table index
+.LPITB   ANOP  ,                        * Outer table loop
+&(L&NUMZ) SETA (&(L&NUMZ)+1)
+         AIF   (&(L&NUMZ) GT 17).LPITBEX * exit from outer table loop
+&TBLDESC SETC  '&(X&DIMZ)(&(L&NUMZ))'   * Get description
+         AIF   ('&TBLDESC' EQ '').LPITB * Skip entry
+.* Punch main ID cell for this table
+         AIF   (&(L&NUMZ) EQ &FIRSTZ).LPROWMT * Skip empty column
+         HTMLPUN '  <td>&nbsp;</td>'
+.LPROWMT ANOP  ,
+.LPITBSK ANOP  ,
+         HTMLPUN '  <td>&ROWDESC.</td>'
+         AGO   .NEWROWD
+.LPITBEX ANOP  ,                        * Row is complete
+         HTMLPUN ' </tr>'
+&(L&NUMZ) SETA 0                        * Reset table index
+         AGO   .LPROW                   * Advance to next row
+.*
+.* Now loop over all data cells
+.NEWROWD ANOP  ,                        * Data portion of row
+&(L&NUMX) SETA 0                        * Generate cells:
+.LPCEL   ANOP  ,                        * For each data cell
+&(L&NUMX) SETA (&(L&NUMX)+1)
+         AIF   (&(L&NUMX) GT 17).LPCELEX * exit from cells loop
+&CELDESC SETC  '&(X&DIMX)(&(L&NUMX))'   * Get description
+         AIF   ('&CELDESC' EQ '').LPCEL * Skip entry
+&MAJOR   SETC  '&PREFIX'                * Construct opcode
+&MINOR   SETC  '')
+&MASKLEN SETA  0                        * Number of bit in mask
+         AIF   (&L3 EQ 0).SKIPL3        * This dimension is in use?
+         AIF   (&L3 GT 16).SKIPL3       * skip optional value?
+         AIF   (&ARGOPT EQ 3 AND &L3 GT K'&HEXDIGS).SKIPL3
+&MINOR   SETC  '&HEXDIGS'(&L3,1).&MINOR
+&MASKLEN SETA  (&MASKLEN+4)             * Number of bits in mask
+.SKIPL3  ANOP  ,
+         AIF   (&L2 EQ 0).SKIPL2        * This dimension is in use?
+         AIF   (&L2 GT 16).SKIPL2       * skip optional value?
+         AIF   (&ARGOPT EQ 2 AND &L2 GT K'&HEXDIGS).SKIPL2
+&MINOR   SETC  '&HEXDIGS'(&L2,1).&MINOR
+&MASKLEN SETA  (&MASKLEN+4)             * Number of bits in mask
+.SKIPL2  ANOP  ,
+         AIF   (&L1 EQ 0).SKIPL1        * This dimension is in use?
+         AIF   (&L1 GT 16).SKIPL1       * skip optional value?
+         AIF   (&ARGOPT EQ 1 AND &L1 GT K'&HEXDIGS).SKIPL1
+&MINOR   SETC  '&HEXDIGS'(&L1,1).&MINOR
+&MASKLEN SETA  (&MASKLEN+4)             * Number of bits in mask
+.SKIPL1  ANOP  ,
+.* Mask length is now in bits, convert to characters:
+&MASKLEN SETA  (&MASKLEN+(&MASKLEN/4)-1) * Adjust for periods in mask
+         FINDOPCD &MAJOR,&MINOR
+         AIF   (&OPCD_START EQ 0).LPCELMT * eMpTy cell
+.*
+.* Loop to find and show all valid mnemonics for this cell
+&L4      SETA  &OPCD_START              * Init loop over result set
+&CARD    SETC  '  <td>'
+         AIF   (&ONLYNEG).OLDCELL       * Mark old
+         AIF   (&ONLYPOS).LPMNM         * Mark current, even if empty
+         AIF   ('&OPCD_ATTR' EQ '').LPMNM    * Ok: all entries current
+         AIF   ('&OPCD_ATTR' EQ 'Mix').LPMNM * Ok: some entries current
+.OLDCELL ANOP  ,
+&CARD    SETC  '  <td class="old">'
+.LPMNM   ANOP  ,                        * Loop over mnemonnics found
+&P       SETA  &OPCDPTR(&L4)            * Extract pointer to &OPCD
+         AIF   (&ONLYNEG AND '&ATTR(&P)' NE 'Old').LPMNMNX * Go next
+         AIF   (&ONLYPOS AND '&ATTR(&P)' EQ 'Old').LPMNMNX * Go next
+&MNEMON  SETC  (LOWER '&MNEM(&P)')      * Mnemonic in lower case
+&ATTRIB  SETC  '&ATTR(&P)'              * Get attribute string
+&MASKVAL SETC  '&MASK(&P)'              * Get mask string
+&MASKVAL SETC  '&MASKVAL'
+.* Check length of mask to differentiate between zero and absent values
+         AIF   (&MASKLEN NE K'&MASKVAL).LPMNMNX * Go next
+         AIF   (&OLDPAGE AND '&ATTRIB' NE 'Old').ERROR17
+.NOERR17 ANOP  ,
+.* For old entries in mixed cells: Add opening span attribute
+         AIF   (&ONLYPOS OR &ONLYNEG).LPMNMV1
+         AIF   ('&OPCD_ATTR' NE 'Mix').LPMNMV1 * Mixed old / current?
+         AIF   ('&ATTRIB' NE 'Old').LPMNMV1 * Valid opcode?
+&CARD    SETC  '&CARD'.'<span class="old">'
+         AIF   ('&CARD'(1,6) EQ '  <td>').LPMNMV1 * Ok
+&CARD    SETC  '&CARD'(4,*)             * Remove 3 superfluous blanks
+.LPMNMV1 ANOP  ,                        * Mnemonic is currently valid
+.* Now we can add the opening anchor tag with correct target file name
+.* Add spaces if entire cell has attrib old & it's not the first item
+         AIF   ('&OPCD_ATTR' NE 'Old').LPMNMS1 * Cell is "Old"?
+         AIF   (&L4 EQ &OPCD_START).LPMNMS1
+&CARD    SETC  '&CARD'.(12)' '          * Insert 12 spaces
+.LPMNMS1 ANOP  ,
+&CARD    SETC  '&CARD'.'<a href="opcd/'.'&MNEMON'.'.htm">'
+.* Create text to be shown as content of anchor tag
+&MNEMON  SETC  '&MNEM(&P)'              * Retrieve real mnemonic
+.* Add content of anchor tag and closing anchor tag
+&CARD    SETC  '&CARD'.'&MNEMON'.'</a>'
+.* Add closing span tag (if required)
+         AIF   ('&OPCD_ATTR' NE 'Mix').LPMNMV2 * Mixed old / current?
+         AIF   ('&ATTRIB' NE 'Old').LPMNMV2 * Valid opcode?
+&CARD    SETC  '&CARD'.'</span>'
+.LPMNMV2 ANOP  ,                        * Mnemonic is currently valid
+.* Add break tag before continuing with next opcode in this cell
+         AIF   (&L4 EQ &OPCD_END).LPMNMNX * Go process next menmonic
+&CARD    SETC  '&CARD'.'<br />'
+         HTMLPUN '&CARD'
+&CARD    SETC  '      '
+&GEND(&P) SETB 1                        * Mark instruction generated
+.LPMNMNX ANOP  ,                        * Next mnemonic
+         AIF   (&L4 EQ &OPCD_END).LPMNMEX * All menmonics done
+&L4      SETA  &L4+1                    * Point next instruction
+         AGO   .LPMNM                   * And add to this cell
+.* Add terminating td tag to complete current cell
+.LPMNMEX ANOP  ,                        * closing tag fits on card?
+         AIF   (K'&CARD LE 67).LPMNMX1  * Normal case: 1 card
+         HTMLPUN '&CARD'                * Punch major part of card
+         HTMLPUN '  </td>'              * Punch closing td tag
+         AGO   .LPMNMX2                 *
+.LPMNMX1 ANOP  ,                        * Punch as one card
+&CARD    SETC  '&CARD'.'</td>'
+         HTMLPUN '&CARD'
+.LPMNMX2 ANOP  ,                        * Punch complete
+&GEND(&P) SETB 1                        * Mark instruction generated
+         AGO   .LPCEL                   * Go process next cell
+.LPCELMT ANOP ,                         * Non-existing opcode
+&CARD    SETC  '  <td>&nbsp;</td>'
+         AIF   (NOT &OLDPAGE).LPCELPU   * Ok: go punch cell-end
+&CARD    SETC  '  <td class="old">&nbsp;</td>'
+.LPCELPU ANOP ,                         * Punch non-existing opcode
+         HTMLPUN '&CARD'
+         AGO   .LPCEL                   * Go process next cell
+.*
+.* Terminate the loop over all data cells
+.LPCELEX ANOP  ,                        * Cell loop exit point
+&(L&NUMX) SETA 0                        * Reset columnn counter
+         AIF   (&NUMZ GT 0 AND &COMBHOR).LPITB * Next table on same row
+         HTMLPUN ' </tr>'               * Mark end of row
+         AGO   .LPROW                   * Go process next row
+.*
+.* Terminate the loop over all data rows
+.LPROWEX ANOP  ,                        * Row loop exit point
+         HTMLPUN '</table>'             * Mark end of table
+         AIF   (&NUMZ GT 0 AND NOT &COMBHOR).LPOTB
+.*
+.* Terminate the outer table loop
+.LPOTBEX ANOP  ,                        * Exit from outer table loop
+.* terminate div tag if needed
+         AIF   (&NUMZ EQ 0 OR &COMBHOR EQ 1).EXIT
+         HTMLPUN '</div>'
+.*
+.* If notes are needed, copy logic from GENHTMLO
+.*
+          AGO   .EXIT
+.*
+.* Logic to build index table for pages that hold
+.* muliple extension tables
+.*
+.* When we get here &ARG1 and &ARG2 have already been decomposed
+.* into &LBOUND1, &LBOUND2 and UBOUND1, &UBOUND2 respectively.
+.*
+.GEN_NDX ANOP  ,
+&L       SETA  ('&ARG1' FIND '.')       * Find separator dot
+         AIF   (&L NE 0).ERROR3
+&L       SETA  ('&ARG2' FIND '.')       * Find separator dot
+         AIF   (&L NE 0).ERROR4
+&FIRSTBYTE SETC '&ARG1'(1,2)            * Get first 2 hex digits
+         HTMLPUN '<table class="indextbl">'
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <th>Opcode</th>'
+         HTMLPUN '  <th>Mnemonic</th>'
+         HTMLPUN '  <th>Description</th>'
+         HTMLPUN '  <th>Table Type</th>'
+         HTMLPUN ' </tr>'
+&OPCDV   SETA  D2A('&LBOUND1')          * Starting opcode
+.LPNDX   ANOP  ,                        * Loop to gen index
+.*
+.* In order to qualify for the index an opcode must have:
+.* 1) at least 1 non-masked mnemonic, not being OPCD*
+.* 2) exactly 1 OPCD* mnemonic that either has:
+.*    - a page redirection entry
+.*    - an ending m
+.*    - an ending fc
+.*
+         FINDOPCD &OPCDV,-1,DEC,&FIRSTBYTE
+         AIF   (&OPCD_START EQ 0).LPNDXNX * not found: next opcode
+&L4      SETA  &OPCD_START
+&MNEM_NM SETA  0                        * Count of non-masked mnemonics
+&MNEM_OP SETA  0                        * Count of OPCD entries
+&CARD1   SETC  ''
+&CARD2   SETC  ''
+&CARD3   SETC  ''
+&CARD4   SETC  ''
+.LPL4    ANOP  ,                        * Loop all mnemonics for opcode
+&P       SETA  &OPCDPTR(&L4)            * Extract pointer to &OPCD
+&OPCODE  SETC  '&OPCD(&P)'              * Opcode
+&MNEMON  SETC  '&MNEM(&P)'              * Mnemonic
+&ATTRIB  SETC  '&ATTR(&P)'              * Get attribute string
+&MASKVAL SETC  '&MASK(&P)'              * Get mask string
+&FULLNM  SETC  '&NAME(&P)'              * Get descriptive name
+&MNEMONL SETC  (LOWER '&MNEM(&P)')      * Mnemonic in lower case
+&SUBPAGE SETB  ('&PAGE(&P)' NE '')      * Subpage indicator
+         AIF   ('&MASKVAL' NE '').LPL4NX * Skip masked instruction
+         AIF   (K'&MNEMON LE 4).LPL4NOP           * cannot be OPCD*
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').LPL4NOP * is not    OPCD*
+.* This entry describes the whole page: Mnemonic is OPCD*
+         AIF   ('&MNEMON'(K'&MNEMON-1,2) EQ 'fc').LPL4FC
+         AIF   ('&MNEMON'(K'&MNEMON-0,1) EQ 'm').LPL4XM
+         AIF   (&SUBPAGE).LPL4SP
+         AGO   .LPL4NX                  * Ignore this entry
+.LPL4SP  ANOP  ,                        * Non-specific subpage
+&MNEM_OP SETA  (&MNEM_OP+1)             * Count of OPCD* mnemonics
+&CARD4   SETC  '<a href="#&OPCD1">Extended Mnemonics</a>'
+         AGO   .LPL4NX
+.LPL4FC  ANOP  ,
+&MNEM_OP SETA  (&MNEM_OP+1)             * Count of OPCD* mnemonics
+&CARD4   SETC  '<a href="#&OPCD1">Function Codes</a>'
+         AGO   .LPL4NX
+.LPL4XM  ANOP  ,
+&MNEM_OP SETA  (&MNEM_OP+1)             * Count of OPCD* mnemonics
+&CARD4   SETC  '<a href="#&OPCD1">Extended Mnemonics</a>'
+         AGO   .LPL4NX
+.LPL4NOP ANOP  ,                        * Normal mnemonnic not OPCD*
+&MNEM_NM SETA  (&MNEM_NM+1)             * Count of non-masked mnemonics
+         AIF   ('&CARD1' EQ '').LPL4NW
+.* Extend row with additional entry in cells 2 and 3 (mnemonic, descr)
+.* if opcode is old add span tag
+         AIF   ('&ATTRIB' EQ 'Old').LPL4OLD
+&CARD2   SETC  '&CARD2.<br /><a href="opcd/&MNEMONL..htm">&MNEMON.</a>'
+         AGO   .LPL4C3
+.LPL4OLD ANOP  ,
+&CARD2   SETC  '&CARD2.<br /><span class="old">'
+&CARD2   SETC  '&CARD2.<a href="opcd/&MNEMONL..htm">&MNEMON.</a>'
+&CARD2   SETC  '&CARD2.</span>'
+.LPL4C3  ANOP  ,
+&CARD3   SETC  '&CARD3.<br />&FULLNM'
+         AGO   .LPL4NX
+.LPL4NW  ANOP  ,                        * Start new entry
+&OPCD1   SETC  '&MNEMON'                * Keep for use with OPCD entry
+&CARD1   SETC  '&OPCODE'
+&CARD2   SETC  '<a href="opcd/&MNEMONL..htm">&MNEMON.</a>'
+&CARD3   SETC  '&FULLNM'
+         AGO   .LPL4NX
+.LPL4NX  ANOP  ,
+&L4      SETA  (&L4+1)
+         AIF   (&L4 LE &OPCD_END).LPL4
+.* We'e processed all menmonnics for this opcode
+.* check whether all conditions are met to create an index entry
+         AIF   (&MNEM_NM LT 1).LPNDXNX  * Skip this opcode, no subpage
+         AIF   (&MNEM_OP NE 1).LPNDXNX  * Skip this opcode, no subpage
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <td>&CARD1</td>'
+.*
+.* &CARD2 may need to be split across lines
+&L0      SETA  0                        * Break indicator
+&L       SETA  ('&CARD2' INDEX '<br />')
+         AIF   (&L NE 0).LPL5           * one entry or mulitple?
+         HTMLPUN '  <td>&CARD2</td>'
+         AGO   .LPL5X                   * Skip the loop
+.LPL5    ANOP  ,                        * Loop to create separate lines
+&L       SETA  ('&CARD2' INDEX '<br />')
+         AIF   (&L EQ 0).LPL5LST        * Last entry
+&CARD    SETC  '&CARD2'(1,&L+5)         * Get first part plus break tag
+&CARD2   SETC  '&CARD2'(&L+6,*)         * Get remainder
+         AIF   (&L0 EQ 0).LPL5E1        * First or non-first entry?
+         HTMLPUN '      &CARD'
+         AGO   .LPL5
+.LPL5E1  ANOP  ,                        * First entry
+         HTMLPUN '  <td>&CARD'
+&L0      SETA  1                        * Indicate first entry done
+         AGO   .LPL5
+.LPL5LST ANOP  ,                        * Last entry of multi-part
+         HTMLPUN '      &CARD2</td>'
+.LPL5X   ANOP  ,
+.*
+.* &CARD3 may need to be split across lines
+&L0      SETA  0                        * Break indicator
+&L       SETA  ('&CARD3' INDEX '<br />')
+         AIF   (&L NE 0).LPL6           * one entry or mulitple?
+         HTMLPUN '  <td>&CARD3</td>'
+         AGO   .LPL6X                   * Skip the loop
+.LPL6    ANOP  ,                        * Loop to create separate lines
+&L       SETA  ('&CARD3' INDEX '<br />')
+         AIF   (&L EQ 0).LPL6LST        * Last entry
+&CARD    SETC  '&CARD3'(1,&L+5)         * Get first part plus break tag
+&CARD3   SETC  '&CARD3'(&L+6,*)         * Get remainder
+         AIF   (&L0 EQ 0).LPL6E1        * First or non-first entry?
+         HTMLPUN '      &CARD'
+         AGO   .LPL6
+.LPL6E1  ANOP  ,                        * First entry
+         HTMLPUN '  <td>&CARD'
+&L0      SETA  1                        * Indicate first entry done
+         AGO   .LPL6
+.LPL6LST ANOP  ,                        * Last entry of multi-part
+         HTMLPUN '      &CARD3</td>'
+.LPL6X   ANOP  ,
+         HTMLPUN '  <td>&CARD4</td>'
+         HTMLPUN ' </tr>'
+.NOERR6  ANOP  ,
+.LPNDXNX ANOP  ,
+&OPCDV   SETA  (&OPCDV+1)
+         AIF   (&OPCDV LE &UBOUND1).LPNDX
+         HTMLPUN '</table>'
+         AGO   .EXIT
+.*
+.* Logic to build list-like table of extended mnemonics
+.*
+.* When we get here &ARG1 and &ARG2 have already been decomposed
+.* into &LBOUND1, &LBOUND2 and UBOUND1, &UBOUND2 respectively.
+.*
+.GEN_LST ANOP  ,
+         HTMLPUN '<table class="indextbl">' * Layout is shared
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <th>Opcode</th>'
+         HTMLPUN '  <th>Operand&nbsp;Pattern</th>'
+         HTMLPUN '  <th>Mnemonic</th>'
+         HTMLPUN '  <th>Description</th>'
+         HTMLPUN ' </tr>'
+         FINDOPCD &ARG1,-1
+         AIF   (&OPCD_START EQ 0).LPLSTNX * not found: next opcode
+&L4      SETA  &OPCD_START
+.LPLST   ANOP  ,                        * Loop to gen table entries
+&P       SETA  &OPCDPTR(&L4)            * Extract pointer to &OPCD
+&OPCODE  SETC  '&OPCD(&P)'              * Opcode
+&MNEMON  SETC  '&MNEM(&P)'              * Mnemonic
+&MNEMONL SETC  (LOWER '&MNEM(&P)')      * Mnemonic in lower case
+&ATTRIB  SETC  '&ATTR(&P)'              * Get attribute string
+&MASKVAL SETC  '&MASK(&P)'              * Get mask string
+&FULLNM  SETC  '&NAME(&P)'              * Get descriptive name
+         AIF   ('&MASKVAL' EQ '').LPLSTNX
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <td>&OPCODE</td>'
+         HTMLPUN '  <td>&MASKVAL</td>'
+         HTMLPUN '  <td><a href="opcd/&MNEMONL..htm">&MNEMON.</a></td>'
+         HTMLPUN '  <td>&FULLNM</td>'
+         HTMLPUN ' </tr>'
+&GEND(&P) SETB 1                        * Mark instruction generated
+.LPLSTNX ANOP  ,
+&L4      SETA  (&L4+1)
+         AIF   (&L4 LE &OPCD_END).LPLST
+         HTMLPUN '</table>'
+         HTMLPUN '<p>&nbsp;</p>'
+         AGO   .EXIT
+.*
+.* Error messages - never mind the numbers, once upon a time this
+.*                  macro was part of HTMLGEN macro.
+.*
+.ERROR1  MNOTE 8,'HTMLGENF error 1: format not specified'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLGENF error 2: invalid format &FORMAT specified'
+         AGO   .EXIT
+
+.ERROR3  MNOTE 8,'HTMLGENF error 3: &ARG1 uses minor opcode which is in*
+               valid in with format=ndx'
+         AGO   .EXIT
+
+.ERROR4  MNOTE 8,'HTMLGENF error 4: &ARG2 uses minor opcode which is in*
+               valid in with format=ndx'
+         AGO   .EXIT
+
+.ERROR5  MNOTE 8,'HTMLGENF error 5: Missing OPCD* entry for subpage &OP*
+               CDV'
+         AGO   .EXIT
+
+.ERROR6  MNOTE 8,'HTMLGENF error 6: Mnemonic &MNEMON specifies an unsup*
+               ported type of subpage'
+         AGO   .NOERR6
+
+.ERROR12 MNOTE 8,'HTMLGENF error 12: No range specified for genopcd'
+         AGO   .EXIT
+
+.ERROR13 MNOTE 8,'HTMLGENF error 13: &HEXVAL invalid hex number in rang*
+               e &RANGE'
+         AGO   .EXIT
+
+.ERROR14 MNOTE 8,'HTMLGENF error 14: &RANGE Invalid range for genopcd'
+         AGO   .EXIT
+
+.ERROR16 MNOTE 8,'HTMLGENF error 16: No instruction found pointing to p*
+               age for instructions with &PREFIX'
+&ATTRIB  SETC  ''
+&OLDPAGE SETB  0
+         AGO   .NOERR16
+
+.ERROR17 MNOTE 8,'HTMLGENF error 17: Instruction &MNEMON has attribute *
+               conflicting with pagetype of invocation'
+         AGO   .NOERR17
+
+.ERROR27 MNOTE 8,'HTMLGENF error 27: No opcode definitions available'
+         AGO   .EXIT
+
+.ERROR28 MNOTE 8,'HTMLGENF error 28: Different mnemonics cannot define *
+               valid range'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

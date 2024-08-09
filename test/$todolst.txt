@@ -1,0 +1,14 @@
+22-04-11 Define syntax to replace .xxh components with a single unit
+         defining required elements for each language xx.
+Spent:   01:00 (20:15-21:15)
+
+
+
+
+
+
+--> Automate formatting
+--> Verify all href= pointers contain \ in stead of /
+
+
+2016-12-31: add www.punctiliousprogrammer.com to list of useful sites

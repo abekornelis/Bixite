@@ -1,0 +1,189 @@
+.*
+.* Initialize for generating an html page
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   HTMLINIT  ,
+.*
+.* Declare variables, set defaults
+.*
+         GBLC  &SP_DEST                * Destination: Local / Upload
+         GBLC  &SP_LANG                * Language: uk / nl / de etc.
+         GBLC  &SP_DIR                 * Target directory; . for root
+         GBLC  &SP_LICENSE             * Name of License
+         GBLC  &SP_LICSTAT             * License status
+&SP_DEST SETC  'LOCAL'                 * default to LOCAL
+&SP_DEST SETC  'UK'                    * default to uk English
+&SP_LICENSE SETC '*None'               * default to no license 
+&SP_LICSTAT SETC 'NOTOK'               *    and not agreed
+.*
+.* Local variables
+.*
+         LCLC  &P(5)                   * Array to contain parms
+         LCLA  &I                      * Character index for &SYSPARM
+         LCLA  &J                      * Character index for &PARM
+         LCLA  &N                      * Next character to extract
+         LCLA  &X                      * Index into array &P
+         LCLC  &PARM                   * Current entry from array &P
+         LCLC  &NAME                   * Name contained in &PARM
+         LCLC  &VALUE                  * Value contained in &PARM
+.*
+.* First the sysparm string is to be split into substrings
+.*
+&I       SETA  0                       * Initialize for
+&N       SETA  1                       *   extraction of parameters
+&X       SETA  1                       *   from &SYSPARM
+.LOOP1   ANOP  ,
+&I       SETA  &I+1                    * Increment character index
+         AIF   (&I GT K'&SYSPARM).LOOP1OK * end of string
+         AIF   ('&SYSPARM'(&I,1) NE ',').LOOP1 * end of substring
+&P(&X)   SETC  '&SYSPARM'(&N,&I-&N)    * Extract substring
+&P(&X)   SETC  (UPPER '&P(&X)')        *   and make uppercase
+&N       SETA  &I+1                    * Point to next substring
+&X       SETA  &X+1                    * Increment substring counter
+         AGO   .LOOP1                  * Go check next character
+.LOOP1OK ANOP  ,
+&P(&X)   SETC  '&SYSPARM'(&N,&I-&N)    * Extract last substring
+&P(&X)   SETC  (UPPER '&P(&X)')        *   and make uppercase
+.*
+.* Now check that keywords are valid
+.* &X now is count of parms to check
+&I       SETA  0                       * Index into array &P
+.LOOP2   ANOP  ,
+&I       SETA  &I+1                    * Point to next parameter
+         AIF   (&I GT &X).LOOP2OK      * End of loop
+&PARM    SETC  '&P(&I)'                * Copy current entry
+         AIF   ('&PARM' EQ '').LOOP2   * Skip empty parameter
+         AIF   ('&PARM' EQ 'LOCAL').LOCAL   * Set destination local
+         AIF   ('&PARM' EQ 'UPLOAD').UPLOAD * Set destination upload
+.* Check to see if parameter can be split into name=value pair
+&J       SETA  ('&PARM' FIND '=')      * Contains =sign?
+         AIF   (&J EQ 0).LOOP2ER       * No =sign: signal error
+&NAME    SETC  '&PARM'(1,&J-1)         * Extract parameter name
+&VALUE   SETC  '&PARM'(&J+1,*)         * Extract parameter value
+         AIF   ('&NAME' EQ 'DIR').DIR  * Select target directory
+         AIF   ('&NAME' EQ 'LANG').LANG * Select language
+         AIF   ('&NAME' EQ 'LICENSE').LICENSE * Select license id
+         AIF   ('&NAME' EQ 'LICSTAT').LICSTAT * Register license status
+.LOOP2ER MNOTE 8,'Invalid sysparm operand: &PARM'
+         AGO   .LOOP2                  * Go try next parameter
+.*
+.LOCAL   ANOP  ,
+&SP_DEST SETC  'LOCAL'
+         AGO   .LOOP2
+.*
+.UPLOAD  ANOP  ,
+&SP_DEST SETC  'UPLOAD'
+         AGO   .LOOP2
+.*
+.DIR     ANOP  ,
+&SP_DIR  SETC  '&VALUE'
+         AGO   .LOOP2
+.*
+.LANG    ANOP  ,
+&SP_LANG SETC  '&VALUE'                * Register language code
+         AIF   ('&SP_LANG' EQ 'DE').LOOP2
+         AIF   ('&SP_LANG' EQ 'ES').LOOP2
+         AIF   ('&SP_LANG' EQ 'FR').LOOP2
+         AIF   ('&SP_LANG' EQ 'FY').LOOP2
+         AIF   ('&SP_LANG' EQ 'IT').LOOP2
+         AIF   ('&SP_LANG' EQ 'NL').LOOP2
+         AIF   ('&SP_LANG' EQ 'UK').LOOP2
+         MNOTE 8,'HTMLINIT: Unsupported language code &SP_LANG'
+         AGO   .LOOP2
+.*
+.LICENSE ANOP  ,
+&SP_LICENSE SETC '&VALUE'              * Register license name
+         AGO   .LOOP2
+.*
+.LICSTAT ANOP  ,
+&SP_LICSTAT SETC '&VALUE'              * Register license status
+         AGO   .LOOP2
+.LOOP2OK ANOP  ,
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLB  &SP_LICOK               * On if valid license accepted
+&SP_LICOK  SETB 0                      * Default: license not ok
+.*
+.* Check that a valid license id was entered
+         AIF   ('&SP_LICENSE' EQ 'GPL2.0').LICOK
+         AIF   ('&SP_LICENSE' EQ 'GPL3.0').LICOK
+         MNOTE 4,'License id &SP_LICENSE entered: not valid, BXA macros*
+                are disabled'
+         AGO   .EXIT
+.LICOK   ANOP  ,
+.*
+.* Check whether the license was accepted
+         AIF   ('&SP_LICSTAT' EQ 'IAGREE').LICSOK
+         MNOTE 4,'License status &SP_LICSTAT entered: you did not agree*
+                to the terms in license &SP_LICENSE, BXA macros are dis*
+               abled'
+         AGO   .EXIT
+.LICSOK  ANOP  ,
+         MNOTE 0,'For usage of the BXA macros you have agreed to the te*
+               rms of license &SP_LICENSE'
+***********************************************************************
+**
+** For the terms and conditions of the license you have selected
+** please check the text of the license, which should be in the
+** macro library. Alternatively, you can find a copy on our site:
+** GPL2.0   - http://www.hlasm.com/english/gpl
+** BXAPL1.0 - http://www.hlasm.com/english/license
+**
+***********************************************************************
+&SP_LICOK  SETB 1                      * License was accepted
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.EXIT    MEND  ,

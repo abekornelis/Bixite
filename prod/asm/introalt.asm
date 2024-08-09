@@ -1,0 +1,11 @@
+.*Metadata=HTML,Languages(DE,ES,FR,FY,IT,NL,UK)
+
+         GBLC     &SP_LANG
+         HTMLINIT ,
+
+         HTMLHEAD INTROALT,&SP_LANG
+         HTMLBODY INTROALT,&SP_LANG,BIXOFT,ALTFTR=INTROALT
+
+         HTMLPUN OP=PUNCH
+
+         END

@@ -1,0 +1,709 @@
+.*
+.* Generate an Opcode table in html format
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLGENO &RANGE
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLGENO               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLC  &HEXVAL                  * Input for HEX2DEC
+         GBLC  &DECVAL                  * Output from HEX2DEC
+         GBLA  &OPCD_START,&OPCD_END    * Output from FINDOPCD/FINDMNEM
+         GBLC  &OPCD_ATTR               * Output attribute for range
+.*
+.* Arrays to hold parsed opcode definitions
+         GBLA  &MNEM_LAST               * Index for tables below
+         AIF   (&MNEM_LAST EQ 0).ERROR27
+         GBLC  &MNEM(2500)              * Mnemonics
+         GBLC  &OPCD(2500)              * Opcodes
+         GBLC  &NAME(2500)              * Full names
+         GBLC  &MASK(2500)              * Mask value
+         GBLB  &GEND(2500)              * Generated on opcdxxxx pages
+         GBLC  &PAGE(2500)              * Page names
+         GBLC  &ATTR(2500)              * Attributes
+         GBLA  &OPCDPTR(2500)           * Opcode ptr in sequence
+         LCLA  &P                       * Pointer
+.*
+.* Local variables for genopcd handling
+         LCLC  &URANGE                  * Unsigned copy of RANGE
+         LCLC  &ARG1                    * First argument
+         LCLC  &ARG2                    * Second argument
+         LCLA  &LBOUND1,&UBOUND1        * Lower, Upper bounds (major)
+         LCLA  &LBOUND2,&UBOUND2        * Lower, Upper bounds (minor)
+         LCLB  &ONLYPOS,&ONLYNEG        * indicators for +/- opcodes
+.*                                      * where + indicates current ...
+.*                                      *   and - indicates old opcodes
+         LCLB  &RNG16,&RNG256           * Range indicators
+         LCLC  &CARD                    * Line content
+         LCLA  &L                       * Char index for &CARD/&HEXDIGS
+         LCLC  &X                       * A character
+         LCLC  &PREFIX,&SAVPFX,&FUNPFX  * Prefix for opcode table
+         LCLC  &PFX                     * Prefix for column headings
+         LCLA  &L1,&L2,&L3              * Loop counters
+         LCLC  &MAJOR,&MINOR            * Major, minor opcode
+         LCLC  &MNEMON,&MNEMPRV         * Mnemonic, previous mnemonic
+         LCLC  &OPCODE,&OPCD1,&OPCD2    * Opcode
+         LCLA  &OPCDV,&OPCDV1,&OPCDV2   * Opcode value
+         LCLC  &ATTRIB                  * Attributes
+         LCLC  &FULLNM                  * Full Name
+         LCLC  &MASKVAL                 * Mask value
+         LCLB  &SUBPAGE                 * Opcode points to subpage
+         LCLB  &FCODES,&FUNCOD          * Page contains function codes
+         LCLB  &OLDPAGE                 * All opcodes on page are old
+         LCLA  &NOTE(256)               * List of indexes for notes
+         LCLA  &CNOTE                   * Current note pointer
+         LCLC  &HEXDIGS                 * Valid hex digits
+         LCLC  &nbsp,&Q
+.GENOPC2 ANOP  ,
+&HEXDIGS SETC  '0123456789ABCDEF'
+&nbsp    SETC  '&&nbsp'                 * Must contain it's own value!
+&Q       SETC  ''''''                   * This is two quotes
+.*
+.* Check args - find range & size of table to generate
+&FCODES  SETB  0                        * Assume no function codes
+&FUNCOD  SETB  0                        * Assume no function codes
+&ONLYPOS SETB  0                        * Assume old and new
+&ONLYNEG SETB  0                        *    opcodes in a single table
+&URANGE  SETC  '&RANGE'                 * Assume no explicit sign
+         AIF   ('&RANGE' EQ '????').GENOPCQ * Handle unknowns
+         AIF   ('&RANGE' EQ '--').GENOPCA * Handle Asm directives
+         AIF   ('&RANGE'(1,1) EQ '+').GENPOS * set explicit + only
+         AIF   ('&RANGE'(1,1) EQ '-').GENNEG * set explicit - only
+         AGO   .NOSIGN
+.GENPOS  ANOP  ,
+&ONLYPOS SETB  1                        * include only current opcodes
+         AGO   .SIGNOK
+.GENNEG  ANOP  ,
+&ONLYNEG SETB  1                        * include only old opcodes
+.SIGNOK  ANOP  ,
+&URANGE  SETC  '&RANGE'(2,*)            * Remove leading sign
+.NOSIGN  ANOP  ,                        * Sign done, check range
+&L       SETA  ('&URANGE' FIND '-')     * Find separator dash
+         AIF   (&L EQ 0).ERROR12
+&ARG1    SETC  '&URANGE'(1,&L-1)        * Extract lower bound
+&ARG2    SETC  '&URANGE'(&L+1,*)        *     and upper bound
+.* Get major/minor from &ARG1
+&L       SETA  ('&ARG1' FIND '.')       * Contains a period?
+         AIF   (&L EQ 0).OPRNG_A        * Only major opcode
+&HEXVAL  SETC  '&ARG1'(1,&L-1)          * Extract major opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' NE '').OPRNG_X * Valid?
+.* It's not a valid hex number: is it a mnemonic?
+&MNEMON  SETC  '&HEXVAL'                * Save mnemonic
+         FINDMNEM &MNEMON               * Try to find as a mnemonic
+         AIF   (&OPCD_START EQ 0).ERROR13 * Oops: invalid indeed!
+&HEXVAL  SETC  '&OPCD(&OPCD_START)'     * Extract actual opcode
+         AIF   ('&HEXVAL' EQ '????').GENOPCQ * Handle unknowns
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Valid?
+&FUNPFX  SETC  '&HEXVAL'                * Save hex opcode
+&FCODES  SETB  1                        * Function codes selected!
+.OPRNG_X ANOP  ,
+&LBOUND1 SETA  (&DECVAL)                * Set lower bound
+&HEXVAL  SETC  '&ARG1'(&L+1,*)          * Extract minor opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&LBOUND2 SETA  (&DECVAL)                * Set lower bound
+         AGO   .OPRNG_B                 * Go find upper bound
+.OPRNG_A ANOP  ,
+&HEXVAL  SETC  '&ARG1'
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&LBOUND1 SETA  (&DECVAL)                * Set lower bound
+&LBOUND2 SETA  -1                       * No minor opcode
+.OPRNG_B ANOP  ,
+.* Get major/minor from &ARG2
+&L       SETA  ('&ARG2' FIND '.')       * Contains a period?
+         AIF   (&L EQ 0).OPRNG_C        * Only major opcode
+&HEXVAL  SETC  '&ARG2'(1,&L-1)          * Extract major opcode
+         AIF   (&FCODES).OPRNG_Y        * MUST be a mnemonic!
+         HEX2DEC ,                      * Should be an opcode
+         AIF   ('&DECVAL' EQ '').ERROR13 * InValid!
+         AGO   .OPRNG_Z
+.OPRNG_Y ANOP  ,
+         AIF   ('&HEXVAL' NE '&MNEMON').ERROR28 * Equal mnemonics?
+&DECVAL  SETC  '&LBOUND1'               * Copy value from prior find
+.OPRNG_Z ANOP  ,
+&UBOUND1 SETA  (&DECVAL)                * Set upper bound
+&HEXVAL  SETC  '&ARG2'(&L+1,*)          * Extract minor opcode
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&UBOUND2 SETA  (&DECVAL)                * Set upper bound
+         AGO   .OPRNG_D                 * upper and lower bound found
+.OPRNG_C ANOP  ,
+&HEXVAL  SETC  '&ARG2'
+         HEX2DEC ,
+         AIF   ('&DECVAL' EQ '').ERROR13 * Invalid?
+&UBOUND1 SETA  (&DECVAL)                * Set lower bound
+&UBOUND2 SETA  -1                       * No minor opcode
+.OPRNG_D ANOP  ,
+.* Need to establish size of interval between lower and upper bounds
+         AIF   (&LBOUND2 EQ -1 AND &UBOUND2 NE -1).ERROR14
+         AIF   (&LBOUND2 NE -1 AND &UBOUND2 EQ -1).ERROR14
+         AIF   (&LBOUND2 NE -1).OPRNG_E * Minor opcodes
+.* Checking major opcodes (no minors)
+         AIF   (&LBOUND1 GE &UBOUND1).ERROR14
+&L       SETA  (&UBOUND1-&LBOUND1+1)
+         AGO   .OPRNG_F
+.OPRNG_E ANOP  ,
+.* Checking major and minor opcodes
+         AIF   (&LBOUND1 NE &UBOUND1).ERROR14
+         AIF   (&LBOUND2 GE &UBOUND2).ERROR14
+&L       SETA  (&UBOUND2-&LBOUND2+1)
+.OPRNG_F ANOP  ,
+.* Check validity of calculated interval
+         AIF   (&L EQ 16).OPRNG16
+         AIF   (&L NE 256).ERROR14
+&RNG16   SETB  0                        * Range is not 16
+&RNG256  SETB  1                        * Range is 256
+&L       SETA  2                        * Size is 2 hex digits
+&PFX     SETC  '_'                      * Add underscores
+         AIF   (&LBOUND2 EQ -1).OPRNGOK * Simple major opcodes
+&L       SETA  3                        * Exclude period from prefix
+         AGO   .OPRNGOK
+.OPRNG16 ANOP  ,
+&RNG256  SETB  0                        * Range is not 256
+&RNG16   SETB  1                        * Range is 16
+&L       SETA  1                        * Size is 1 hex digit
+&PFX     SETC  ''                       * No underscores
+         AIF   (&LBOUND2 EQ -1).OPRNGOK * Simple major opcodes
+&L       SETA  2                        * Exclude period from prefix
+.OPRNGOK ANOP  ,
+.*
+.* If the table holds minor opcodes, precede it with header(s)
+.* One for each mnemonic associated with the opcode
+         AIF   (&LBOUND1 NE &UBOUND1).CRTTBL
+         ACTR  400                      * For the h3 loop
+&L1      SETA  (K'&ARG1-&L)             * Prefix length
+&PREFIX  SETC  '&ARG1'(1,&L1)           * Extract prefix
+         AIF   (NOT &FCODES).GOFIND
+&PREFIX  SETC  '&FUNPFX'                * Major function opcode
+.GOFIND  ANOP  ,
+         FINDOPCD &PREFIX,-1
+         AIF   (&OPCD_START EQ 0).LPH3SKP * Skip the whole loop
+&L1      SETA  &OPCD_START
+.LPH3    ANOP  ,
+&P       SETA  &OPCDPTR(&L1)            * Extract opcode pointer
+&MNEMON  SETC  '&MNEM(&P)'              * Extract mnemonic
+         AIF   (K'&MNEMON LE 4).LPH3PUN * Too short for OPCDxxxx
+         AIF   ('&MNEMON'(1,4) EQ 'OPCD').LPH3NXT * Skip this one!
+.LPH3PUN ANOP  ,
+         HTMLPUN '<h3>Extended Mnemonics for <a name="&MNEMON" id="&MNE*
+               MON">&MNEMON</a>'
+         HTMLPUN '    (&NAME(&P))</h3>'
+.LPH3NXT ANOP  ,
+&L1      SETA  (&L1+1)
+         AIF   (&L1 LE &OPCD_END).LPH3
+.LPH3SKP ANOP  ,
+.CRTTBL  ANOP  ,                        * Start create table
+         ACTR  400+12*(256*&RNG256+16*&RNG16)
+&L1      SETA  (K'&ARG1-&L)             * Prefix length
+&L2      SETA  (K'&ARG2-&L)             * same
+&PREFIX  SETC  '&ARG1'(1,&L1)           * Extract prefix
+&SAVPFX  SETC  '&PREFIX'                * Save original value
+         AIF   ('&PREFIX' NE '&ARG2'(1,&L2)).ERROR14
+         AIF   (&FCODES).CHKFUN         * Function codes?
+         AIF   ('&PREFIX' NE '').CHKPFX
+&PREFIX  SETC  '&&nbsp;'
+         AGO   .OPGO
+.CHKFUN  ANOP  ,
+&SAVPFX  SETC  '&FUNPFX'                * Set hex opcode as prefix
+&OLDPAGE SETB  0                        * Default to no old coldes
+         AGO   .OPGO
+.CHKPFX  ANOP  ,
+.* Need to find the mnemonic(s) associated with the entire table
+         FINDOPCD &PREFIX,-1
+         AIF   (&OPCD_START NE 0).OPPFX1 * Ok: found
+.* Could it be this is an opcode nn with range nn00-nn0F ??
+         AIF   (NOT &RNG16).ERROR16     * Range must be 16 to qualify
+         AIF   (&LBOUND1 EQ &UBOUND1).ERROR16 * Skip sub-opcodes
+&L       SETA  K'&ARG1
+         AIF   (&L NE 4).ERROR16        * nn00 ?
+         AIF   ('&ARG1'(&L-1,2) NE '00').ERROR16
+&L       SETA  K'&ARG2
+         AIF   (&L NE 4).ERROR16        * nn0F ?
+         AIF   ('&ARG2'(&L-1,2) NE '0F').ERROR16
+&L       SETA  K'&PREFIX
+         AIF   (&L NE 3).ERROR16        * Wrong length: cannot qualify
+&X       SETC  '&PREFIX'(1,&L-1)        * Remove trailing 0
+         FINDOPCD &X,-1                 * This opcode exists?
+         AIF   (&OPCD_START EQ 0).ERROR16 * Oops: not found
+.OPPFX1  ANOP  ,
+&L1      SETA  (&OPCD_START-1)          * Pre-point first entry
+.OPPFX   ANOP  ,                        * Loop over relevant entries
+&L1      SETA  (&L1+1)
+         AIF   (&L1 GT &OPCD_END).ERROR16 * Not found: error
+&L2      SETA  &OPCDPTR(&L1)            * Extract opcode pointer
+&MNEMON  SETC  '&MNEM(&L2)'             * Extract mnemonic
+         AIF   (K'&MNEMON LE 4).OPPFX   * Too short for OPCDxxxx
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').OPPFX * Not the right one!
+&L       SETA  K'&MNEMON
+.* If range is 256, then the format is OPCD..xx of OPCD..fc
+         AIF   (&RNG256 AND '&MNEMON'(&L-1,2) EQ 'xx').PFXOK
+         AIF   (&RNG256 AND '&MNEMON'(&L-1,2) EQ 'fc').PFXFC
+         AIF   (&RNG256).OPPFX          * Not the one we're looking for
+.* Range is 16; if majors are unequal, then format is OPCD.x/..x/...x
+         AIF   (&LBOUND1 NE &UBOUND1 AND '&MNEMON'(&L,1) EQ 'x').PFXOK
+         AIF   (&LBOUND1 NE &UBOUND1).OPPFX * Not the right one!
+.* Range is 16 and majors are equal: format is OPCD..m / OPCD..m.
+         AIF   ('&MNEMON'(&L,1) EQ 'm').PFXOK
+&PREFIX  SETC  '&MNEMON'(1,&L-2).'.'.'&MNEMON'(&L,1)
+&PREFIX  SETC  '&PREFIX'(5,*)           * Remove leading OPCD
+         AGO   .PFXOK
+.PFXFC   ANOP  ,                        * Suffix fc detected
+&FUNCOD  SETB  1                        * Mark funcodes suffix found
+.PFXOK   ANOP  ,
+&ATTRIB  SETC  '&ATTR(&L2)'             * Extract page attribute
+         AIF   (&FCODES NE &FUNCOD).ERROR11
+&OLDPAGE SETB  ('&ATTRIB' EQ 'Old' OR &ONLYNEG) * Set status
+.NOERR16 ANOP  ,
+.*
+.* Now we can start punching the actual html
+.OPGO    ANOP  ,
+         HTMLPUN '<!-- UK -->'
+         HTMLPUN '<table class="opcodes">'
+         HTMLPUN ' <tr>'
+         AIF   (&FCODES).OPGOFC         * function code Table id
+.* all other types of table id
+         HTMLPUN '  <th>&PREFIX</th>'
+         AGO   .OPGO2
+.*
+.* collect all mnemonics that apply for the subpage/table
+.OPGOFC  ANOP  ,
+&CARD    SETC  ''
+&L       SETA  0
+         FINDOPCD &SAVPFX,-1            * Re-find OPCD entries
+&L1      SETA  (&OPCD_START-1)          * Pre-point first entry
+.MNEMLP  ANOP  ,                        * Loop over relevant entries
+&L1      SETA  (&L1+1)
+         AIF   (&L1 GT &OPCD_END).MNEMLPX * all done
+&L2      SETA  &OPCDPTR(&L1)            * Extract opcode pointer
+&MNEMON  SETC  '&MNEM(&L2)'             * Extract mnemonic
+         AIF   (K'&MNEMON LE 4).MNEMLPF * Too short for OPCDxxxx
+         AIF   ('&MNEMON'(1,4) EQ 'OPCD').MNEMLP * Not the right one!
+.MNEMLPF ANOP  ,                        * not OPCD - valid mnemonic
+.* Mnemonic found: punch prior one, then buffer current one
+         AIF   (&L GT 0).MNEMLP2        * create subsequent entry
+&CARD    SETC  '  <th><a href="opcd/&MNEMON..htm">&MNEMON</a>'
+&L       SETA  (&L+1)
+         AGO   .MNEMLP
+.MNEMLP2 ANOP  ,
+         HTMLPUN '&CARD<br />'          * punch out prior mnemonic
+&CARD    SETC  '      <a href="opcd/&MNEMON..htm">&MNEMON</a>'
+&L       SETA  (&L+1)
+         AGO   .MNEMLP
+.MNEMLPX ANOP  ,                        * all mnemonics scanned
+         AIF   (&L EQ 0).ERROR01        * Need to punch only/last card
+         HTMLPUN '&CARD<br />'          * punch out the last mnemonnic
+&MNEMON  SETC  '&OPCD(&L2)'             *
+&CARD    SETC  '      &MNEMON'
+         HTMLPUN '&CARD</th>'           * punch out the opcode
+.NOERR01 ANOP  ,
+.OPGO2   ANOP  ,
+&PREFIX  SETC  '&SAVPFX'                * Reset to proper prefix
+&L       SETA  0
+.OPLP1   ANOP  ,                        * Standard header for table
+&L       SETA  &L+1
+         AIF   (&L GT K'&HEXDIGS).OPLP1X
+&X       SETC  '&HEXDIGS'(&L,1)         * Extract next digit
+         HTMLPUN '  <th>&PFX.&X.</th>'
+         AGO   .OPLP1
+.OPLP1X  ANOP  ,
+         HTMLPUN ' </tr>'
+.*
+.* Use &L1 as outer loop variable (counting rows of 16 entries)
+.* Use &L2 as inner loop variable (counting 16 cells for each row)
+.* Use &L3 as innermost loop var. (counting opcodes inside each cell)
+&L1      SETA  0                        * Generate rows:
+.OPLP2   ANOP  ,                        * Opcodes Loop 2
+&L1      SETA  (&L1+1)
+         AIF   (&RNG16  AND &L1 GT 1).OPLP2X
+         AIF   (&RNG256 AND &L1 GT 16).OPLP2X
+         HTMLPUN ' <tr>'
+         AIF   (&RNG16).OPTD16
+&X       SETC  '&HEXDIGS'(&L1,1).'_'
+         AGO   .OPTDOK
+.OPTD16  ANOP  ,
+&X       SETC  '&&nbsp;'
+.* ********************************************************************
+.* For tables having 1 line of 16 entries of extended mnemonics       *
+.* the leftmost column should hold the mnemonic of the instruction    *
+.*       AIF   (&RNG256).OPTDOK         * big table has hex digit     *
+.*       AIF   (&LBOUND1 NE &UBOUND1).OPTDOK * >1 major opcodes       *
+.*       AIF   (&LBOUND2 EQ &UBOUND2).OPTDOK * no minor opcodes       *
+.* Now find the major opcode in table &OPCD                           *
+.*&L2    SETA  ('&ARG1' FIND '.')       * Find major/minor separator  *
+.*       AIF   (&L EQ 0).OPTDOK         * No period: cannot process   *
+.*&MAJOR SETC  '&ARG1'(1,&L2-1)         * Extracr major opcode        *
+.*       FINDOPCD &MAJOR                                              *
+.*       AIF   (&OPCD_START EQ 0).OPTDOK * opcode not found           *
+.* returned values are indirect pointers                              *
+.*&L2    SETA  &OPCD_START                                            *
+.LKUPNXT ANOP  ,                        * lookup loop                 *
+.*&L3    SETA  (&OPCDPTR(&L2))          * Extract pointer             *
+.*&X     SETC  '&MNEM(&L3)'             * Copy major mnemonic         *
+.*&X     SETC  '<a name="&X" id="&X">&X</a>'                          *
+.* accept mnemonic unless it starts with OPCD                         *
+.*       AIF   (K'&X LE 4).OPTDOK       * too short for OPCDxx        *
+.*       AIF   ('&X'(1,4) NE 'OPCD').OPTDOK                           *
+.*&L2    SETA  (&L2+1)                  * next indirect index value   *
+.*       AIF   (&L2 GT &OPCD_END).LKUPDFT * no next entry: use default*
+.*       AGO   .LKUPNXT                 * go process next entry       *
+.LKUPDFT ANOP  ,                                                      *
+.*&X     SETC  '&&nbsp;'                * No usable mnemonic found    *
+.*       AGO   .OPTDOK                                                *
+.* ********************************************************************
+.OPTDOK  ANOP  ,
+         HTMLPUN '  <td>&X.</td>'
+&L2      SETA  0                        * Generate cells:
+.OPLP3   ANOP  ,                        * Opcodes loop 3
+&L2      SETA  (&L2+1)
+         AIF   (&L2 GT 16).OPLP3X
+&MAJOR   SETC  '&PREFIX'                * Construct opcode
+         AIF   (&RNG16).OPLP3A          * Include digit1?
+&X       SETC  '&HEXDIGS'(&L1,1)
+&MAJOR   SETC  '&MAJOR.&X'              * Add high digit
+.OPLP3A  ANOP  ,                        * Nothing or high digit added
+&X       SETC  '&HEXDIGS'(&L2,1)
+&MAJOR   SETC  '&MAJOR.&X'              * Add low digit
+&MINOR   SETC  '-1'                     * Assume minor irrelevant
+         AIF   (&LBOUND2 EQ -1).OPLP3F  * No minor: major is ok
+.* separate &MAJOR into its true major and its minor opcode
+         AIF   (&RNG16).OPLP3E          * One digit for minor code
+&MINOR   SETC  '&MAJOR'(K'&MAJOR-1,2)   * Extract final 2 digits
+&MAJOR   SETC  '&MAJOR'(1,K'&MAJOR-2)   * Retain only true major
+         AGO   .OPLP3F                  * And go find opcode entry
+.OPLP3E  ANOP  ,                        * Handle single-digit minor
+&MINOR   SETC  '&MAJOR'(K'&MAJOR,1)     * Extract final digit
+&MAJOR   SETC  '&MAJOR'(1,K'&MAJOR-1)   * Retain only true major
+.OPLP3F  ANOP  ,                        * Ok - go find instruction
+         FINDOPCD &MAJOR,&MINOR
+         AIF   (&OPCD_START EQ 0).OPLP3NO
+&L3      SETA  &OPCD_START              * Init loop over result set
+&MNEMPRV SETC  ''
+&CARD    SETC  '  <td>'
+         AIF   (&ONLYNEG).OLDCELL       * Mark old
+         AIF   (&ONLYPOS).OPLP4         * Mark current, even if empty
+         AIF   ('&OPCD_ATTR' EQ '').OPLP4 * Ok: all entries current
+         AIF   ('&OPCD_ATTR' EQ 'Mix').OPLP4 * Ok: some entries current
+.OLDCELL ANOP  ,
+&CARD    SETC  '  <td class="old">'
+.OPLP4   ANOP  ,                        * Loop over instructions found
+&P       SETA  &OPCDPTR(&L3)            * Extract pointer to &OPCD
+         AIF   (&ONLYNEG AND '&ATTR(&P)' NE 'Old').OPLP4NX
+         AIF   (&ONLYPOS AND '&ATTR(&P)' EQ 'Old').OPLP4NX
+&MNEMON  SETC  (LOWER '&MNEM(&P)')      * Mnemonic in lower case
+&ATTRIB  SETC  '&ATTR(&P)'              * Get attribute string
+&MASKVAL SETC  '&MASK(&P)'              * Get mask value string
+         AIF   ('&MASKVAL'(1,1) EQ '[').OPLP4NX
+         AIF   (&OLDPAGE AND '&ATTRIB' NE 'Old').ERROR17
+.NOERR17 ANOP  ,
+&SUBPAGE SETB  0                        * Indicate this is no pointer
+.* for pointers to other opcode pages we need to create the page name
+         AIF   (K'&MNEMON LE 4).OPLP4M  * Cannot be a pointer
+         AIF   ('&MNEMON'(1,4) NE 'opcd').OPLP4M * Same thing...
+         AIF   ('&PAGE(&P)' NE '').OPLP4MO
+         AIF   ('&MNEMON'(K'&MNEMON,1) EQ 'x').OPLP4MO
+         AIF   ('&MNEMON'(K'&MNEMON-1,2) EQ 'fc').OPLP4MO
+&L       SETA  ('&MNEMON' FIND 'm')     * Find mask placeholder
+         AIF   (&L NE 0).OPLP4MO        * Ok: Lowercase m in mnemonic
+.* It's an unnamed opcode, not a pointer. Store index for notes
+.* that will appear below the generated table
+&CNOTE   SETA  (&CNOTE+1)               * Point next note entry
+&NOTE(&CNOTE) SETA &P                   * Store pointer to instruction
+         AGO   .OPLP4M
+.OPLP4MO ANOP  ,                        * Add opcode subpage name
+&MNEMON  SETC  'opcd'.'&OPCD(&P)'       * Create opcode page name
+&MNEMON  SETC  (LOWER '&MNEMON')        * lowercase for hex digits A-F
+&SUBPAGE SETB  1                        * Indicate this is a pointer
+.* For old entries in mixed cells: Add opening span attribute
+.OPLP4M  ANOP  ,                        * Add target file name
+         AIF   (&ONLYPOS OR &ONLYNEG).OPLP4V1
+         AIF   ('&OPCD_ATTR' NE 'Mix').OPLP4V1 * Mixed old / current?
+         AIF   ('&ATTRIB' NE 'Old').OPLP4V1 * Valid opcode?
+&CARD    SETC  '&CARD'.'<span class="old">'
+         AIF   ('&CARD'(1,6) EQ '  <td>').OPLP4V1 * Ok
+&CARD    SETC  '&CARD'(4,*)             * Remove 3 superfluous blanks
+.OPLP4V1 ANOP  ,
+.* Now we can add the opening anchor tag with correct target file name
+.* Add spaces if entire cell has attrib old & it's not the first item
+         AIF   ('&OPCD_ATTR' NE 'Old').OPLP4S1 * Cell is "Old"?
+         AIF   (&L3 EQ &OPCD_START).OPLP4S1
+&CARD    SETC  '&CARD'.(12)' '          * Insert 12 spaces
+.OPLP4S1 ANOP  ,
+         AIF   (&SUBPAGE).OPLP4S2
+&L       SETA  ('&MNEMON' INDEX '.')    * Contains a dot?
+         AIF   (&L NE 0).OPLP4S4        * Yes: replace it
+&CARD    SETC  '&CARD'.'<a href="opcd/'.'&MNEMON'.'.htm">'
+         AGO   .OPLP4S5
+.OPLP4S2 ANOP  ,
+         AIF   ('&PAGE(&P)' EQ '').OPLP4S3
+&CARD    SETC  '&CARD'.'<a href="'.'&PAGE(&P)'.'.htm">'
+         AGO   .OPLP4S5
+.OPLP4S3 ANOP  ,
+&CARD    SETC  '&CARD'.'<a href="'.'&MNEMON'.'.htm">'
+         AGO   .OPLP4S5
+.OPLP4S4 ANOP  ,
+&MNEMON  SETC  '&MNEMON'(1,&L-1).'_'.'&MNEMON'(&L+1,*)
+&CARD    SETC  '&CARD'.'<a href="opcd/'.'&MNEMON'.'.htm">'
+.OPLP4S5 ANOP  ,
+.* Create text to be shown as content of anchor tag
+&MNEMON  SETC  '&MNEM(&P)'              * Retrieve real mnemonic
+         AIF   (K'&MNEMON LE 4).OPLP4A  * Normal opcode
+         AIF   ('&MNEMON'(1,4) NE 'OPCD').OPLP4A
+&MNEMON  SETC  '&MNEMON'(5,*)           * Trailing part of mnemonic
+.* if mnemonic ends in fc insert a period in between
+         AIF   (K'&MNEMON LE 3).OPLP4S6
+         AIF   ('&MNEMON'(K'&MNEMON-1,2) NE 'fc').OPLP4S6
+&MNEMON  SETC  '&MNEMON'(1,K'&MNEMON-2).'.fc'
+.OPLP4S6 ANOP  ,
+&MNEMON  SETC  'X&Q'.'&MNEMON'.'&Q'     * Change to X'opcd'
+         AGO   .OPLP4B                  * Done
+.OPLP4A  ANOP  ,
+         AIF   (NOT &FCODES).OPLP4B
+&L       SETA  ('&MNEMON' INDEX '.')    * Contains a dot?
+         AIF   (&L EQ 0).OPLP4B         * no: use entire mnemonic
+&MNEMON  SETC  '&MNEMON'(&L+1,*)        * Get Function code part only
+.* Check for duplicate
+         AIF   ('&MNEMON' EQ '&MNEMPRV').OPLP4NX
+&MNEMPRV SETC  '&MNEMON'
+.OPLP4B  ANOP  ,
+.* Add content of anchor tag and closing anchor tag
+&CARD    SETC  '&CARD'.'&MNEMON'.'</a>'
+.* Add closing span tag (if required)
+         AIF   ('&OPCD_ATTR' NE 'Mix').OPLP4V2 * Mixed old / current?
+         AIF   ('&ATTRIB' NE 'Old').OPLP4V2 * Valid opcode?
+&CARD    SETC  '&CARD'.'</span>'
+.OPLP4V2 ANOP  ,
+.* Add break tag before continuing with next opcode in this cell
+         AIF   (&L3 EQ &OPCD_END).OPLP4X
+&CARD    SETC  '&CARD'.'<br />'
+         HTMLPUN '&CARD'
+&GEND(&P) SETB 1                        * Mark instruction generated
+&CARD    SETC  '      '
+.OPLP4NX ANOP  ,                        * Go next entry
+         AIF   (&L3 EQ &OPCD_END).OPLP4X
+&L3      SETA  &L3+1                    * Point next instruction
+         AGO   .OPLP4                   * And add to this cell
+.* Add terminating td tag to complete current cell
+.OPLP4X  ANOP  ,                        * closing tag fits on card?
+         AIF   (K'&CARD LE 67).OPLP4X1  * Normal case: 1 card
+         HTMLPUN '&CARD'                * Punch major part of card
+&GEND(&P) SETB 1                        * Mark instruction generated
+&CARD    SETC  '  </td>'
+         HTMLPUN '&CARD'                * Punch closing td tag
+         AGO   .OPLP3
+.OPLP4X1 ANOP  ,                        * Punch as one card
+         AIF   ('&CARD' EQ '      ').OPLP4MT * Empty entry ...
+&CARD    SETC  '&CARD'.'</td>'
+         HTMLPUN '&CARD'
+&GEND(&P) SETB 1                        * Mark instruction generated
+         AGO   .OPLP3
+.OPLP4MT ANOP  ,                        * Empty entry
+&CARD    SETC  '&CARD'.'</td>'
+         HTMLPUN '&CARD'
+         AGO   .OPLP3
+.OPLP3NO ANOP  ,                        * Non-existing opcode
+&CARD    SETC  '  <td>&nbsp;</td>'
+         AIF   (NOT &OLDPAGE).OPLP3NP   * Ok: go punch cell-end
+&CARD    SETC  '  <td class="old">&nbsp;</td>'
+.OPLP3NP ANOP  ,                        * Punch non-existing opcode
+         HTMLPUN '&CARD'
+         AGO   .OPLP3
+.OPLP3X  ANOP  ,
+         HTMLPUN ' </tr>'
+         AGO   .OPLP2
+.OPLP2X  ANOP  ,
+         HTMLPUN '</table>'
+.* Table complete: if there are any notes add them in list format
+.* Combine entries into a range notation if sequential instructions
+.* occur with the same full name (description)
+         AIF   (&CNOTE EQ 0).EXIT      * No notes needed: done!
+         HTMLPUN ''
+         ACTR  20*&CNOTE
+         HTMLPUN '<ul>'
+&L1      SETA  0
+.OPLP5   ANOP  ,                        * Loop over notes
+&L1      SETA  &L1+1
+         AIF   (&L1 GT &CNOTE).OPLP5X   * Exit loop
+&P       SETA  (&NOTE(&L1))             * Extract pointer
+&OPCD1   SETC  '&OPCD(&P)'              * Extract opcode
+&HEXVAL  SETC  '&OPCD1'
+         HEX2DEC ,
+&OPCDV1  SETA  (&DECVAL)
+&FULLNM  SETC  '&NAME(&P)'              * Extract full name
+.* Look ahead: may need to combine entries into a range
+&OPCD2   SETC  '&OPCD1'                 * Current end-of-range
+&OPCDV2  SETA  &OPCDV1                  * Current end-of-range
+&L2      SETA  &L1                      * Init look-ahead pointer
+.OPLP6   ANOP  ,                        * Look-ahead loop
+&L2      SETA  (&L2+1)                  * Point next entry
+         AIF   (&L2 GT &CNOTE).OPLP6X   * Punch entry or range
+&P       SETA  (&NOTE(&L2))             * Extract next pointer
+&OPCODE  SETC  '&OPCD(&P)'              * Extract next opcode
+&HEXVAL  SETC  '&OPCODE'
+         HEX2DEC ,
+&OPCDV   SETA  (&DECVAL)
+         AIF   (&OPCDV2+1 NE &OPCDV).OPLP6X * Not in sequence
+         AIF   ('&FULLNM' NE '&NAME(&P)').OPLP6X * Different names
+&OPCD2   SETC  '&OPCODE'                * Update end-of-range
+&OPCDV2  SETA  &OPCDV                   * Same
+         AGO   .OPLP6
+.OPLP6X  ANOP  ,                        * Look-ahead ends
+&L2      SETA  (&L2-1)                  * L2 was advanced one too many
+&L1      SETA  &L2                      * Advance main ptr to range-end
+.* Start building html for the list entry
+&CARD    SETC  ' <li>'
+&CARD    SETC  '&CARD'.'X&Q.&OPCD1.&Q'  * Add opcode to text
+         AIF   (&OPCDV1 EQ &OPCDV2).OPLP5P1
+&CARD    SETC  '&CARD'.'-X&Q.&OPCD2.&Q' * Add opcode to text
+.* If first word of full name is 'A' or 'AN' then remove it
+&P       SETA  ('&FULLNM' INDEX ' ')
+         AIF   (&P EQ 0).OPLP5P0        * No spaces - no article
+&X       SETC  '&FULLNM'(1,&P-1)        * Extract first word
+&X       SETC  (UPPER '&X')             * And make upper case
+         AIF   ('&X' NE 'A' AND '&X' NE 'AN').OPLP5P1 * Punch as is
+&FULLNM  SETC  '&FULLNM'(&P+1,*)        * Remove article
+&X       SETC  '&FULLNM'(1,1)           * Get first letter
+&X       SETC  (UPPER '&X')             * And make upper case
+&FULLNM  SETC  '&X'.'&FULLNM'(2,*)      * Capitalize description
+.OPLP5P0 ANOP  ,
+.* If the word 'instruction' occurs, we'll add an 's' to pluralize
+&P       SETA  ('&FULLNM' INDEX ' instruction')
+         AIF   (&P EQ 0).OPLP5P1        * Does not occur - ok.
+         AIF   (&P+11 EQ K'&FULLNM).OPLP5EN
+&X       SETC  '&FULLNM'(&P+12,*)       * Extract tail
+&FULLNM  SETC  '&FULLNM'(1,&P+11)       * Remove tail
+&FULLNM  SETC  '&FULLNM.s&X'            * Pluralize and recombine
+         AGO   .OPLP5P1
+.OPLP5EN ANOP  ,                        * Add s at end to pluralize
+&FULLNM  SETC  '&FULLNM.s'
+.OPLP5P1 ANOP  ,
+&X       SETC  '&CARD'                  * Save current value
+&CARD    SETC  '&CARD = &FULLNM.</li>'  * Add full name
+         AIF   (K'&CARD GE 71).OPLP5P2  * Split into 2 punch lines
+         HTMLPUN '&CARD'
+         AGO   .OPLP5
+.OPLP5P2 ANOP  ,
+&CARD    SETC  '&X ='                   * Restore first part
+         HTMLPUN '&CARD'
+&CARD    SETC  '     &FULLNM</li>'      * Add full name
+         HTMLPUN '&CARD'
+         AGO   .OPLP5
+.OPLP5X  ANOP  ,
+         HTMLPUN '</ul>'
+         AGO   .EXIT                    * genopcd handled completely
+.*
+.* Generate a table with all instructions with no known opcode
+.*
+.GENOPCQ ANOP  ,
+         HTMLGENU ,                     * Generate Unknowns
+         AGO   .EXIT
+.*
+.* Generate a table with all directives
+.*
+.GENOPCA ANOP  ,
+         HTMLGEND ,                     * Generate Directives table
+         AGO   .EXIT
+
+.*
+.* Error messages - never mind the numbers, once upon a time this
+.*                  macro was part of HTMLGEN macro.
+.*
+.ERROR01 MNOTE 8,'HTMLGENO error 01: No usable menmonic found for table*
+                OPCD&SAVPFX'
+         AGO   .NOERR01
+
+.ERROR11 MNOTE 8,'HTMLGENO error 11: Range type conflicts with generic *
+               opcode definition for the table'
+         AGO   .EXIT
+
+.ERROR12 MNOTE 8,'HTMLGENO error 12: No range specified for genopcd'
+         AGO   .EXIT
+
+.ERROR13 MNOTE 8,'HTMLGENO error 13: &HEXVAL invalid hex number in rang*
+               e &RANGE'
+         AGO   .EXIT
+
+.ERROR14 MNOTE 8,'HTMLGENO error 14: &RANGE Invalid range for genopcd'
+         AGO   .EXIT
+
+.ERROR16 MNOTE 8,'HTMLGENO error 16: No instruction found pointing to p*
+               age for instructions with &PREFIX'
+&ATTRIB  SETC  ''
+&OLDPAGE SETB  0
+         AGO   .NOERR16
+
+.ERROR17 MNOTE 8,'HTMLGENO error 17: Instruction &MNEMON has attribute *
+               conflicting with pagetype of invocation'
+         AGO   .NOERR17
+
+.ERROR27 MNOTE 8,'HTMLGENO error 27: No opcode definitions available'
+         AGO   .EXIT
+
+.ERROR28 MNOTE 8,'HTMLGENO error 28: Different mnemonics cannot define *
+               valid range'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

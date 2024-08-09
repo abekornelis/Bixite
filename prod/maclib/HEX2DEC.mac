@@ -1,0 +1,111 @@
+.*
+.* Convert hexadecimal text string to decimal string
+.* Return empty string on error
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   HEX2DEC
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HEX2DEC                * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Variables for processing a single opcode definition
+         GBLC  &HEXVAL                 * Input variable
+         GBLC  &DECVAL                 * Output variable'
+         LCLC  &CH                     * Single input character
+         LCLA  &I                      * Char ptr in string
+         LCLA  &X                      * Intermediate result value
+         LCLC  &DIGITS                 * All hex digits
+         LCLB  &NEGATIVE               * Negative number?
+.*
+.* Init
+&DECVAL  SETC  ''
+&DIGITS  SETC  '0123456789ABCDEF'
+&X       SETA  0
+         AIF   (K'&HEXVAL LT 1).NOSIGN
+&CH      SETC  '&HEXVAL'(1,1)          * Get first char
+         AIF   ('&CH' EQ '-').SIGNNEG
+         AIF   ('&CH' EQ '-').SIGNPOS
+         AGO   .NOSIGN
+.SIGNNEG ANOP  ,
+&NEGATIVE SETB 1                       * Mark number as negative
+.SIGNPOS ANOP  ,
+&HEXVAL  SETC  '&HEXVAL'(2,*)          * Remove leading sign
+.NOSIGN  ANOP  ,
+.*
+.* Loop through input string, building result value
+&I       SETA  0
+.LOOP    ANOP  ,
+         AIF   (&I EQ K'&HEXVAL).LOOPX * End of input: exit loop
+&I       SETA  (&I+1)                  * Increment char pointer
+&CH      SETC  '&HEXVAL'(&I,1)         * Extract input char
+&J       SETA  ('&DIGITS' INDEX '&CH') * Valid digit?
+         AIF   (&J EQ 0).EXIT          * Exit error
+&J       SETA  (&J-1)                  * Get value of digit
+&X       SETA  (&X SLA 4)              * Multiply int.result by 16
+&X       SETA  (&X+&J)                 * Add new digit's value
+         AGO   .LOOP
+.LOOPX   ANOP  ,
+.*
+.* Obtain result as a character string
+&DECVAL  SETC  '&X'
+         AIF   (NOT &NEGATIVE).EXIT
+&DECVAL  SETC  '-&DECVAL'              * Mark as negative
+.*
+.EXIT    MEND

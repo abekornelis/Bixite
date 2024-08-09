@@ -1,0 +1,1106 @@
+.*
+.* Generate a List of instructions in html format
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   HTMLGENL &OPTIONS
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLGENL               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Variables for parameters
+         GBLC  &SP_LANG                * Language for current page
+.* Following vars are taken from positional parm1, char 1 thru 4:
+         LCLC  &CURRENT                * C=Current, O=Old, B=Both
+         LCLC  &OPCODES                * O=Opcodes, D=Directives,
+.*                                     * B=Both, N=Neither
+         LCLC  &EXTENTS                * X=eXtended opcodes,
+.*                                     * F=Function codes,
+.*                                     * B=Both, N=Neither
+         LCLC  &ORDER                  * M=Mnemonic, O=Opcode, N=Name
+.*
+.* Arrays to hold parsed opcode definitions
+         GBLA  &SIZING
+         GBLA  &MNEM_LAST              * Index for tables below
+         GBLC  &MNEM(2500)             * Mnemonics
+         GBLC  &OPCD(2500)             * Opcodes
+         GBLC  &MASK(2500)             * Mask values
+         GBLC  &NAME(2500)             * Full names
+         GBLC  &ATTR(2500)             * Attributes
+         GBLC  &PAGE(2500)             * Page being redirected to
+         GBLA  &OPCDPTR(2500)          * Opcode ptr in sequence
+         GBLA  &NAMEPTR(2500)          * Opcode ptr in sequence
+         LCLA  &PTR(2500)              * Pointers in selected order
+.*
+.* Local variables
+         LCLA  &I,&J                   * Index, Pointer
+         LCLA  &P                      * Pointer into global arrays
+         LCLC  &MNEMON                 * Current mnemonic
+         LCLC  &OPCODE                 * Current Opcode
+         LCLC  &MASKVAL                * Current mask
+         LCLC  &FULLNM                 * Current name
+         LCLC  &OPCAT                  * Current category
+         LCLC  &CARD,&TXT              * Card image to be punched
+         LCLC  &LOW_HDR                * Partial page name in lowercase
+         LCLC  &LOW_END                * Partial page name in lowercase
+         LCLA  &CTR                    * Counter of qualified rows
+         LCLB  &SELOPC                 * Select Opcodes Y/N
+         LCLB  &SELDIR                 * Select Directives Y/N
+         LCLB  &SELEXT                 * Select Extended mnemonics Y/N
+         LCLB  &SELFUN                 * Select Function Codes Y/N
+         LCLB  &SELALL                 * Select all Y/N
+         LCLB  &SELNON                 * Select nothing Y/N
+         LCLB  &GENTBL                 * Generate table or count only
+.*
+.* Alternatives table arrays
+         LCLC  &STA(10)                * Status column
+         LCLA  &MAXSTA                 * Nr of valid entries
+         LCLC  &ORD(10)                * Ordering column
+         LCLA  &MAXORD                 * Nr of valid entries
+         LCLC  &ADD(10)                * Additions column
+         LCLA  &MAXADD                 * Nr of valid entries
+         LCLC  &REM(10)                * Removals column
+         LCLA  &MAXREM                 * Nr of valid entries
+         LCLC  &LAN(10)                * Languages column
+         LCLA  &MAXLAN                 * Nr of valid entries
+         LCLC  &XLATO,&XLATD,&XLATN    *
+         LCLC  &XLATF,&XLATX           *
+         LCLC  &XLATC,&XLATB           *
+.*
+.* Check input parameter
+&CURRENT SETC  'B'                     * Default for XNN
+&OPCODES SETC  'N'                     * Value for XNN
+&EXTENTS SETC  'N'                     * Value for XNN
+&ORDER   SETC  'M'                     * Default for XNN
+         AIF   ('&OPTIONS' EQ 'XNN').XNN1
+&I       SETA  (K'&OPTIONS)
+         AIF   (&I NE 4).ERROR1
+.*
+.* Check position 1 - Current, Old, or Both
+&CURRENT SETC  '&OPTIONS'(1,1)
+&I       SETA  ('COB' INDEX '&CURRENT')
+         AIF   (&I EQ 0).ERROR2
+.*
+.* Check position 2 - Opcodes, Directives, or Both
+&OPCODES SETC  '&OPTIONS'(2,1)
+&I       SETA  ('ODBN' INDEX '&OPCODES')
+         AIF   (&I EQ 0).ERROR3
+.*
+.* Check position 3 - eXtended opcodes, Function codes, Both, Neither
+&EXTENTS SETC  '&OPTIONS'(3,1)
+&I       SETA  ('XFBN' INDEX '&EXTENTS')
+         AIF   (&I EQ 0).ERROR4
+.*
+.* Check position 4 - Sorting Order: Mnemonic, Opcode, or Name
+&ORDER   SETC  '&OPTIONS'(4,1)
+&I       SETA  ('MON' INDEX '&ORDER')
+         AIF   (&I EQ 0).ERROR5
+.*
+.* Declare and initialize texts, depending on current language
+.XNN1    ANOP  ,
+         LCLC  &H1INIT                 * Fixed start of header
+         LCLC  &H1OPCD                 * Opcodes
+         LCLC  &H1DIR                  * Directives
+         LCLC  &H1EXT                  * Extended Mnemonics
+         LCLC  &H1FUN                  * Function Codes
+         LCLC  &H1INST                 * Instructions
+         LCLC  &H1LIST                 * List of
+         LCLC  &H1CLIST                * Complete list of
+         LCLC  &H1ELIST                * Empty list of instructions
+         LCLC  &H1AGEB                 * Current and outdated
+         LCLC  &H1AGEC                 * Current only
+         LCLC  &H1AGEO                 * Outdated only
+         LCLC  &H1SEP0                 * Separator0: not a list
+         LCLC  &H1SEP1                 * Separator1: terms in list
+         LCLC  &H1SEP2                 * Separator2: last term
+         LCLC  &H1SORT1                * separator, preceding ...
+         LCLC  &H1SORT2                * Sorted by
+         LCLC  &H1SORTM                * Mnemonic
+         LCLC  &H1SORTN                * Name
+         LCLC  &H1SORTO                * Opcode
+         LCLC  &HDRLIST                * The list below contains:
+         LCLC  &HDRAGEB                * Both current and outdated
+         LCLC  &HDRAGEC                * Current only
+         LCLC  &HDRAGEO                * Outdated only
+         LCLC  &HDROPCO                * Opcodes only
+         LCLC  &HDROPCD                * Directives only
+         LCLC  &HDROPCB                * Both opcodes and directives
+         LCLC  &HDROPCN                * Neither opcodes nor directives
+         LCLC  &HDREXTF                * Function codes only
+         LCLC  &HDREXTX                * Extended Mnemonics only
+         LCLC  &HDREXTB                * Both Functions and Extended
+         LCLC  &HDREXTN                * Neither Functions nor Extended
+         LCLC  &ALTSORT                * Sort this list by:
+         LCLC  &ALTADD                 * Expand this list with:
+         LCLC  &ALTREM                 * Remove from this list:
+         LCLC  &ALTLAN                 * Translate into:
+         LCLC  &ALTCUR                 * Current Instructions
+         LCLC  &ALTOLD                 * Outdated Instructions
+         LCLC  &ALTUK                  * English
+         LCLC  &ALTNL                  * Nederlands
+         LCLC  &COLMNEM                * Mnemonic
+         LCLC  &COLOPCD                * Opcode
+         LCLC  &COLMASK                * Mask
+         LCLC  &COLNAME                * Name
+         LCLC  &COLCAT                 * Category
+         LCLC  &COLCAT1                * - Opcodes
+         LCLC  &COLCAT2                * - Extended opcodes
+         LCLC  &COLCAT3                * - Function code for opcode
+         LCLC  &COLCAT4                * - Directive - asm instruction
+         LCLC  &COLCAT5                * - Directive - cond.asm instr.
+         LCLC  &EMPTY1                 * No categories selected
+         LCLC  &EMPTY2                 * Hence you get an empty list
+         AIF   ('&SP_LANG' EQ 'UK').LANGUK
+         AIF   ('&SP_LANG' EQ 'NL').LANGNL
+         AGO   .ERROR9
+.*
+.* English terms
+.LANGUK  ANOP  ,
+&H1INIT  SETC  ' HLASM -'
+&H1OPCD  SETC  'Opcodes'
+&H1DIR   SETC  'Directives'
+&H1EXT   SETC  'Extended Mnemonics'
+&H1FUN   SETC  'Function Codes'
+&H1INST  SETC  'Instructions'
+&H1LIST  SETC  'List of'
+&H1CLIST SETC  'Complete list of'
+&H1ELIST SETC  'Empty list of Instructions'
+&H1AGEB  SETC  'all'
+&H1AGEC  SETC  'current'
+&H1AGEO  SETC  'outdated'
+&H1SEP0  SETC  ' and'
+&H1SEP1  SETC  ','
+&H1SEP2  SETC  ' and'
+&H1SORT1 SETC  ','
+&H1SORT2 SETC  'Sorted by'
+&H1SORTM SETC  'Mnemonic'
+&H1SORTN SETC  'Name'
+&H1SORTO SETC  'Opcode'
+&HDRLIST SETC  'The list below contains:'
+&HDRAGEB SETC  'Both Currently supported and Outdated instructions'
+&HDRAGEC SETC  'Currently supported instructions only'
+&HDRAGEO SETC  'Outdated instructions only'
+&HDROPCO SETC  'Opcodes, but no Directives'
+&HDROPCD SETC  'Directives, but no Opcodes'
+&HDROPCB SETC  'Both Opcodes and Directives'
+&HDROPCN SETC  'Neither Opcodes nor Directives'
+&HDREXTF SETC  'Function codes, but no Extended mnemonics'
+&HDREXTX SETC  'Extended mnemonics, but no Function codes'
+&HDREXTB SETC  'Both Extended mnemonics and Function codes'
+&HDREXTN SETC  'Neither Extended mnemonics nor Function codes'
+&ALTSORT SETC  'Sort this list by:'
+&ALTADD  SETC  'Expand this list with:'
+&ALTREM  SETC  'Remove from this list:'
+&ALTLAN  SETC  'Translate into:'
+&ALTCUR  SETC  'Current Instructions'
+&ALTOLD  SETC  'Outdated Instructions'
+&ALTUK   SETC  'English'
+&ALTNL   SETC  'Dutch / Nederlands'
+&COLMNEM SETC  'Mnemonic'
+&COLOPCD SETC  'Opcode'
+&COLMASK SETC  'Mask'
+&COLNAME SETC  'Name'
+&COLCAT  SETC  'Category'
+&COLCAT1 SETC  'Machine Instruction'
+&COLCAT2 SETC  'Extended Mnemonic'
+&COLCAT3 SETC  'Function code'
+&COLCAT4 SETC  'Directive - assembler instruction'
+&COLCAT5 SETC  'Directive - conditional assembler instruction'
+&EMPTY1  SETC  '<p>As you have selected none of the four available'
+&EMPTY1  SETC  '&EMPTY1 categories, you'
+&EMPTY2  SETC  ' get an empty list, naturally.</p>'
+         AGO   .LANGOK
+.*
+.* Dutch terms
+.LANGNL  ANOP  ,
+&H1INIT  SETC  ' HLASM -'
+&H1OPCD  SETC  'Opcodes'
+&H1DIR   SETC  'Directives'
+&H1EXT   SETC  'Extended Mnemonics'
+&H1FUN   SETC  'Functie Codes'
+&H1INST  SETC  'Instructies'
+&H1LIST  SETC  'Lijst van'
+&H1CLIST SETC  'Volledige lijst van'
+&H1ELIST SETC  'Lege lijst van instructies'
+&H1AGEB  SETC  'alle'
+&H1AGEC  SETC  'gangbare'
+&H1AGEO  SETC  'vervallen'
+&H1SEP0  SETC  ' en'
+&H1SEP1  SETC  ','
+&H1SEP2  SETC  ', en'
+&H1SORT1 SETC  ','
+&H1SORT2 SETC  'op volgorde van'
+&H1SORTM SETC  'Mnemonic'
+&H1SORTN SETC  'Naam'
+&H1SORTO SETC  'Opcode'
+&HDRLIST SETC  'De lijst hieronder bevat:'
+&HDRAGEB SETC  'Zowel gangbare als vervallen instructies'
+&HDRAGEC SETC  'Alleen gangbare instructies'
+&HDRAGEO SETC  'Alleen vervallen instructies'
+&HDROPCO SETC  'Wel Opcodes, geen Directives'
+&HDROPCD SETC  'Wel Directives, geen Opcodes'
+&HDROPCB SETC  'Zowel Opcodes als Directives'
+&HDROPCN SETC  'Noch Opcodes noch Directives'
+&HDREXTF SETC  'Wel Functie codes, geen Extended mnemonics'
+&HDREXTX SETC  'Wel Extended mnemonics, geen Functie codes'
+&HDREXTB SETC  'Zowel Extended mnemonics als Functie codes'
+&HDREXTN SETC  'Noch Extended mnemonics noch Functie codes'
+&ALTSORT SETC  'Sorteer deze lijst op:'
+&ALTADD  SETC  'Breid deze lijst uit met:'
+&ALTREM  SETC  'Deze lijst zonder:'
+&ALTLAN  SETC  'Vertaal in:'
+&ALTCUR  SETC  'Gangbare Instructies'
+&ALTOLD  SETC  'Vervallen Instructies'
+&ALTUK   SETC  'Engels / English'
+&ALTNL   SETC  'Nederlands'
+&COLMNEM SETC  'Mnemonic'
+&COLOPCD SETC  'Opcode'
+&COLMASK SETC  'Masker'
+&COLNAME SETC  'Naam'
+&COLCAT  SETC  'Categorie'
+&COLCAT1 SETC  'Machine Instructie'
+&COLCAT2 SETC  'Extended Mnemonic'
+&COLCAT3 SETC  'Functie code'
+&COLCAT4 SETC  'Directive - assembler instructie'
+&COLCAT5 SETC  'Directive - conditionele assembler instructie'
+&EMPTY1  SETC  '<p>Aangezien u geen van de vier beschikbare'
+&EMPTY1  SETC  '&EMPTY1 categorie&&euml;n heeft'
+&EMPTY2  SETC  ' geselecteerd, is de resultaat-lijst'
+&EMPTY2  SETC  '&EMPTY2 noodzakelijkerwijze leeg.</p>'
+         AGO   .LANGOK
+.*
+.* Generate introductory part (heading 1)
+.* Heading 1 line reads like:
+.* (complete/empy/ ) list of (all/current/outdated) ...
+.* (instructions/
+.*      opcodes, directives, extended mnemonics, function codes)
+.* ,sorted by (mnemonic/name/opcode)
+.LANGOK  ANOP  ,
+.* Which options have been selected?
+&SELOPC  SETB  ('&OPCODES' EQ 'B' OR '&OPCODES' EQ 'O')
+&SELDIR  SETB  ('&OPCODES' EQ 'B' OR '&OPCODES' EQ 'D')
+&SELEXT  SETB  ('&EXTENTS' EQ 'B' OR '&EXTENTS' EQ 'X')
+&SELFUN  SETB  ('&EXTENTS' EQ 'B' OR '&EXTENTS' EQ 'F')
+&SELALL  SETB  (&SELOPC AND &SELDIR AND &SELEXT AND &SELFUN)
+&SELNON  SETB  (NOT &SELOPC AND NOT &SELDIR AND NOT &SELEXT)
+&SELNON  SETB  (&SELNON AND NOT &SELFUN)
+&I       SETA  (&SELOPC+&SELDIR+&SELEXT+&SELFUN) * How many to do?
+&J       SETA  0                                 * How many done?
+.* Start building heading1 string
+&CARD    SETC  '&H1INIT'               * Fixed start of text
+         AIF   (&SELALL).H1_ALL
+         AIF   (&SELNON).H1_NONE
+&CARD    SETC  '&CARD &H1LIST'         * List of
+         AGO   .H1_AGE
+.H1_ALL  ANOP  ,                       * All selected
+&CARD    SETC  '&CARD &H1CLIST'        * Complete list of
+         AGO   .H1_AGE                 * Go indicate age selection
+.H1_NONE ANOP  ,                       * Nothing selected
+&CARD    SETC  '&CARD &H1ELIST'        * Empty list of instructions
+         AGO   .H1PUNCH                * That's the whole header!
+.* Indicate which age categories are included
+.H1_AGE  ANOP  ,                       * Current / outdated / both ?
+&CARD    SETC  '&CARD &(H1AGE&CURRENT)' * all / current / outdated
+.* Indicate which types of instructions are included
+         AIF   (&SELALL).H1_INST
+         AIF   (NOT &SELOPC).H1_OPOK   * Opcodes selected?
+&CARD    SETC  '&CARD &H1OPCD'         * Opcodes
+&J       SETA  (&J+1)                  * Count description generated
+         AIF   (&I EQ 1).H1_OPOK       * 1 term - we're done
+         AIF   (&I EQ 2 AND &J EQ 1).H1_OP0
+         AIF   (&I EQ 2).H1_OPOK       * 2 terms - done
+         AIF   (&I EQ 3 AND &J EQ 1).H1_OP1
+         AIF   (&I EQ 3 AND &J EQ 2).H1_OP2
+         AGO   .H1_OPOK                * No more options - done!
+.H1_OP0  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP0'         * Add ' and'
+         AGO   .H1_OPOK
+.H1_OP1  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP1'         * Add ','
+         AGO   .H1_OPOK
+.H1_OP2  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP2'         * Add ', and'
+         AGO   .H1_OPOK
+.H1_OPOK ANOP  ,
+         AIF   (NOT &SELDIR).H1_DIOK   * Directives selected?
+&CARD    SETC  '&CARD &H1DIR'          * Directives
+&J       SETA  (&J+1)                  * Count description generated
+         AIF   (&I EQ 1).H1_DIOK       * 1 term - we're done
+         AIF   (&I EQ 2 AND &J EQ 1).H1_DI0
+         AIF   (&I EQ 2).H1_DIOK       * 2 terms - done
+         AIF   (&I EQ 3 AND &J EQ 1).H1_DI1
+         AIF   (&I EQ 3 AND &J EQ 2).H1_DI2
+         AGO   .H1_DIOK                * No more options - done!
+.H1_DI0  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP0'         * Add ' and'
+         AGO   .H1_DIOK
+.H1_DI1  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP1'         * Add ','
+         AGO   .H1_DIOK
+.H1_DI2  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP2'         * Add ', and'
+         AGO   .H1_DIOK
+.H1_DIOK ANOP  ,
+         AIF   (NOT &SELEXT).H1_XMOK   * Extended Mnemonics selected?
+&CARD    SETC  '&CARD &H1EXT'          * Extended Mnemonics
+&J       SETA  (&J+1)                  * Count description generated
+         AIF   (&I EQ 1).H1_XMOK       * 1 term - we're done
+         AIF   (&I EQ 2 AND &J EQ 1).H1_XM0
+         AIF   (&I EQ 2).H1_XMOK       * 2 terms - done
+         AIF   (&I EQ 3 AND &J EQ 1).H1_XM1
+         AIF   (&I EQ 3 AND &J EQ 2).H1_XM2
+         AGO   .H1_XMOK                * No more options - done!
+.H1_XM0  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP0'         * Add ' and'
+         AGO   .H1_XMOK
+.H1_XM1  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP1'         * Add ','
+         AGO   .H1_XMOK
+.H1_XM2  ANOP  ,
+&CARD    SETC  '&CARD.&H1SEP2'         * Add ', and'
+         AGO   .H1_XMOK
+.H1_XMOK ANOP  ,
+         AIF   (NOT &SELFUN).H1_FCOK   * Function codes selected?
+&CARD    SETC  '&CARD &H1FUN'          * Function Codes
+&J       SETA  (&J+1)                  * Count description generated
+.H1_FCOK ANOP  ,
+         AGO   .H1_SORT                * Go indicate sort order
+.H1_INST ANOP  ,                       * Instructions (short for all)
+&CARD    SETC  '&CARD &H1INST'         * Instructions
+         AGO   .H1_SORT                * Go indicate sort order
+.* Indicate sorting order
+.H1_SORT ANOP  ,
+&CARD    SETC  '&CARD.&H1SORT1 &H1SORT2' * Sorted by
+&CARD    SETC  '&CARD &(H1SORT&ORDER)' * mnemonic / name / opcode
+         AGO   .H1PUNCH
+.*
+.* Header1 string is now complete: start punching the page's html
+.H1PUNCH ANOP  ,
+         HTMLPUN '<!-- &SP_LANG -->'
+         HTMLPUN '<h1 align="center">'
+.H1PUN2  ANOP  ,
+&TXT     SETC  '&CARD'
+&J       SETA  (K'&CARD)               * How many chars in H1-text?
+         AIF   (&J LT 72).H1PUNOK
+&J       SETA  72
+.H1_LP   ANOP  ,                       * Loop over txt
+&J       SETA  (&J-1)                  *   scanning backwards
+         AIF   (&J LT 1).ERROR13       *   looking for the last space
+         AIF   ('&CARD'(&J,1) EQ ' ').H1_LPX * Found: exit loop!
+         AGO   .H1_LP                  * Not found: try next char
+.H1_LPX  ANOP  ,                       * Found last space at &J
+&TXT     SETC  '&CARD'(1,&J-1)         * Extract punchable part
+&CARD    SETC  '&CARD'(&J,*)           * Extract remainder
+         HTMLPUN '&TXT'
+         AGO   .H1PUN2                 * Ok - repeat process
+.H1PUNOK HTMLPUN '&CARD'
+         HTMLPUN '</h1>'
+.H1_DONE ANOP  ,
+.*
+.* Before continuing, we need to know the number of entries
+.* we will have to generate in the table that is to follow
+&GENTBL  SETB  0                       * Set to count only
+         AIF   ('&OPTIONS' NE 'XNN').COUNT * Go count instructions
+.*
+.* By jumping to .COUNT with &GENTBL=0 we have counted the number of
+.* instructions to be generated on the current html page. After
+.* counting assembly resumes at .COUNTOK, so we can now continue to
+.* generate the proper header items.
+.COUNTOK ANOP  ,
+.*
+.* Create entries to explain content of current page
+&STA(1)  SETC  '<th>&HDRLIST</th>'     * The list below contains:
+&MAXSTA  SETA  1
+         AIF   ('&OPTIONS' EQ 'XNN').HDR_2 * Irrelevant if empty
+&CARD    SETC  '&(HDRAGE&CURRENT)'     * both / current / outdated
+&I       SETA  &MAXSTA+1
+&STA(&I) SETC  '<li>&CARD.</li>'       * Make it a list entry
+&MAXSTA  SETA  &I
+.HDR_2   ANOP  ,
+&CARD    SETC  '&(HDROPC&OPCODES)'     * opcd / dir / both / neither
+&I       SETA  &MAXSTA+1
+&STA(&I) SETC  '<li>&CARD.</li>'       * Make it a list entry
+&MAXSTA  SETA  &I
+&CARD    SETC  '&(HDREXT&EXTENTS)'     * Functions / extensions / etc
+&I       SETA  &MAXSTA+1
+&STA(&I) SETC  '<li>&CARD.</li>'       * Make it a list entry
+&MAXSTA  SETA  &I
+         AIF   (&CTR LT 2).STAORD      * Empty list: order irrelevant
+&CARD    SETC  '&H1SORT2'              * Sorted by
+&CARD    SETC  '&CARD &(H1SORT&ORDER)' * mnemonic / name / opcode
+&I       SETA  &MAXSTA+1
+&STA(&I) SETC  '<li>&CARD.</li>'       * Make it a list entry
+&MAXSTA  SETA  &I
+.STAORD  ANOP  ,
+.*
+.* Create links to alternate sequences if we have more than 1 row
+         AIF   (&CTR LT 2).ORDDONE     * Can we sort at all?
+&ORD(1)  SETC  '<th>&ALTSORT</th>'     * Sort this list by:
+&MAXORD  SETA  1
+&LOW_HDR SETC  '&OPTIONS'(1,3)         * Options without sorting
+&LOW_HDR SETC  (LOWER '&LOW_HDR')      * Make lowercase
+&LOW_HDR SETC  'opl_&LOW_HDR'          * Create fixed part of file name
+         AIF   ('&ORDER' EQ 'M').ORDM
+&I       SETA  &MAXORD+1
+&ORD(&I) SETC  '<li><a href="&LOW_HDR.m.htm">&H1SORTM.</a></li>'
+&MAXORD  SETA  &I
+.ORDM    ANOP  ,
+         AIF   ('&ORDER' EQ 'N').ORDN
+&I       SETA  &MAXORD+1
+&ORD(&I) SETC  '<li><a href="&LOW_HDR.n.htm">&H1SORTN.</a></li>'
+&MAXORD  SETA  &I
+.ORDN    ANOP  ,
+         AIF   ('&ORDER' EQ 'O').ORDO
+&I       SETA  &MAXORD+1
+&ORD(&I) SETC  '<li><a href="&LOW_HDR.o.htm">&H1SORTO.</a></li>'
+&MAXORD  SETA  &I
+.ORDO    ANOP  ,
+.ORDDONE ANOP  ,
+.*
+.* Create links to tables with additional data
+         AIF   ('&OPCODES.&EXTENTS.&CURRENT' EQ 'BBB').ADDDONE
+&ADD(1)  SETC  '<th>&ALTADD</th>'      * Expand this list with:
+&MAXADD  SETA  1
+&LOW_HDR SETC  'opl_'                  * Create fixed part of file name
+&LOW_END SETC  (LOWER '&OPCODES.&EXTENTS.&ORDER') * Tail of file name
+         AIF   ('&CURRENT' EQ 'B' or '&CURRENT' EQ 'C').ADDCUR
+&XLATO   SETC  'b'                     * from O to B
+&CARD    SETC  '&LOW_HDR.&(XLAT&CURRENT).&LOW_END'
+&I       SETA  &MAXADD+1
+&ADD(&I) SETC  '<li><a href="&CARD..htm">&ALTCUR.</a></li>'
+&MAXADD  SETA  &I
+.ADDCUR  ANOP  ,
+         AIF   ('&CURRENT' EQ 'B' or '&CURRENT' EQ 'O').ADDOLD
+&XLATC   SETC  'b'                     * from C to B
+&CARD    SETC  '&LOW_HDR.&(XLAT&CURRENT).&LOW_END'
+&I       SETA  &MAXADD+1
+&ADD(&I) SETC  '<li><a href="&CARD..htm">&ALTOLD.</a></li>'
+&MAXADD  SETA  &I
+.ADDOLD  ANOP  ,
+&LOW_HDR SETC  (LOWER '&CURRENT')      * first option letter
+&LOW_HDR SETC  'opl_&LOW_HDR'          * Create fixed part of file name
+&LOW_END SETC  (LOWER '&EXTENTS.&ORDER') * third+fourth option letters
+         AIF   (&SELOPC).ADDOPC
+&XLATN   SETC  'o'                     * From N to O
+&XLATD   SETC  'b'                     * or from D to B
+&CARD    SETC  '&LOW_HDR.&(XLAT&OPCODES).&LOW_END'
+&I       SETA  &MAXADD+1
+&ADD(&I) SETC  '<li><a href="&CARD..htm">&H1OPCD.</a></li>'
+&MAXADD  SETA  &I
+.ADDOPC  ANOP  ,
+         AIF   (&SELDIR).ADDDIR
+&XLATN   SETC  'd'                     * From N to D
+&XLATO   SETC  'b'                     * or from O to B
+&CARD    SETC  '&LOW_HDR.&(XLAT&OPCODES).&LOW_END'
+&I       SETA  &MAXADD+1
+&ADD(&I) SETC  '<li><a href="&CARD..htm">&H1DIR.</a></li>'
+&MAXADD  SETA  &I
+.ADDDIR  ANOP  ,
+&LOW_HDR SETC  (LOWER '&CURRENT.&OPCODES') * first+second option lettrs
+&LOW_HDR SETC  'opl_&LOW_HDR'          * Create fixed part of file name
+&LOW_END SETC  (LOWER '&ORDER')        * fourth option letter
+         AIF   (&SELEXT).ADDEXT
+&XLATN   SETC  'x'                     * From N to X
+&XLATF   SETC  'b'                     * or from F to B
+&CARD    SETC  '&LOW_HDR.&(XLAT&EXTENTS).&LOW_END'
+&I       SETA  &MAXADD+1
+&ADD(&I) SETC  '<li><a href="&CARD..htm">&H1EXT.</a></li>'
+&MAXADD  SETA  &I
+.ADDEXT  ANOP  ,
+         AIF   (&SELFUN).ADDFUN
+&XLATN   SETC  'f'                     * From N to F
+&XLATX   SETC  'b'                     * or from X to B
+&CARD    SETC  '&LOW_HDR.&(XLAT&EXTENTS).&LOW_END'
+&I       SETA  &MAXADD+1
+&ADD(&I) SETC  '<li><a href="&CARD..htm">&H1FUN.</a></li>'
+&MAXADD  SETA  &I
+.ADDFUN  ANOP  ,
+.ADDDONE ANOP  ,
+.*
+.* Create links to tables with some data removed
+         AIF   ('&OPCODES.&EXTENTS' EQ 'NN').REMDONE
+&REM(1)  SETC  '<th>&ALTREM</th>'      * Remove from this list:
+&MAXREM  SETA  1
+&LOW_HDR SETC  'opl_'                  * Create fixed part of file name
+&LOW_END SETC  (LOWER '&OPCODES.&EXTENTS.&ORDER') * Tail of file name
+         AIF   ('&CURRENT' EQ 'O' OR '&CURRENT' EQ 'C').REMCUR
+&XLATB   SETC  'o'                     * from B to O
+&CARD    SETC  '&LOW_HDR.&(XLAT&CURRENT).&LOW_END'
+&I       SETA  &MAXREM+1
+&REM(&I) SETC  '<li><a href="&CARD..htm">&ALTCUR.</a></li>'
+&MAXREM  SETA  &I
+.REMCUR  ANOP  ,
+         AIF   ('&CURRENT' EQ 'O' OR '&CURRENT' EQ 'C').REMOLD
+&XLATB   SETC  'c'                     * from B to C
+&CARD    SETC  '&LOW_HDR.&(XLAT&CURRENT).&LOW_END'
+&I       SETA  &MAXREM+1
+&REM(&I) SETC  '<li><a href="&CARD..htm">&ALTOLD.</a></li>'
+&MAXREM  SETA  &I
+.REMOLD  ANOP  ,
+&LOW_HDR SETC  (LOWER '&CURRENT')      * first option letter
+&LOW_HDR SETC  'opl_&LOW_HDR'          * Create fixed part of file name
+&LOW_END SETC  (LOWER '&EXTENTS.&ORDER') * third+fourth option letters
+         AIF   (NOT &SELOPC).REMOPC
+&XLATB   SETC  'd'                     * From B to D
+&XLATO   SETC  'n'                     * or from O to N
+&CARD    SETC  '&LOW_HDR.&(XLAT&OPCODES).&LOW_END'
+&I       SETA  &MAXREM+1
+&REM(&I) SETC  '<li><a href="&CARD..htm">&H1OPCD.</a></li>'
+&MAXREM  SETA  &I
+         AIF   (&SELDIR OR &SELEXT OR &SELFUN).REMOPC
+&REM(&I) SETC  '<li><a href="opl_xnn.htm">&H1OPCD.</a></li>'
+.REMOPC  ANOP  ,
+         AIF   (NOT &SELDIR).REMDIR
+&XLATB   SETC  'o'                     * From B to O
+&XLATD   SETC  'n'                     * or from D to N
+&CARD    SETC  '&LOW_HDR.&(XLAT&OPCODES).&LOW_END'
+&I       SETA  &MAXREM+1
+&REM(&I) SETC  '<li><a href="&CARD..htm">&H1DIR.</a></li>'
+&MAXREM  SETA  &I
+         AIF   (&SELOPC OR &SELEXT OR &SELFUN).REMDIR
+&REM(&I) SETC  '<li><a href="opl_xnn.htm">&H1DIR.</a></li>'
+.REMDIR  ANOP  ,
+&LOW_HDR SETC  (LOWER '&CURRENT.&OPCODES') * first+second option lettrs
+&LOW_HDR SETC  'opl_&LOW_HDR'          * Create fixed part of file name
+&LOW_END SETC  (LOWER '&ORDER')        * fourth option letter
+         AIF   (NOT &SELEXT).REMEXT
+&XLATB   SETC  'f'                     * From B to F
+&XLATX   SETC  'n'                     * or from X to N
+&CARD    SETC  '&LOW_HDR.&(XLAT&EXTENTS).&LOW_END'
+&I       SETA  &MAXREM+1
+&REM(&I) SETC  '<li><a href="&CARD..htm">&H1EXT.</a></li>'
+&MAXREM  SETA  &I
+         AIF   (&SELOPC OR &SELDIR OR &SELFUN).REMEXT
+&REM(&I) SETC  '<li><a href="opl_xnn.htm">&H1EXT.</a></li>'
+.REMEXT  ANOP  ,
+         AIF   (NOT &SELFUN).REMFUN
+&XLATB   SETC  'x'                     * From B to X
+&XLATF   SETC  'n'                     * or from F to N
+&CARD    SETC  '&LOW_HDR.&(XLAT&EXTENTS).&LOW_END'
+&I       SETA  &MAXREM+1
+&REM(&I) SETC  '<li><a href="&CARD..htm">&H1FUN.</a></li>'
+&MAXREM  SETA  &I
+         AIF   (&SELOPC OR &SELDIR OR &SELEXT).REMFUN
+&REM(&I) SETC  '<li><a href="opl_xnn.htm">&H1FUN.</a></li>'
+.REMFUN  ANOP  ,
+.REMDONE ANOP  ,
+.*
+.* Create links to same table in different language
+&LAN(1)  SETC  '<th>&ALTLAN</th>'      * Other Language(s):
+&MAXLAN  SETA  1
+&LOW_HDR SETC  'opl_'                  * Create fixed part of file name
+&LOW_END SETC  (LOWER '&OPTIONS')      * Tail
+&CARD    SETC  '&LOW_HDR.&LOW_END'
+         AIF   ('&SP_LANG' EQ 'UK').LANUK
+&I       SETA  &MAXLAN+1
+&LAN(&I) SETC  '<li><a href="../english/&CARD..htm">&ALTUK.</a></li>'
+&MAXLAN  SETA  &I
+.LANUK   ANOP  ,
+         AIF   ('&SP_LANG' EQ 'NL').LANNL
+&I       SETA  &MAXLAN+1
+&LAN(&I) SETC  '<li><a href="../hollands/&CARD..htm">&ALTNL.</a></li>'
+&MAXLAN  SETA  &I
+.LANNL   ANOP  ,
+.*
+.* Now punch the navigation table, using relevant columns only
+         HTMLPUN ''
+         HTMLPUN '<table class="oplist">'
+         HTMLPUN ' <tr>'
+         AIF   (&MAXSTA EQ 0).NOSTA1
+&CARD    SETC  '  &STA(1)'             * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'               * Header cell for status
+.NOSTA1  ANOP  ,
+         AIF   (&MAXORD EQ 0).NOORD1
+&CARD    SETC  '  &ORD(1)'             * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'               * Header cell for ordering
+.NOORD1  ANOP  ,
+         AIF   (&MAXADD EQ 0).NOADD1
+&CARD    SETC  '  &ADD(1)'             * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'               * Header cell for additions
+.NOADD1  ANOP  ,
+         AIF   (&MAXREM EQ 0).NOREM1
+&CARD    SETC  '  &REM(1)'             * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'               * Header cell for removals
+.NOREM1  ANOP  ,
+         AIF   (&MAXLAN EQ 0).NOLAN1
+&CARD    SETC  '  &LAN(1)'             * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'               * Header cell for translations
+.NOLAN1  ANOP  ,
+         HTMLPUN ' </tr>'
+         HTMLPUN ' <tr>'
+         AIF   (&MAXSTA EQ 0).NOSTA2
+         HTMLPUN '  <td>'
+         HTMLPUN '   <ul>'
+&I       SETA  2                       * Skip header entry
+.STALOOP ANOP  ,                       * Loop over status entries
+&CARD    SETC  '    &STA(&I)'          * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I LE &MAXSTA).STALOOP * Done: exit loop
+         HTMLPUN '   </ul>'
+         HTMLPUN '  </td>'
+.NOSTA2  ANOP  ,
+         AIF   (&MAXORD EQ 0).NOORD2
+         HTMLPUN '  <td>'
+         HTMLPUN '   <ul>'
+&I       SETA  2                       * Skip header entry
+.ORDLOOP ANOP  ,                       * Loop over order options
+&CARD    SETC  '    &ORD(&I)'          * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I LE &MAXORD).ORDLOOP * Done: exit loop
+         HTMLPUN '   </ul>'
+         HTMLPUN '  </td>'
+.NOORD2  ANOP  ,
+         AIF   (&MAXADD EQ 0).NOADD2
+         HTMLPUN '  <td>'
+         HTMLPUN '   <ul>'
+&I       SETA  2                       * Skip header entry
+.ADDLOOP ANOP  ,                       * Loop over addition options
+&CARD    SETC  '    &ADD(&I)'          * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I LE &MAXADD).ADDLOOP * Done: exit loop
+         HTMLPUN '   </ul>'
+         HTMLPUN '  </td>'
+.NOADD2  ANOP  ,
+         AIF   (&MAXREM EQ 0).NOREM2
+         HTMLPUN '  <td>'
+         HTMLPUN '   <ul>'
+&I       SETA  2                       * Skip header entry
+.REMLOOP ANOP  ,                       * Loop over removal options
+&CARD    SETC  '    &REM(&I)'          * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I LE &MAXREM).REMLOOP * Done: exit loop
+         HTMLPUN '   </ul>'
+         HTMLPUN '  </td>'
+.NOREM2  ANOP  ,
+         AIF   (&MAXLAN EQ 0).NOLAN2
+         HTMLPUN '  <td>'
+         HTMLPUN '   <ul>'
+&I       SETA  2                       * Skip header entry
+.LANLOOP ANOP  ,                       * Loop over language options
+&CARD    SETC  '    &LAN(&I)'          * Add indentation
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I LE &MAXLAN).LANLOOP * Done: exit loop
+         HTMLPUN '   </ul>'
+         HTMLPUN '  </td>'
+.NOLAN2  ANOP  ,
+         HTMLPUN ' </tr>'
+         HTMLPUN '</table>'
+.*
+.* Now we can punch the table with all relevant instructions
+         HTMLPUN ''
+         AIF   ('&OPCODES.&EXTENTS' EQ 'NN').EMPTY1
+         HTMLPUN '<p>&&nbsp;</p>'
+         AGO   .EMPTY2
+.EMPTY1  ANOP  ,
+&CARD    SETC  '&EMPTY1'               * Copy part 1 of text
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+&CARD    SETC  '&EMPTY2'               * Copy part 2 of text
+&J       SETA  (K'&CARD)               * Does it fit on a line?
+         AIF   (&J GT 71).ERROR11      * No: issue error
+         HTMLPUN '&CARD'
+.EMPTY2  ANOP  ,
+         HTMLPUN ''
+         HTMLPUN '<table class="oplist">'
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <th>&COLMNEM.</th>'
+         HTMLPUN '  <th>&COLOPCD.</th>'
+         HTMLPUN '  <th>&COLMASK.</th>'
+         HTMLPUN '  <th>&COLNAME.</th>'
+         HTMLPUN '  <th>&COLCAT.</th>'
+         HTMLPUN ' </tr>'
+&GENTBL  SETB  1                       * Do generate the table
+         AGO   .ORDEROK                * And go process input data
+.*
+.* Input data with mnemonics info should be available
+.COUNT   ANOP  ,
+         AIF   (&MNEM_LAST EQ 0).ERROR6
+.*
+.* Input is valid. Step 1: create array of pointers in requested order
+         ACTR  &MNEM_LAST+4
+         AIF   ('&ORDER' EQ 'M').ORDERM
+         AIF   ('&ORDER' EQ 'O').ORDERO
+         AIF   ('&ORDER' EQ 'N').ORDERN
+         AGO   .ERROR7
+.ORDERM  ANOP  ,                       * This is the basic sequence
+&I       SETA  0
+.ORDERML ANOP  ,                       * Loop start
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I GT &MNEM_LAST).ORDEROK * eXit loop
+&PTR(&I) SETA  &I                      * Copy natural sequence
+         AGO   .ORDERML
+.*
+.* Copy sequence from NAMEPTR - ordered by name
+.ORDERN  ANOP  ,                       * Order by name
+         GBLB  &$$OPCDNM_SORTED        * Executed indicator
+         AIF   (&$$OPCDNM_SORTED).ORDERN1 * Skip sort step
+         $$OPCDNM ,                    * Sort by name
+.ORDERN1 ANOP  ,
+&I       SETA  0
+.ORDERNL ANOP  ,                       * Loop start
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I GT &MNEM_LAST).ORDEROK * eXit loop
+&PTR(&I) SETA  &NAMEPTR(&I)            * Copy name sequence pointer
+         AGO   .ORDERNL
+.*
+.* Copy sequence from OPCDPTR - ordered by opcode
+.ORDERO  ANOP  ,
+         GBLB  &$$OPCDOP_SORTED        * Executed indicator
+         AIF   (&$$OPCDOP_SORTED).ORDERO1 * Skip sort step
+         $$OPCDOP ,                    * Sort by opcode
+.ORDERO1 ANOP  ,
+&I       SETA  0
+.ORDEROL ANOP  ,                       * Loop start
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I GT &MNEM_LAST).ORDEROK * eXit loop
+&PTR(&I) SETA  &OPCDPTR(&I)            * Copy name sequence pointer
+         AGO   .ORDEROL
+.ORDEROK ANOP  ,
+         ACTR  20
+.*
+.* Now we have array &PTR holding all pointers in correct sequence
+.*
+.* Loop over all entries to select relevant ones
+         ACTR  10*&MNEM_LAST+12
+&I       SETA  0
+&CTR     SETA  0                       * Start counter
+.PUNCHL  ANOP  ,
+&I       SETA  (&I+1)                  * Point next entry
+         AIF   (&I GT &MNEM_LAST).PUNCHX * eXit loop
+&P       SETA  (&PTR(&I))              * Point actual entry
+&MNEMON  SETC  '&MNEM(&P)'             * Extract mnemonic
+&OPCODE  SETC  '&OPCD(&P)'             *         opcode
+&MASKVAL SETC  '&MASK(&P)'             *         mask
+&FULLNM  SETC  '&NAME(&P)'             *    and  name
+.*
+.* Omit placeholders for instruction groups / extension codes
+         AIF   ('&PAGE(&P)' NE '').PUNCHL * Skip redirection entry
+&J       SETA  ('&MNEMON' FIND 'mx')   * Does lowercase m or x occur?
+         AIF   (&J NE 0).PUNCHL        * Yes: Skip current entry
+&J       SETA  ('&MNEMON' INDEX 'fc')  * fc in mnemonic?
+         AIF   (&J NE 0).PUNCHL        * Yes: Skip current entry
+.*
+.* Check currency criterion
+         AIF   ('&CURRENT' EQ 'C').CHK1C  * Select current
+         AIF   ('&CURRENT' EQ 'O').CHK1O  * Select Old
+         AIF   ('&CURRENT' EQ 'B').CHK1OK * Select both (=all)
+         AGO   .ERROR10
+.CHK1C   ANOP  ,
+         AIF   ('&ATTR(&P)' EQ 'Old').PUNCHL * Skip old entries
+         AGO   .CHK1OK                       * Select all others
+.CHK1O   ANOP  ,
+         AIF   ('&ATTR(&P)' NE 'Old').PUNCHL * Skip current entries
+         AGO   .CHK1OK                       * Select all others
+.CHK1B   ANOP  ,
+.CHK1OK  ANOP  ,
+.*
+.* Now we need to check for 4 independent criteria:
+.* include/exclude Opcodes
+.* include/exclude Directives
+.* include/exclude extended opcodes
+.* include/exclude function codes
+.* First we will figure out what type of entry this is:
+.* - CHK2A: plain opcode
+.* - CHK2B: extended opcode
+.* - CHK2C: function code for an opcode
+.* - CHK2D: plain directive
+.* - CHK2E: function code for a directive
+.* Then, for the appropriate type, we will check selection criteria
+.*
+&J       SETA  ('&MNEMON' INDEX '.')       * Period in mnemonic?
+         AIF   (&J GT 0).FUNCCD            * It's a function code!
+         AIF   ('&OPCODE' EQ '--').CHK2D   * It's a plain directive!
+         AIF   ('&OPCODE' EQ '&&').CHK2D   * It's a plain directive!
+         AIF   ('&MASKVAL' NE '').CHK2B    * It's an extended opcode!
+         AGO   .CHK2A                      * Must be a plain opcode!
+.FUNCCD  ANOP  ,
+         AIF   ('&OPCODE' EQ '--').CHK2E   * It's a directive subcode!
+         AGO   .CHK2C                      * Function for an opcode!
+.*
+.* Plain opcode:
+.* select if &OPCODES = O or B
+.CHK2A   ANOP  .
+&OPCAT   SETC  '&COLCAT1'                  * Machine instruction
+&J       SETA  ('OB' INDEX '&OPCODES')     * Select opcodes?
+         AIF   (&J GT 0).CHK2OK            * Ok: go process entry
+         AGO   .PUNCHL                     * No: skip this entry
+.*
+.* Extended opcode:
+.* select if &OPCODES = O or B AND &EXTENTS = X or B
+.*        or &OPCODES = N      AND &EXTENTS = X or B
+.CHK2B   ANOP  .
+&OPCAT   SETC  '&COLCAT2'                  * Extended mnemonic
+&J       SETA  ('OBN' INDEX '&OPCODES')    * Select opcodes?
+         AIF   (&J EQ 0).PUNCHL            * No: skip this entry
+&J       SETA  ('XB' INDEX '&EXTENTS')     * Select ext. opcodes?
+         AIF   (&J GT 0).CHK2OK            * Ok: go process entry
+         AGO   .PUNCHL                     * No: skip this entry
+.*
+.* Function code for opcode:
+.* select if &OPCODES = O or B AND &EXTENTS = F or B
+.*        or &OPCODES = N      AND &EXTENTS = F or B
+.CHK2C   ANOP  .
+&OPCAT   SETC  '&COLCAT3'                  * Function code
+&J       SETA  ('OBN' INDEX '&OPCODES')    * Select opcodes?
+         AIF   (&J EQ 0).PUNCHL            * No: skip this entry
+&J       SETA  ('FB' INDEX '&EXTENTS')     * Select function codes?
+         AIF   (&J GT 0).CHK2OK            * Ok: go process entry
+         AGO   .PUNCHL                     * No: skip this entry
+.*
+.* Plain directive:
+.* select if &OPCODES = D or B
+.CHK2D   ANOP  ,
+&OPCAT   SETC  '&COLCAT4'                  * Assembler instruction
+         AIF   ('&OPCODE' EQ '--').CHK2D_B * That's right!
+&OPCAT   SETC  '&COLCAT5'                  * Cond. Asm instruction
+.CHK2D_B ANOP  ,
+&J       SETA  ('DB' INDEX '&OPCODES')     * Select directives?
+         AIF   (&J EQ 0).PUNCHL            * No: skip this entry
+         AGO   .CHK2OK                     * Ok: go process entry
+.*
+.* Function code for a directive:
+.* select if &OPCODES = D or B AND &EXTENTS = F or B
+.*        or &OPCODES = N      AND &EXTENTS = F or B
+.CHK2E   ANOP  .
+&OPCAT   SETC  '&COLCAT4'                  * Assembler instruction
+&J       SETA  ('DBN' INDEX '&OPCODES')    * Select directives?
+         AIF   (&J EQ 0).PUNCHL            * No: skip this entry
+&J       SETA  ('FB' INDEX '&EXTENTS')     * Select function codes?
+         AIF   (&J GT 0).CHK2OK            * Ok: go process entry
+         AGO   .PUNCHL                     * No: skip this entry
+.CHK2OK  ANOP  ,
+.*
+.* Entry selected: Punch a table row
+&CTR     SETA  (&CTR+1)                * Count this row
+         AIF   (NOT &GENTBL).PUNCHL    * Count only!
+         AIF   ('&ATTR(&P)' EQ 'Old').OLDROW
+         HTMLPUN ' <tr>'
+         AGO   .ROWOK
+.OLDROW  ANOP  ,
+         HTMLPUN ' <tr class="old">'
+.ROWOK   ANOP  ,
+.* Column 1: Mnemonic with link to instruction page
+&CARD    SETC  '&MNEMON'               * Copy menmonic
+&J       SETA  ('&MNEMON' INDEX '.')   * If it has a period...
+         AIF   (&J EQ 0).NOMINOR       * Then there's no minor code
+&CARD    SETC  '&MNEMON'(1,&J-1)       * Extract major opcode
+&CARD    SETC  '&CARD'.'/'.'&MNEMON'(&J+1,*) * Add / and minor opcode
+.NOMINOR ANOP  ,
+&CARD    SETC  (LOWER '&CARD')         * Set to lower case
+&CARD    SETC  '  <td><a href="opcd/&CARD..htm">&MNEMON</a></td>'
+&J       SETA  (K'&CARD)
+         AIF   (&J GT 71).BREAK1
+         HTMLPUN '&CARD'
+         AGO   .NOERR8
+.BREAK1  ANOP  ,                       * Too long: break line
+&CARD    SETC  '&CARD'(7,K'&CARD-11)   * Remove <td> and </td> tags
+&J       SETA  (K'&CARD)
+         AIF   (&J GT 68).ERROR8
+         HTMLPUN '  <td>'
+         HTMLPUN '   &CARD'
+         HTMLPUN '  </td>'
+.NOERR8  ANOP  ,
+.* Column 2: Opcode
+         AIF   ('&OPCODE' EQ '&&').OPCDAMP
+         HTMLPUN '  <td>&OPCODE</td>'
+         AGO   .OPCDOK
+.OPCDAMP ANOP  ,
+         HTMLPUN '  <td>--</td>'
+.OPCDOK  ANOP  ,
+.* Column 3: Mask value
+         AIF   ('&MASKVAL' EQ '').NOMASK
+         HTMLPUN '  <td>&MASKVAL</td>'
+         AGO   .MASKOK
+.NOMASK  ANOP  ,
+         HTMLPUN '  <td>&&nbsp;</td>'
+.MASKOK  ANOP  ,
+.* Column 4: Instruction name
+&CARD    SETC  '  <td>&FULLNM</td>'
+&J       SETA  (K'&CARD)
+         AIF   (&J GT 71).NAME2
+         HTMLPUN '&CARD'
+         AGO   .NAMEOK
+.NAME2   ANOP  ,                       * Name is too long: Split
+         HTMLPUN '  <td>'
+.NAME3R  ANOP  ,                       * Retry point if longer 71 chars
+&CARD    SETC  '   &FULLNM'
+&J       SETA  (K'&CARD)               * Fits on a card image?
+         AIF   (&J GT 71).NAME3        * No: split again!
+         HTMLPUN '&CARD'
+         AGO   .NAMEOK2
+.NAME3   ANOP  ,                       * Name is too long: split again
+&J       SETA  72
+.NAMELP  ANOP  ,                       * Loop over name
+&J       SETA  (&J-1)                  *   scanning backwards
+         AIF   (&J LT 1).ERROR13       *   looking for the last space
+         AIF   ('&CARD'(&J,1) EQ ' ').NAMELPX * Found: exit loop!
+         AGO   .NAMELP                 * Not found: try next char
+.NAMELPX ANOP  ,                       * Found last space at &J
+&FULLNM  SETC  '&CARD'(&J+1,*)         * Extract remainder of name
+&CARD    SETC  '&CARD'(1,&J-1)         * Extract punchable part
+         HTMLPUN '&CARD'
+         AGO   .NAME3R
+.NAMEOK2 ANOP  ,
+         HTMLPUN '  </td>'
+.NAMEOK  ANOP  ,
+.* Column 5: Instruction category
+&CARD    SETC  '  <td>&OPCAT</td>'
+         HTMLPUN '&CARD'
+         HTMLPUN ' </tr>'
+         AGO   .PUNCHL                 * Go process next entry
+.PUNCHX  ANOP  ,
+         AIF   (NOT &GENTBL).COUNTOK   * Generate remainder of header
+         AIF   (&CTR NE 0).NOTMPTY     * Empty table generated?
+         HTMLPUN ' <tr>'
+         HTMLPUN '  <td>-</td>'
+         HTMLPUN '  <td>-</td>'
+         HTMLPUN '  <td>&&nbsp;</td>'
+         HTMLPUN '  <td>&&nbsp;</td>'
+         HTMLPUN ' </tr>'
+.NOTMPTY ANOP  ,
+         HTMLPUN '</table>'
+         HTMLPUN ''
+         HTMLPUN '<!-- &SP_LANG -->'
+         AIF   ('&SP_LANG' EQ 'NL').FTRNL
+.FTRUK   ANOP  ,
+         HTMLPUN '<p>There are &CTR entries in this list.</p>'
+         AGO   .FTREND
+.FTRNL   ANOP  ,
+         HTMLPUN '<p>Totaal &CTR regels in deze lijst.</p>'
+         AGO   .FTREND
+.FTREND  ANOP  ,
+         HTMLPUN ''
+         AGO   .EXIT                   * We're done!
+
+.ERROR1  MNOTE 8,'HTMLGENL Error1: Length of parameter is &I but should*
+                be 4'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLGENL Error2: First option character &CURRENT shou*
+               ld be C, O, or B'
+         AGO   .EXIT
+
+.ERROR3  MNOTE 8,'HTMLGENL Error3: Second option character &OPCODES sho*
+               uld be O, D, B, or N'
+         AGO   .EXIT
+
+.ERROR4  MNOTE 8,'HTMLGENL Error4: Third option character &EXTENTS shou*
+               ld be X, F, B, or N'
+         AGO   .EXIT
+
+.ERROR5  MNOTE 8,'HTMLGENL Error5: Fourth option character &ORDER shoul*
+               d be M, O, or N'
+         AGO   .EXIT
+
+.ERROR6  MNOTE 8,'HTMLGENL Error6: No opcode definitions available'
+         AGO   .EXIT
+
+.ERROR7  MNOTE 12,'HTMLGENL Error7: Internal error'
+         AGO   .EXIT
+
+.ERROR8  MNOTE 8,'HTMLGENL Error8: &MNEMON path too long'
+         AGO   .NOERR8
+
+.ERROR9  MNOTE 8,'HTMLGENL Error9: &SP_LANG not yet supported'
+         AGO   .EXIT
+
+.ERROR10 MNOTE 12,'HTMLGENL Error10: Internal error - &CURRENT invalid'
+         AGO   .EXIT
+
+.ERROR11 MNOTE 12,'HTMLGENL Error11: Internal error - line too long:'
+         MNOTE 12,'&CARD'
+         AGO   .EXIT
+
+.ERROR12 MNOTE 12,'HTMLGENL Error12: Internal error - &OPCODES invalid'
+         AGO   .EXIT
+
+.ERROR13 MNOTE 8,'HTMLGENL Error13: Text cannot be split for punching'
+         AGO   .EXIT
+
+.ERROR14 MNOTE 12,'HTMLGENL Error14: Internal error - &EXTENTS invalid'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEND  ,

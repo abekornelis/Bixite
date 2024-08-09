@@ -1,0 +1,114 @@
+.*
+.* Find an opcode definition for a given mnemonic
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   FINDMNEM &MNEMON
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC FINDMNEM               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+.*
+.* Global variables
+         GBLA  &OPCD_START,&OPCD_END   * Output range of FINDMNEM
+         GBLC  &OPCD_ATTR              * Output attribute for range
+.*
+.* Arrays to hold parsed opcode definitions
+         GBLA  &SIZING
+         GBLA  &MNEM_LAST              * Index for tables below
+         GBLC  &MNEM(2500)             * Mnemonics
+         GBLC  &OPCD(2500)             * Opcodes
+         GBLA  &OPCDMAJ(2500)          * Major Opcodes
+         GBLA  &OPCDMIN(2500)          * Minor Opcodes
+         GBLC  &MASK(2500)             * Mask values
+         GBLC  &DESC(2500)             * Descriptor codes
+         GBLC  &NAME(2500)             * Full names
+         GBLC  &ATTR(2500)             * Attributes
+.*
+.* Local variables for processing
+         LCLA  &P                      * Pointer for &OPCD
+         LCLA  &N                      * Nr. of characters in mnemonic
+.*
+.* Opcodes defined properly?
+         AIF   (&MNEM_LAST GT 0).OPCDOK
+         MNOTE 12,'FINDMNEM: internal error - no opcodes defined!'
+         MEXIT ,
+.OPCDOK  ANOP  ,
+.*
+.* Find first entry containing relevant mnemonic
+.* Due to comparison being for SETC variables, lengths must match
+.* for strings to be equal. Longer strings always compare larger!
+&N       SETA  (K'&MNEMON)             * Nr of characters in mnemonic
+&P       SETA  (0)                     * Point before first entry
+.LOOP1   ANOP  ,
+&P       SETA  &P+1
+         AIF   (&P GT &MNEM_LAST).ERROR * Not found!
+         AIF   (&N NE K'&MNEM(&P)).LOOP1 * Cannot compare!
+         AIF   ('&MNEM(&P)' LT '&MNEMON').LOOP1 * Not yet ok
+         AIF   ('&MNEM(&P)' GT '&MNEMON').ERROR * Not found
+&OPCD_START SETA &P                    * Save starting index
+&OPCD_END   SETA &P                    * Save ending index
+&OPCD_ATTR  SETC '&ATTR(&P)'           * Copy Attribute
+         AGO   .EXIT
+.*
+.ERROR  ANOP  ,
+&OPCD_START SETA 0                     * No starting index
+&OPCD_END   SETA 0                     * No ending index
+&OPCD_ATTR  SETC ''                    * Copy Attribute
+.*
+.EXIT    MEND

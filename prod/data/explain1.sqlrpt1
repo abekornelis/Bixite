@@ -1,0 +1,27 @@
+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------
+MGRNAME                       DEPTNAME                              LASTNAME         FIRSTNME
+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------
+CHRISTINE HAAS                SPIFFY COMPUTER SERVICE DIV.          HAAS             CHRISTINE
+CHRISTINE HAAS                SPIFFY COMPUTER SERVICE DIV.          LUCCHESI         VINCENZO
+CHRISTINE HAAS                SPIFFY COMPUTER SERVICE DIV.          O'CONNELL        SEAN
+EVA PULASKI                   ADMINISTRATION SYSTEMS                PULASKI          EVA
+EVA PULASKI                   ADMINISTRATION SYSTEMS                JEFFERSON        JAMES
+EVA PULASKI                   ADMINISTRATION SYSTEMS                MARINO           SALVATORE
+EVA PULASKI                   ADMINISTRATION SYSTEMS                SMITH            DANIEL
+EVA PULASKI                   ADMINISTRATION SYSTEMS                JOHNSON          SYBIL
+EVA PULASKI                   ADMINISTRATION SYSTEMS                PEREZ            MARIA
+IRVING STERN                  MANUFACTURING SYSTEMS                 STERN            IRVING
+IRVING STERN                  MANUFACTURING SYSTEMS                 ADAMSON          BRUCE
+IRVING STERN                  MANUFACTURING SYSTEMS                 PIANKA           ELIZABETH
+IRVING STERN                  MANUFACTURING SYSTEMS                 YOSHIMURA        MASATOSHI
+IRVING STERN                  MANUFACTURING SYSTEMS                 SCOUTTEN         MARILYN
+IRVING STERN                  MANUFACTURING SYSTEMS                 WALKER           JAMES
+IRVING STERN                  MANUFACTURING SYSTEMS                 BROWN            DAVID
+IRVING STERN                  MANUFACTURING SYSTEMS                 JONES            WILLIAM
+IRVING STERN                  MANUFACTURING SYSTEMS                 LUTZ             JENNIFER
+MICHAEL THOMPSON              PLANNING                              THOMPSON         MICHAEL
+SALLY KWAN                    INFORMATION CENTER                    KWAN             SALLY
+SALLY KWAN                    INFORMATION CENTER                    QUINTANA         DOLORES
+SALLY KWAN                    INFORMATION CENTER                    NICHOLLS         HEATHER
+DSNE610I NUMBER OF ROWS DISPLAYED IS 22
+DSNE616I STATEMENT EXECUTION WAS SUCCESSFUL, SQLCODE IS 100

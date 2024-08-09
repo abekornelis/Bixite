@@ -1,0 +1,148 @@
+.*
+.* Sort list of opcodes by name
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+&LABEL   $$OPCDNM ,
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC $$OPCDNM               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         GBLB  &$$OPCDNM_SORTED        * Executed indicator
+         AIF   (&$$OPCDNM_SORTED).EXIT * Execute only once!
+&$$OPCDNM_SORTED SETB 1                * Ok: first pass
+.*
+.*
+.* Variables for processing opcode definitions
+         LCLC  &MAJOR                  * Major name
+         LCLC  &MAJ(2500)              * Major names (sorted)
+         LCLC  &FULLNM                 * Full Name
+         LCLC  &ALTNAM                 * Full Name
+         LCLA  &LASTMAJ                * Last major added in &NAMEPTR
+.*
+.* Additional fields for processing
+         LCLA  &CURRENT                * Ptr to current &NAME entry
+         LCLA  &I,J                    * Pointers
+         LCLC  &X,Y                    * Extracted characters
+.*
+.* Arrays to hold parsed opcode definitions
+         LCLA  &INDEX                  * Index for tables below
+         GBLA  &SIZING
+         GBLA  &MNEM_LAST              * Index for tables below
+         GBLC  &MNEM(2500)             * Mnemonics
+         GBLC  &OPCD(2500)             * Opcodes
+         GBLC  &MASK(2500)             * Mask values
+         GBLC  &DESC(2500)             * Descriptor codes
+         GBLC  &NAME(2500)             * Full names
+         GBLA  &NAMEPTR(2500)          * Full name ptr in sequence
+.*
+.* Create &NAMEPTR array with pointers to &NAME in ascending sequence
+.* We'll use an insert sort
+.*
+&INDEX   SETA  &MNEM_LAST              * Point last valid entry
+&CURRENT SETA  0                       * Point before first name
+.OUTLOOP ANOP  ,                       * Outer Loop
+         ACTR  &CURRENT+&CURRENT+20    * Allow sufficient compares
+&CURRENT SETA  &CURRENT+1              * Point next name
+         AIF   (&CURRENT GT &MNEM_LAST).OUTEXIT * Exit loop on end
+&FULLNM  SETC  (UPPER '&NAME(&CURRENT)') * Extract name to sort
+&J       SETA  K'&FULLNM
+&FULLNM  SETC  '&FULLNM'.(255-&J)' '   * Add trailing blanks
+&J       SETA  ('&MNEM(&CURRENT)' INDEX '.') * This is a sub-opcode?
+         AIF   (&J NE 0).OUTDOT        * No: major name unchanged
+&MAJOR   SETC  '&FULLNM'               * Yes: Set new major name
+.OUTDOT  ANOP  ,
+.*
+.* Set up for inner loop: move all names evaluating as larger
+.* up by 1 entry, insert new pointer when existing entry is smaller
+.* or when emptying entry 1. Sort on major name, real name
+.*
+&I       SETA  &CURRENT                * Point after last valid entry
+.INRLOOP ANOP  ,
+&J       SETA  &I                      * Point current free entry
+&I       SETA  &I-1                    * Point prior entry
+         AIF   (&I EQ 0).INRFND        * No more entries left
+&NAMEPTR(&J) SETA &NAMEPTR(&I)         * Copy pointer to free entry
+&MAJ(&J) SETC  '&MAJ(&I)'              *   and major name
+.*
+.* Normal  case: major name =  full name
+.* --> Insert where major name fits in sequence
+.* Special case: major name <> full name
+.* --> Insert where major name compares equal
+.*     and where full name fits in sequence but before &LASTMAJ
+         AIF   ('&MAJOR' NE '&FULLNM').INRSPC
+.* Ok: normal case
+         AIF   ('&MAJ(&I)' GT '&MAJOR').INRLOOP * No match: repeat
+&LASTMAJ SETA  &I+1                    * Set last inserted major
+         AGO   .INRFND                 * Found: go insert new entry
+.INRSPC  ANOP  ,
+         AIF   ('&MAJ(&I)' GT '&MAJOR').INRLOOP * No match: repeat
+         AIF   (&I EQ &LASTMAJ).INRFND * Bumping into primary opcode!
+&J       SETA  &NAMEPTR(&I)            * Get pointer to &NAME array
+&ALTNAM  SETC  (UPPER '&NAME(&J)')     * Get name
+&J       SETA  K'&ALTNAM
+&ALTNAM  SETC  '&ALTNAM'.(255-&J)' '   * Add trailing blanks
+         AIF   ('&ALTNAM' GT '&FULLNM').INRLOOP
+.INRFND  ANOP  ,                       * Location found: insert entry
+&J       SETA  &I+1                    * Point current free entry
+&NAMEPTR(&J) SETA &CURRENT             * Set pointer to current &NAME
+&MAJ(&J) SETC  '&MAJOR'                * And insert major name
+         AGO   .OUTLOOP                * Go add next &NAME entry
+.OUTEXIT ANOP  ,                       * Outer loop ends here
+.*
+.EXIT    MEND

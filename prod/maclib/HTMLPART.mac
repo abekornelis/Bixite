@@ -1,0 +1,126 @@
+.*
+.* Generate required html parts for an html page component
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLPART &NAME,&CTR,&SEP=,&ASSOC=,&SEP2=
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLPART               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         GBLC  &SP_LANG                * Language: uk / nl / de etc.
+.*
+.* Check parameters
+         AIF   (K'&SEP2 EQ 0).NOERR1
+         AIF   (K'&ASSOC EQ 0).ERROR1
+.NOERR1  ANOP  ,
+.*
+         AIF   (K'&ASSOC EQ 0).NOERR2
+         AIF   (K'&SEP EQ 0).ERROR2
+.NOERR2  ANOP  ,
+.*
+.* Generate constituent parts for current component
+.* Which type of logic / layout is applicable?
+         AIF   (&CTR EQ 0).ZERO
+         AIF   (K'&ASSOC EQ 0).NOASSOC
+         AIF   (K'&SEP2 EQ 0).NOSEP2
+         AGO   .SEP2
+.*
+.* Component sequence nr is 0 - no main component
+.ZERO    ANOP    ,
+         AIF     (K'&SEP EQ 0).EXIT
+         AINSERT '         HTMLGEN &SEP',BACK
+         AIF     (K'&ASSOC EQ 0).EXIT
+         AINSERT '         HTMLGEN &ASSOC',BACK
+         AIF     (K'&SEP2 EQ 0).EXIT
+         AINSERT '         HTMLGEN &SEP2',BACK
+         AGO     .EXIT
+.*
+.* Component sequence nr is non-0 - no main component
+.NOASSOC ANOP    ,
+         AIF     ('&SEP' EQ '').NOSEP
+         AINSERT '         HTMLGEN &SEP',BACK
+.NOSEP   ANOP    ,
+         AINSERT '         HTMLGEN &NAME..&SP_LANG.&CTR',BACK
+         AGO     .EXIT
+.*
+.* Associated data present, but no second separator
+.NOSEP2  ANOP    ,
+         AINSERT '         HTMLGEN &SEP',BACK
+         AINSERT '         HTMLGEN &NAME..&SP_LANG.&CTR',BACK
+         AINSERT '         HTMLGEN &SEP',BACK
+         AINSERT '         HTMLGEN &ASSOC.&CTR',BACK
+         AGO     .EXIT
+.*
+.* Associated data present - with second separator
+.SEP2    ANOP    ,
+         AINSERT '         HTMLGEN &SEP',BACK
+         AINSERT '         HTMLGEN &NAME..&SP_LANG.&CTR',BACK
+         AINSERT '         HTMLGEN &ASSOC.&CTR',BACK
+         AINSERT '         HTMLGEN &SEP2',BACK
+         AGO     .EXIT
+.*
+.ERROR1  MNOTE 8,'HTMLPART Error 1: Missing associated component name'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLPART Error 2: Missing separator component name'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND

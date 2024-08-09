@@ -1,0 +1,8 @@
+
+* Project default settings for Bixoft site pages
+  ascii         * Use EBCDIC for encoding literals
+  chkmac(2)     * Check macros for illegal characters
+  chksrc(3)     * Check sources for illegal characters
+  maxgbl(299999) * Max nr of global SETx variables
+sysparm(LICENSE=BXAPL1.0,LICSTAT=IAGREE)
+notrap

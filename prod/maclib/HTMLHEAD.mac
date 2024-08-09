@@ -1,0 +1,123 @@
+.*
+.* Generate heading for an html page
+.*
+.**********************************************************************
+.*
+.* This macro is free software; you can redistribute it and/or modify
+.* it under the terms of the GNU General Public License as published by
+.* the Free Software Foundation; either version 2 of the License
+.* or (at your option) any later version.
+.* The license text is available at the following internet addresses:
+.* - http://www.bixoft.com/english/gpl.htm
+.* - http://fsf.org
+.* - http://opensource.org
+.*
+.* This macro is distributed in the hope that it will be useful,
+.* but WITHOUT ANY WARRANTY; without even the implied warranty of
+.* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.* See the GNU General Public License for more details.
+.*
+.* You should have received a copy of the GNU General Public License
+.* along with this macro; if not, write to either of the following:
+.* the Free Software Foundation, Inc.      B.V. Bixoft
+.* 59 Temple Place, Suite 330              Rogge 9
+.* Boston, MA 02111-1307                   7261 JA Ruurlo
+.* United States of America                The Netherlands
+.*
+.*                                         e-mail: bixoft@bixoft.nl
+.*                                         phone : +31-6-22755401
+.*
+.**********************************************************************
+.*
+.* Bixoft eXtended Assembly language
+.* Licensed material - Property of B.V. Bixoft
+.*
+.* This macro can be licensed or used on an as-is basis.
+.* No warranty, neither implicit nor explicit, is given.
+.* It remains your own responsibility to ensure the correct
+.* working of any program using this macro.
+.*
+.* Suggestions for improvement are always welcome at
+.* http://www.bixoft.com  or mail to  bixoft@bixoft.nl
+.*
+.* (C) Copyright B.V. Bixoft, 2010-2011
+.**********************************************************************
+         MACRO
+         HTMLHEAD &NAME,&LANG
+.**********************************************************************
+.*
+.*       IMPORTANT NOTICE
+.*       ========= ======
+.*
+.* Code below checks whether 'USER' accepted the terms and conditions
+.* of the license for the BXA macro library. This code is to be treated
+.* as part of the Copyright Notice and therefore may not be changed
+.* or disabled in any way.
+.*
+.**********************************************************************
+         GBLA  &BXA_RC                 * Returncode from CHKLIC
+         CHKLIC HTMLHEAD               * Check license acceptance
+         AIF   (&BXA_RC NE 0).EXIT
+.**********************************************************************
+.*
+.* End of special code that is part of the Copyright Notice
+.*
+.**********************************************************************
+         LCLC  &HTMLLANG               * Define language for page
+         LCLC  &CSSTYP                 * Type of CSS section, if any
+.*
+.* Check parameters
+         AIF   (K'&NAME EQ 0).ERROR1
+         AIF   (K'&LANG EQ 0).ERROR2
+.*
+         AIF   ('&LANG' EQ 'DE').LANGOK
+         AIF   ('&LANG' EQ 'ES').LANGOK
+         AIF   ('&LANG' EQ 'FR').LANGOK
+         AIF   ('&LANG' EQ 'FY').LANGOK
+         AIF   ('&LANG' EQ 'IT').LANGOK
+         AIF   ('&LANG' EQ 'NL').LANGOK
+         AIF   ('&LANG' EQ 'UK').LANGOK
+         AGO   .ERROR4
+.LANGOK  ANOP  ,
+&HTMLLANG SETC '&LANG'
+.*
+.* Obtain definitions for this page
+         GBLB  &(COPY_&NAME)             * On if COPY gen'ed for member
+         AIF   (&(COPY_&NAME)).COPYOK    * Member copied?
+         AINSERT '         HTMLHEAD &NAME,&LANG',FRONT
+         AINSERT '         COPY  &NAME',FRONT
+&(COPY_&NAME) SETB 1           * Indicate COPY was generated
+         MEXIT ,
+.COPYOK  ANOP  ,
+.*
+.* Generate heading for a HTML page
+         AINSERT '         HTMLGEN $DOCTYPE.ALG',BACK
+         AINSERT '         HTMLGEN $COMMENT.&LANG',BACK
+         AINSERT '         HTMLGEN $HTML.&LANG',BACK
+         AINSERT '         HTMLGEN $HEAD.ALG',BACK
+         AINSERT '         HTMLGEN &NAME..&LANG.H',BACK
+         AINSERT '         HTMLGEN $META.ALG',BACK
+         AINSERT '         HTMLGEN $META.&LANG',BACK
+         AINSERT '         HTMLGEN $STYLREL.ALG',BACK
+.*
+.* If this page has a private CSS definition, include it
+         GBLC     &(TYPE_&NAME._CSS)     * Type of CSS section if any
+&CSSTYP  SETC    '&(TYPE_&NAME._CSS)'
+         AIF     ('&CSSTYP' NE 'PRIVATE').NOCSS
+         AINSERT '         HTMLGEN &NAME..CSS',BACK
+.NOCSS   ANOP    ,
+         AINSERT '         HTMLGEN $HEADEND.ALG',BACK
+         AGO   .EXIT
+.*
+.ERROR1  MNOTE 8,'HTMLHEAD: Missing label on invocation'
+         AGO   .EXIT
+
+.ERROR2  MNOTE 8,'HTMLHEAD: Missing Language on invocation'
+         AGO   .EXIT
+
+.ERROR4  MNOTE 8,'HTMLHEAD: Unsupported language &LANG on invocation'
+         AGO   .EXIT
+
+.EXIT    ANOP  ,
+         MEXIT
+         MEND
