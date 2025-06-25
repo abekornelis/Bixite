@@ -22,7 +22,7 @@
 <h1 align="center">Macros for handling large numbers</h1>
 
 <p class="copy" align="center">
- &copy; Copyright Sergio ovacchini, 1982-1983. All rights reserved.
+ &copy; Copyright Sergio Iovacchini, 1982-1983. All rights reserved.
 </p>
 
 <h2>Short macro descriptions.</h2>
