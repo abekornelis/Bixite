@@ -255,7 +255,7 @@
          AIF   (&L1 LE &OPCD_END).LPH3
 .LPH3SKP ANOP  ,
 .CRTTBL  ANOP  ,                        * Start create table
-         ACTR  400+12*(256*&RNG256+16*&RNG16)
+         ACTR  400+12*(298*&RNG256+16*&RNG16)
 &L1      SETA  (K'&ARG1-&L)             * Prefix length
 &L2      SETA  (K'&ARG2-&L)             * same
 &PREFIX  SETC  '&ARG1'(1,&L1)           * Extract prefix

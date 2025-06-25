@@ -148,9 +148,11 @@ BCT          = 46      %      $   # Branch on CounT
 BCTG         = E346    %      $ P # Branch on CounT Grande
 BCTGR        = B946    %      $   # Branch on CounT Grande Register
 BCTR         = 06      %      $   # Branch on CounT Register
+BDEPG        = B96D    %      $   # Bit DEPosit Grande
 BDIL         =-EA01    %      $ S # ???
 BE           = 47      % 1000 $ B # Branch on Equal
 BER          = 07      % 1000 $ B # Branch on Equal Register
+BEXTG        = B96C    %      $   # Bit EXTract Grande
 BH           = 47      % 0010 $ B # Branch on High
 BHE          =-47      % 1010 $ B # Branch on High or Equal
 BHER         =-07      % 1010 $ B # Branch on High or Equal Register
@@ -282,6 +284,10 @@ BXLEG        = EB45    %      $ P # Branch on indeX Low or Equal Grande
 BZ           = 47      % 1000 $ B # Branch on Zero
 BZR          = 07      % 1000 $ B # Branch on Zero Register
 C            = 59      %      $   # Compare
+CAL          = C86     %      $   # Compare And Load
+CALG         = C87     %      $   # Compare And Load Grande
+CALGF        = C8F     %      $   # Compare And Load Grande from
+                                  + Fullword
 CATTR        = --      %      $   # Class ATTRibutes
 CCSB         = B2CA    %      $ T # Compare Character String Bytes
 CCW          = --      %      $   # Channel Command Word
@@ -809,6 +815,7 @@ CLTNH        = EB23    % 1100 $ P # Compare Logical and Trap on Not
                                   + High
 CLTNL        = EB23    % 1010 $ P # Compare Logical and Trap on Not Low
 CLY          = E355    %      $ P # Compare Logical Yonder
+CLZG         = B968    %      $   # Count Leading Zeros Grande
 CMPS         = 0109    %      $ G # Clear Message Path State
 CMPSC        = B263    %      $   # CoMPreSsion Call
 CMSG         = 0105    %      $ F # Clear MeSsaGe
@@ -872,6 +879,7 @@ CSXTR        = B3EB    %      $   # Convert to Signed packed from
                                   + eXtended Tfp Register
 CSY          = EB14    %      $ P # Compare and Swap Yonder
 CTP          =-B0      %      $   # ConnecT Page
+CTZG         = B969    %      $   # Count Trailing Zeros Grande
 CUDTR        = B3E2    %      $   # Convert to Unsigned packed from
                                   + Double Tfp Register
 CUSE         = B257    %      $   # Compare Until Substring Equal
@@ -1327,6 +1335,8 @@ KEBR         = B308    %      $   # Kompare and signal Exponential
 KIMD         = B93E    %      $ Z # Kompute Intermediate Message
                                   + Digest
 KIMD.GHASH   = B93E.41 %      $   # KIMD - GHASH
+KIMD.QAI     = B93E.7F %      $   # KIMD - Query Authentication
+                                  + Information
 KIMD.QUERY   = B93E.00 %      $   # KIMD - QUERY
 KIMD.SHAKE128= B93E.24 %      $   # KIMD - Secure Hash Algorithm
                                   + standard 3 with KEccak-128
@@ -1347,6 +1357,8 @@ KIMD.SHA3512 = B93E.23 %      $   # KIMD - Secure Hash Algorithm
 KIMD.SHA512  = B93E.03 %      $   # KIMD - Secure Hash Algorithm
                                   + standard-512
 KLMD         = B93F    %      $ Z # Kompute Last Message Digest
+KLMD.QAI     = B93F.7F %      $   # KLMD - Query Authentication
+                                  + Information
 KLMD.QUERY   = B93F.00 %      $   # KLMD - QUERY
 KLMD.SHAKE128= B93F.24 %      $   # KLMD - Secure Hash Algorithm
                                   + standard 3 with KEccak-128
@@ -1725,6 +1737,8 @@ LLGFRL       = C4E     %      $ A # Load Logical Grande from Fullword
 LLGFSG       = E348    %      $ P # Load Logical Guarded Fullword
                                   + Shifted to Grande
 LLGH         = E391    %      $ P # Load Logical Grande from Halfword
+LLGHI        = A5F     %      $ A # Load Logical Grande from Halfword
+                                  + Immediate
 LLGHR        = B985    %      $   # Load Logical Grande from Halfword
                                   + in Register
 LLGHRL       = C46     %      $ A # Load Logical Grande from Halfword
@@ -1760,6 +1774,14 @@ LLILH        = A5E     %      $ A # Load Logical Immediate Low-order
                                   + word, Higher halfword
 LLILL        = A5F     %      $ A # Load Logical Immediate Low-order
                                   + word, Lower halfword
+LLXAB        = E361    %      $ P # Load Logical indeXed Address Byte
+LLXAF        = E365    %      $ P # Load Logical indeXed Address
+                                  + Fullword
+LLXAG        = E367    %      $ P # Load Logical indeXed Address Grande
+LLXAH        = E363    %      $ P # Load Logical indeXed Address
+                                  + Halfword
+LLXAQ        = E369    %      $ P # Load Logical indeXed Address
+                                  + Quadword
 LLZRGF       = E33A    %      $ P # Load Logical and Zero Rightmost
                                   + byte, Grande from Fullword
 LM           = 98      %      $   # Load Multiple
@@ -2102,6 +2124,11 @@ LTXR         = B362    %      $   # Load and Test eXtended hfp Register
 LTXTR        = B3DE    %      $   # Load and Test eXtended Tfp Register
 LURA         = B24B    %      $   # Load Using Real Address
 LURAG        = B905    %      $   # Load Using Real Address Grande
+LXAB         = E360    %      $ P # Load indeXed Address Byte
+LXAF         = E364    %      $ P # Load indeXed Address Fullword
+LXAG         = E366    %      $ P # Load indeXed Address Grande
+LXAH         = E362    %      $ P # Load indeXed Address Halfword
+LXAQ         = E368    %      $ P # Load indeXed Address Quadword
 LXD          = ED25    %      $ P # Load lengthened eXtended hfp from
                                   + Double hfp
 LXDB         = ED05    %      $ P # Load lengthened eXtended bfp from
@@ -2648,6 +2675,8 @@ OPCDE752m    = E752    %      $   # @opcde75 Extended mnemonics for
                                   + VCTZ instruction
 OPCDE753m    = E753    %      $   # @opcde75 Extended mnemonics for
                                   + VCLZ instruction
+OPCDE754m    = E754    %      $   # @opcde75 Extended mnemonics for
+                                  + VGEM instruction
 OPCDE758     =-E758    %      $ K # Find Gotten Queue Element
 OPCDE75Cm    = E75C    %      $   # @opcde75 Extended mnemonics for
                                   + VISTR instruction
@@ -2685,6 +2714,8 @@ OPCDE781mm   = E781    %      $   # @opcde78 Extended mnemonics for
 OPCDE782mm   = E782    %      $   # @opcde78 Extended mnemonics for
                                   + VFAE instruction
 OPCDE788     =-E788    %      $ K # Getmain PPA on Page Boundary
+OPCDE789m    = E789    %      $   # @opcde78 Extended mnemonics for
+                                  + VBLEND instruction
 OPCDE78Amm   = E78A    %      $   # @opcde78 Extended mnemonics for
                                   + VSTRC instruction
 OPCDE78Bmm   = E78B    %      $   # @opcde78 Extended mnemonics for
@@ -2736,6 +2767,14 @@ OPCDE7AEm    = E7AE    %      $   # @opcde7a Extended mnemonics for
 OPCDE7AFm    = E7AF    %      $   # @opcde7a Extended mnemonics for
                                   + VMAO instruction
 OPCDE7B0     =-E7B0    %      $ K # Invalidate Virtual Page
+OPCDE7B0m    = E7B0    %      $   # @opcde7b Extended mnemonics for
+                                  + VDL instruction
+OPCDE7B1m    = E7B1    %      $   # @opcde7b Extended mnemonics for
+                                  + VRL instruction
+OPCDE7B2m    = E7B2    %      $   # @opcde7b Extended mnemonics for
+                                  + VD instruction
+OPCDE7B3m    = E7B3    %      $   # @opcde7b Extended mnemonics for
+                                  + VR instruction
 OPCDE7B4m    = E7B4    %      $   # @opcde7b Extended mnemonics for
                                   + VGFM instruction
 OPCDE7B8     =-E7B8    %      $ K # Save Getmain/Freemain Status
@@ -3457,6 +3496,7 @@ STBEAR       = B201    %      $   # STore Breaking-Event-Address
                                   + Register
 STC          = 42      %      $   # STore Character
 STCAP        =-B21F    %      $   # STore CAPacity counts
+STCCTM       = EB17    %      $ X # STore Cpu CounTer Multiple
 STCH         = E3C3    %      $   # STore Character High
 STCK         = B205    %      $   # STore ClocK
 STCKC        = B207    %      $   # STore ClocK Comparator
@@ -3764,6 +3804,14 @@ VAVGLB       = E7F0    % 0000 $ P # Vector AVeraGe Logical Byte
 VAVGLF       = E7F0    % 0010 $ P # Vector AVeraGe Logical Fullword
 VAVGLG       = E7F0    % 0011 $ P # Vector AVeraGe Logical Grande
 VAVGLH       = E7F0    % 0001 $ P # Vector AVeraGe Logical Halfword
+VAVGLQ       = E7F0    % 0100 $ P # Vector AVeraGe Logical Quadword
+VAVGQ        = E7F2    % 0100 $ P # Vector AVeraGe Quadword
+VBLEND       = E789    %      $ P # Vector BLEND
+VBLENDB      = E789    % 0000 $ P # Vector BLEND Byte
+VBLENDF      = E789    % 0010 $ P # Vector BLEND Fullword
+VBLENDG      = E789    % 0011 $ P # Vector BLEND Grande
+VBLENDH      = E789    % 0001 $ P # Vector BLEND Halfword
+VBLENDQ      = E789    % 0100 $ P # Vector BLEND Quadword
 VBPERM       = E785    %      $ P # Vector Bit PERMute
 VC           =-A428    %      $   # Vector Compare
 VCD          =-A418    %      $   # Vector Compare Double hfp
@@ -3794,13 +3842,16 @@ VCEQBS       = E7F8    % 0000.0001 $ P # Vector Compare EQual Byte and
                                        + Set cc
 VCEQF        = E7F8    % 0010.0000 $ P # Vector Compare EQual Fullword
 VCEQFS       = E7F8    % 0010.0001 $ P # Vector Compare EQual Fullword
-                                       + Set cc
+                                       + and Set cc
 VCEQG        = E7F8    % 0011.0000 $ P # Vector Compare EQual Grande
 VCEQGS       = E7F8    % 0011.0001 $ P # Vector Compare EQual Grande
-                                       + Set cc
+                                       + and Set cc
 VCEQH        = E7F8    % 0001.0000 $ P # Vector Compare EQual Halfword
 VCEQHS       = E7F8    % 0001.0001 $ P # Vector Compare EQual Halfword
-                                       + Set cc
+                                       + and Set cc
+VCEQQ        = E7F8    % 0100.0000 $ P # Vector Compare EQual Quadword
+VCEQQS       = E7F8    % 0100.0001 $ P # Vector Compare EQual Quadword
+                                       + and Set cc
 VCER         =-A508    %           $   # Vector Compare Exponential hfp
                                        + Register
 VCES         =-A488    %           $   # Vector Compare Exponential hfp
@@ -3823,13 +3874,13 @@ VCHBS        = E7FB    % 0000.0001 $ P # Vector Compare High Byte and
                                        + Set cc
 VCHF         = E7FB    % 0010.0000 $ P # Vector Compare High Fullword
 VCHFS        = E7FB    % 0010.0001 $ P # Vector Compare High Fullword
-                                       + Set cc
+                                       + and Set cc
 VCHG         = E7FB    % 0011.0000 $ P # Vector Compare High Grande
 VCHGS        = E7FB    % 0011.0001 $ P # Vector Compare High Grande and
                                        + Set cc
 VCHH         = E7FB    % 0001.0000 $ P # Vector Compare High Halfword
 VCHHS        = E7FB    % 0001.0001 $ P # Vector Compare High Halfword
-                                       + Set cc
+                                       + and Set cc
 VCHL         = E7F9    %           $ P # Vector Compare High Logical
 VCHLB        = E7F9    % 0000.0000 $ P # Vector Compare High Logical
                                        + Byte
@@ -3847,6 +3898,13 @@ VCHLH        = E7F9    % 0001.0000 $ P # Vector Compare High Logical
                                        + Halfword
 VCHLHS       = E7F9    % 0001.0001 $ P # Vector Compare High Logical
                                        + Halfword and Set cc
+VCHLQ        = E7F9    % 0100.0000 $ P # Vector Compare High Logical
+                                       + Quadword
+VCHLQS       = E7F9    % 0100.0001 $ P # Vector Compare High Logical
+                                       + Quadword and Set cc
+VCHQ         = E7FB    % 0100.0000 $ P # Vector Compare High Quadword
+VCHQS        = E7FB    % 0100.0001 $ P # Vector Compare High Quadword
+                                       + and Set cc
 VCKSM        = E766    %           $ P # Vector ChecKSuM
 VCLFEB       = E7C0    % 0010.0000 $ P # Vector Convert Logical
                                        + Fullword from Exponential Bfp
@@ -3869,6 +3927,7 @@ VCLZDP       = E651    %      $ P # Vector Count Leading Zero Digits
 VCLZF        = E753    % 0010 $ P # Vector Count Leading Zeros Fullword
 VCLZG        = E753    % 0011 $ P # Vector Count Leading Zeros Grande
 VCLZH        = E753    % 0001 $ P # Vector Count Leading Zeros Halfword
+VCLZQ        = E753    % 0100 $ P # Vector Count Leading Zeros Quadword
 VCNF         = E655    %      $ P # Vector Convert Neural-nnp from
                                   + Floating point 
 VCOVM        =-A643    %      $   # Vector Count Ones in Vector Mask
@@ -3891,14 +3950,19 @@ VCTZF        = E752    % 0010 $ P # Vector Count Trailing Zeros
 VCTZG        = E752    % 0011 $ P # Vector Count Trailing Zeros Grande
 VCTZH        = E752    % 0001 $ P # Vector Count Trailing Zeros
                                   + Halfword
+VCTZQ        = E752    % 0100 $ P # Vector Count Trailing Zeros
+                                  + Quadword
 VCVB         = E650    %      $ P # Vector ConVert to Binary
 VCVBG        = E652    %      $ P # Vector ConVert to Binary Grande
+VCVBQ        = E64E    %      $ P # Vector ConVert to Binary Quadword
 VCVD         = E658    %      $ P # Vector ConVert to Decimal
 VCVDG        = E65A    %      $ P # Vector ConVert to Decimal Grande
+VCVDQ        = E64A    %      $ P # Vector ConVert to Decimal Quadword
 VCVM         =-A641    %      $   # Vector Complement Vector Mask
                                   + register
 VCZVM        =-A642    %      $   # Vector Count left Zeros in Vector
                                   + Mask register
+VD           = E7B2    %      $ P # Vector Divide
 VDD          =-A413    %      $   # Vector Divide Double hfp
 VDDQ         =-A593    %      $   # Vector Divide Double hfp scalar
                                   + with Qualified register
@@ -3912,7 +3976,14 @@ VDER         =-A503    %      $   # Vector Divide Exponential hfp
                                   + Register
 VDES         =-A483    %      $   # Vector Divide Exponential hfp
                                   + scalar with Storage
+VDF          = E7B2    % 0010 $ P # Vector Divide Fullword
+VDG          = E7B2    % 0011 $ P # Vector Divide Grande
+VDL          = E7B0    %      $ P # Vector Divide Logical
+VDLF         = E7B0    % 0010 $ P # Vector Divide Logical Fullword
+VDLG         = E7B0    % 0011 $ P # Vector Divide Logical Grande
+VDLQ         = E7B0    % 0100 $ P # Vector Divide Logical Quadword
 VDP          = E67A    %      $ P # Vector Divide Packed decimal
+VDQ          = E7B2    % 0100 $ P # Vector Divide Quadword
 VEC          = E7DB    %      $ P # Vector Element Compare
 VECB         = E7DB    % 0000 $ P # Vector Element Compare Byte
 VECF         = E7DB    % 0010 $ P # Vector Element Compare Fullword
@@ -3926,6 +3997,9 @@ VECLG        = E7D9    % 0011 $ P # Vector Element Compare Logical
                                   + Grande
 VECLH        = E7D9    % 0001 $ P # Vector Element Compare Logical
                                   + Halfword
+VECLQ        = E7D9    % 0100 $ P # Vector Element Compare Logical
+                                  + Quadword
+VECQ         = E7DB    % 0100 $ P # Vector Element Compare Quadword
 VERIM        = E772    %      $ P # Vector Element Rotate and Insert
                                   + under Mask
 VERIMB       = E772    % 0000 $ P # Vector Element Rotate and Insert
@@ -4011,6 +4085,7 @@ VESRLVG      = E778    % 0011 $ P # Vector Element Shift Right Logical
                                   + Vector-specified Grande
 VESRLVH      = E778    % 0001 $ P # Vector Element Shift Right Logical
                                   + Vector-specified Halfword
+VEVAL        = E788    %      $ P # Vector EVALuate
 VFA          = E7E3    %           $ P # Vector Floating point Add
 VFADB        = E7E3    % 0011.0000 $ P # Vector Floating point Add
                                      + Double Bfp
@@ -4274,6 +4349,16 @@ VFTCISB      = E74A    % 0010.0000 $ P # Vector Floating point Test
 VGBM         = E744    %      $ P # Vector Generate Byte Mask
 VGEF         = E713    %      $ P # Vector Gather Element Fullword
 VGEG         = E712    %      $ P # Vector Gather Element Grande
+VGEM         = E754    %      $ P # Vector Generate Element Masks
+VGEMB        = E754    % 0000 $ P # Vector Generate Element Masks Byte
+VGEMF        = E754    % 0010 $ P # Vector Generate Element Masks 
+                                  + Fullword
+VGEMG        = E754    % 0011 $ P # Vector Generate Element Masks 
+                                  + Grande
+VGEMH        = E754    % 0001 $ P # Vector Generate Element Masks 
+                                  + Halfword
+VGEMQ        = E754    % 0100 $ P # Vector Generate Element Masks 
+                                  + Quadword
 VGFM         = E7B4    %      $ P # Vector Galois Field Multiply sum
 VGFMA        = E7BC    %      $ P # Vector Galois Field Multiply sum
                                   + and Accumulate
@@ -4338,6 +4423,7 @@ VLCER        =-A542    %      $   # Vector Load Complement Exponential
 VLCF         = E7DE    % 0010 $ P # Vector Load Complement Fullword
 VLCG         = E7DE    % 0011 $ P # Vector Load Complement Grande
 VLCH         = E7DE    % 0001 $ P # Vector Load Complement Halfword
+VLCQ         = E7DE    % 0100 $ P # Vector Load Complement Quadword
 VLCR         =-A562    %      $   # Vector Load Complement Register
 VLCVM        =-A681    %      $   # Vector Load Complement Vector Mask
                                   + register
@@ -4456,6 +4542,7 @@ VLPER        =-A540    %      $   # Vector Load Positive Exponential
 VLPF         = E7DF    % 0010 $ P # Vector Load Positive Fullword
 VLPG         = E7DF    % 0011 $ P # Vector Load Positive Grande
 VLPH         = E7DF    % 0001 $ P # Vector Load Positive Halfword
+VLPQ         = E7DF    % 0100 $ P # Vector Load Positive Quadword
 VLPR         =-A560    %      $   # Vector Load Positive Register
 VLQ          =-A5A9    %      $   # Vector Load scalar to Qualified
                                   + register
@@ -4508,6 +4595,8 @@ VMAE         =-A404    %      $   # Vector Multiply and Add Exponential
 VMAEB        = E7AE    % 0000 $ P # Vector Multiply and Add Even Byte
 VMAEF        = E7AE    % 0010 $ P # Vector Multiply and Add Even
                                   + Fullword
+VMAEG        = E7AE    % 0011 $ P # Vector Multiply and Add Even
+                                  + Grande
 VMAEH        = E7AE    % 0001 $ P # Vector Multiply and Add Even
                                   + Halfword
 VMAEQ        =-A584    %      $   # Vector Multiply and Add Exponential
@@ -4518,8 +4607,12 @@ VMAH         = E7AB    %      $ P # Vector Multiply and Add High
 VMAHB        = E7AB    % 0000 $ P # Vector Multiply and Add High Byte
 VMAHF        = E7AB    % 0010 $ P # Vector Multiply and Add High
                                   + Fullword
+VMAHG        = E7AB    % 0011 $ P # Vector Multiply and Add High
+                                  + Grande
 VMAHH        = E7AB    % 0001 $ P # Vector Multiply and Add High
                                   + Halfword
+VMAHQ        = E7AB    % 0100 $ P # Vector Multiply and Add High
+                                  + Quadword
 VMAL         = E7AA    %      $ P # Vector Multiply and Add Low
 VMALB        = E7AA    % 0000 $ P # Vector Multiply and Add Low Byte
 VMALE        = E7AC    %      $ P # Vector Multiply and Add Logical
@@ -4528,18 +4621,26 @@ VMALEB       = E7AC    % 0000 $ P # Vector Multiply and Add Logical
                                   + Even Byte
 VMALEF       = E7AC    % 0010 $ P # Vector Multiply and Add Logical
                                   + Even Fullword
+VMALEG       = E7AC    % 0011 $ P # Vector Multiply and Add Logical
+                                  + Even Grande
 VMALEH       = E7AC    % 0001 $ P # Vector Multiply and Add Logical
                                   + Even Halfword
 VMALF        = E7AA    % 0010 $ P # Vector Multiply and Add Low
                                   + Fullword
+VMALG        = E7AA    % 0011 $ P # Vector Multiply and Add Low
+                                  + Grande
 VMALH        = E7A9    %      $ P # Vector Multiply and Add Logical
                                   + High
 VMALHB       = E7A9    % 0000 $ P # Vector Multiply and Add Logical
                                   + High Byte
 VMALHF       = E7A9    % 0010 $ P # Vector Multiply and Add Logical
                                   + High Fullword
+VMALHG       = E7A9    % 0011 $ P # Vector Multiply and Add Logical
+                                  + High Grande
 VMALHH       = E7A9    % 0001 $ P # Vector Multiply and Add Logical
                                   + High Halfword
+VMALHQ       = E7A9    % 0100 $ P # Vector Multiply and Add Logical
+                                  + High Quadword
 VMALHW       = E7AA    % 0001 $ P # Vector Multiply and Add Low
                                   + HalfWord
 VMALO        = E7AD    %      $ P # Vector Multiply and Add Logical Odd
@@ -4547,12 +4648,17 @@ VMALOB       = E7AD    % 0000 $ P # Vector Multiply and Add Logical Odd
                                   + Byte
 VMALOF       = E7AD    % 0010 $ P # Vector Multiply and Add Logical Odd
                                   + Fullword
+VMALOG       = E7AD    % 0011 $ P # Vector Multiply and Add Logical Odd
+                                  + Grande
 VMALOH       = E7AD    % 0001 $ P # Vector Multiply and Add Logical Odd
                                   + Halfword
+VMALQ        = E7AA    % 0100 $ P # Vector Multiply and Add Low
+                                  + Quadword
 VMAO         = E7AF    %      $ P # Vector Multiply and Add Odd
 VMAOB        = E7AF    % 0000 $ P # Vector Multiply and Add Odd Byte
 VMAOF        = E7AF    % 0010 $ P # Vector Multiply and Add Odd
                                   + Fullword
+VMAOG        = E7AF    % 0011 $ P # Vector Multiply and Add Odd Grande
 VMAOH        = E7AF    % 0001 $ P # Vector Multiply and Add Odd
                                   + Halfword
 VMCD         =-A416    %      $   # Vector Multiply and aCcumulate
@@ -4573,6 +4679,7 @@ VME          = E7A6    %      $ P # Vector Multipy Even
 VME          =-A402    %      $   # Vector Multiply Exponential hfp
 VMEB         = E7A6    % 0000 $ P # Vector Multipy Even Byte
 VMEF         = E7A6    % 0010 $ P # Vector Multipy Even Fullword
+VMEG         = E7A6    % 0011 $ P # Vector Multipy Even Grande
 VMEH         = E7A6    % 0001 $ P # Vector Multipy Even Halfword
 VMEQ         =-A582    %      $   # Vector Multiply Exponential hfp
                                   + scalar with Qualified register
@@ -4583,29 +4690,41 @@ VMES         =-A482    %      $   # Vector Multiply Exponential hfp
 VMH          = E7A3    %      $ P # Vector Multiply High
 VMHB         = E7A3    % 0000 $ P # Vector Multiply High Byte
 VMHF         = E7A3    % 0010 $ P # Vector Multiply High Fullword
+VMHG         = E7A3    % 0011 $ P # Vector Multiply High Grande
 VMHH         = E7A3    % 0001 $ P # Vector Multiply High Halfword
+VMHQ         = E7A3    % 0100 $ P # Vector Multiply High Quadword
 VML          = E7A2    %      $ P # Vector Multiply Low
 VMLB         = E7A2    % 0000 $ P # Vector Multiply Low Byte
 VMLE         = E7A4    %      $ P # Vector Multiply Logical Even
 VMLEB        = E7A4    % 0000 $ P # Vector Multiply Logical Even Byte
 VMLEF        = E7A4    % 0010 $ P # Vector Multiply Logical Even
                                   + Fullword
+VMLEG        = E7A4    % 0011 $ P # Vector Multiply Logical Even
+                                  + Grande
 VMLEH        = E7A4    % 0001 $ P # Vector Multiply Logical Even
                                   + Halfword
 VMLF         = E7A2    % 0010 $ P # Vector Multiply Low Fullword
+VMLG         = E7A2    % 0011 $ P # Vector Multiply Low Grande
 VMLH         = E7A1    %      $ P # Vector Multiply Logical High
 VMLHB        = E7A1    % 0000 $ P # Vector Multiply Logical High Byte
 VMLHF        = E7A1    % 0010 $ P # Vector Multiply Logical High
                                   + Fullword
+VMLHG        = E7A1    % 0011 $ P # Vector Multiply Logical High
+                                  + Grande
 VMLHH        = E7A1    % 0001 $ P # Vector Multiply Logical High
                                   + Halfword
-VMLHW        = E7A2    % 0001 $ P # Vector Multiply Low HlafWord
+VMLHQ        = E7A1    % 0100 $ P # Vector Multiply Logical High
+                                  + Quadword
+VMLHW        = E7A2    % 0001 $ P # Vector Multiply Low HalfWord
 VMLO         = E7A5    %      $ P # Vector Multiply Logical Odd
 VMLOB        = E7A5    % 0000 $ P # Vector Multiply Logical Odd Byte
 VMLOF        = E7A5    % 0010 $ P # Vector Multiply Logical Odd
                                   + Fullword
+VMLOG        = E7A5    % 0011 $ P # Vector Multiply Logical Odd
+                                  + Grande
 VMLOH        = E7A5    % 0001 $ P # Vector Multiply Logical Odd
                                   + Halfword
+VMLQ         = E7A2    % 0100 $ P # Vector Multiply Low Quadword
 VMN          = E7FE    %      $ P # Vector MiNimum
 VMNB         = E7FE    % 0000 $ P # Vector MiNimum Byte
 VMNF         = E7FE    % 0010 $ P # Vector MiNimum Fullword
@@ -4616,12 +4735,15 @@ VMNLB        = E7FC    % 0000 $ P # Vector MiNimum Logical Byte
 VMNLF        = E7FC    % 0010 $ P # Vector MiNimum Logical Fullword
 VMNLG        = E7FC    % 0011 $ P # Vector MiNimum Logical Grande
 VMNLH        = E7FC    % 0001 $ P # Vector MiNimum Logical Halfword
+VMNLQ        = E7FC    % 0100 $ P # Vector MiNimum Logical Quadword
+VMNQ         = E7FE    % 0100 $ P # Vector MiNimum Quadword
 VMNSD        =-A611    %      $   # Vector MiNimum Signed Double hfp
 VMNSE        =-A601    %      $   # Vector MiNimum Signed Exponential
                                   + hfp
 VMO          = E7A7    %      $ P # Vector Multiply Odd
 VMOB         = E7A7    % 0000 $ P # Vector Multiply Odd Byte
 VMOF         = E7A7    % 0010 $ P # Vector Multiply Odd Fullword
+VMOG         = E7A7    % 0011 $ P # Vector Multiply Odd Grande
 VMOH         = E7A7    % 0001 $ P # Vector Multiply Odd Halfword
 VMP          = E678    %      $ P # Vector Multiply Packed decimal
 VMQ          =-A5A2    %      $   # Vector Multiply scalar with
@@ -4670,6 +4792,8 @@ VMXLB        = E7FD    % 0000 $ P # Vector MaXimum Logical Byte
 VMXLF        = E7FD    % 0010 $ P # Vector MaXimum Logical Fullword
 VMXLG        = E7FD    % 0011 $ P # Vector MaXimum Logical Grande
 VMXLH        = E7FD    % 0001 $ P # Vector MaXimum Logical Halfword
+VMXLQ        = E7FD    % 0100 $ P # Vector MaXimum Logical Quadword
+VMXQ         = E7FF    % 0100 $ P # Vector MaXimum Quadword
 VMXSD        =-A610    %      $   # Vector MaXimum Signed Double hfp
 VMXSE        =-A600    %      $   # Vector MaXimum Signed Exponential
                                   + hfp
@@ -4732,6 +4856,7 @@ VPOPCTG      = E750    % 0011 $ P # Vector POPulation CounT Grande
 VPOPCTH      = E750    % 0001 $ P # Vector POPulation CounT Halfword
 VPSOP        = E65B    %      $ P # Vector Perform Sign Operation
                                   + Packed decimal
+VR           = E7B3    %      $ P # Vector Remainder
 VRCL         =-A6C5    %      $   # Vector Register CLear
 VREP         = E74D    %      $ P # Vector REPlicate
 VREPB        = E74D    % 0000 $ P # Vector REPlicate Byte
@@ -4743,7 +4868,14 @@ VREPIB       = E745    % 0000 $ P # Vector REPlicate Immediate Byte
 VREPIF       = E745    % 0010 $ P # Vector REPlicate Immediate Fullword
 VREPIG       = E745    % 0011 $ P # Vector REPlicate Immediate Grande
 VREPIH       = E745    % 0001 $ P # Vector REPlicate Immediate Halfword
+VRF          = E7B3    % 0010 $ P # Vector Remainder Fullword
+VRG          = E7B3    % 0011 $ P # Vector Remainder Grande
+VRL          = E7B1    %      $ P # Vector Reaminder Logical
+VRLF         = E7B1    % 0010 $ P # Vector Reaminder Logical Fullword
+VRLG         = E7B1    % 0011 $ P # Vector Reaminder Logical Grande
+VRLQ         = E7B1    % 0100 $ P # Vector Reaminder Logical Quadword
 VRP          = E67B    %      $ P # Vector Remainder Packed decimal
+VRQ          = E7B3    % 0100 $ P # Vector Remainder Quadword
 VRRS         =-A648    %      $   # Vector Register ReStore
 VRSV         =-A64A    %      $   # Vector Register SaVe
 VRSVC        =-A649    %      $   # Vector Register SaVe Changed
@@ -4957,9 +5089,11 @@ VTSD         =-A455    %      $   # Vector multiply Then Subtract
 VTSE         =-A445    %      $   # Vector multiply Then Subtract
                                   + Exponential hfp
 VTVM         =-A640    %      $   # Vector Test Vector Mask register
+VTZ          = E67F    %      $ P # Vector Test Zoned decimal
 VUPH         = E7D7    %      $ P # Vector UnPack High
 VUPHB        = E7D7    % 0000 $ P # Vector UnPack High Byte
 VUPHF        = E7D7    % 0010 $ P # Vector UnPack High Fullword
+VUPHG        = E7D7    % 0011 $ P # Vector UnPack High Grande
 VUPHH        = E7D7    % 0001 $ P # Vector UnPack High Halfword
 VUPKZ        = E63C    %      $ P # Vector UnPacK Zoned
 VUPKZH       = E654    %      $ P # Vector UnPacK Zoned High
@@ -4967,14 +5101,17 @@ VUPKZL       = E65C    %      $ P # Vector UnPacK Zoned Low
 VUPL         = E7D6    %      $ P # Vector UnPack Low
 VUPLB        = E7D6    % 0000 $ P # Vector UnPack Low Byte
 VUPLF        = E7D6    % 0010 $ P # Vector UnPack Low Fullword
+VUPLG        = E7D6    % 0011 $ P # Vector UnPack Low Grande
 VUPLH        = E7D5    %      $ P # Vector UnPack Logical High
 VUPLHB       = E7D5    % 0000 $ P # Vector UnPack Logical High Byte
 VUPLHF       = E7D5    % 0010 $ P # Vector UnPack Logical High Fullword
+VUPLHG       = E7D5    % 0011 $ P # Vector UnPack Logical High Grande
 VUPLHH       = E7D5    % 0001 $ P # Vector UnPack Logical High Halfword
 VUPLHW       = E7D6    % 0001 $ P # Vector UnPack Low HalfWord
 VUPLL        = E7D4    %      $ P # Vector UnPack Logical Low
 VUPLLB       = E7D4    % 0000 $ P # Vector UnPack Logical Low Byte
 VUPLLF       = E7D4    % 0010 $ P # Vector UnPack Logical Low Fullword
+VUPLLG       = E7D4    % 0011 $ P # Vector UnPack Logical Low Grande
 VUPLLH       = E7D4    % 0001 $ P # Vector UnPack Logical Low Halfword
 VX           = E76D    %      $ P # Vector eXclusive-or
 VX           =-A426    %      $   # Vector eXclusive-or

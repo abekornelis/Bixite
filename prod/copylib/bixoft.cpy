@@ -670,8 +670,6 @@ table.opcodes tr td {
   border-top      : 0;
   margin          : 0;
   padding         : 0;
-  text-align      : center;
-  vertical-align  : middle;
   text-align      : left;
   vertical-align  : top;
   width           : 5em }
