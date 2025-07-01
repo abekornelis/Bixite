@@ -1,7 +1,7 @@
          HTMLDEF OPL_ODFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_odfm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_odfm.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Directives and Function Codes, Sorted by
@@ -42,7 +42,7 @@
          HTMLDEF OPL_ODFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_odfm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_odfm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Directives en Functie Codes, op volgorde

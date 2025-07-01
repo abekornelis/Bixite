@@ -1,7 +1,7 @@
          HTMLDEF OPCD9E.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcd9e.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcd9e.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, I/O extension set 9E</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -136,7 +136,7 @@
          HTMLDEF OPCD9E.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcd9e.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcd9e.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, I/O extension set 9E</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

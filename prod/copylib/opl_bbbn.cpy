@@ -1,7 +1,7 @@
          HTMLDEF OPL_BBBN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bbbn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bbbn.htm -->
 <!-- -->
 <title>
  HLASM - Complete list of all Instructions, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BBBN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bbbn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bbbn.htm -->
 <!-- -->
 <title>
  HLASM - Volledige lijst van alle Instructies, op volgorde van Naam

@@ -1,7 +1,7 @@
          HTMLDEF OPCDE60.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde60.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde60.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E600-E60F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE60.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde60.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde60.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E600-E60F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

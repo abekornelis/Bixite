@@ -1,7 +1,7 @@
          HTMLDEF OPCDA74.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcda74.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcda74.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BRC instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -143,7 +143,7 @@
          HTMLDEF OPCDA74.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcda74.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcda74.htm -->
 <!-- -->
 <title>HLASM - Pseudo Opcodes for BRC instruction</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

@@ -1,7 +1,7 @@
          HTMLDEF OPL_CNXN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cnxn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cnxn.htm -->
 <!-- -->
 <title>
  HLASM - List of current Extended Mnemonics, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CNXN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cnxn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cnxn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Extended Mnemonics, op volgorde van Naam

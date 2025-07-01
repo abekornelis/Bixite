@@ -1,7 +1,7 @@
          HTMLDEF SVCLIST.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/svclist.htm -->
+<!-- Saved from http://www.bixoft.com/english/svclist.htm -->
 <!-- -->
 <title>HLASM - SVC-codes overview</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -66,7 +66,7 @@
          HTMLDEF SVCLIST.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/svclist.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/svclist.htm -->
 <!-- -->
 <title>HLASM - Overzicht SVC-nummers</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

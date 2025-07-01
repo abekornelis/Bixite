@@ -1,7 +1,7 @@
          HTMLDEF OPCDE347.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde347.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde347.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BIC instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -134,7 +134,7 @@
          HTMLDEF OPCDE347.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde347.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde347.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BIC instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

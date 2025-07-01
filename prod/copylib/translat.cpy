@@ -1,7 +1,7 @@
          HTMLDEF TRANSLAT.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/translat.htm -->
+<!-- Saved from http://www.bixoft.com/translat.htm -->
 <!-- -->
 <title>Bixoft &amp; HLASM - Translation Requests</title>
 <link rel="shortcut icon" href="images/bixoft.ico"

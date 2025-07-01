@@ -1,7 +1,7 @@
          HTMLDEF OPL_OBBN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_obbn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_obbn.htm -->
 <!-- -->
 <title>
  HLASM - Complete list of outdated Instructions, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_OBBN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_obbn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_obbn.htm -->
 <!-- -->
 <title>
  HLASM - Volledige lijst van vervallen Instructies, op volgorde van

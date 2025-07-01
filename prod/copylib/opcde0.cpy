@@ -1,7 +1,7 @@
          HTMLDEF OPCDE0.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde0.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde0.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, assist extension set E0</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -168,7 +168,7 @@
          HTMLDEF OPCDE0.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcde0.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcde0.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, assist extension set E0</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

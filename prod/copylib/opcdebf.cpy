@@ -1,7 +1,7 @@
          HTMLDEF OPCDEBF.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdebf.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdebf.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EBFx</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -142,7 +142,7 @@
          HTMLDEF OPCDEBF.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdebf.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdebf.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EBFx</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

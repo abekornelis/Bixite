@@ -1,7 +1,7 @@
          HTMLDEF OPCDCC.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdcc.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdcc.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set CC</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -120,7 +120,7 @@
          HTMLDEF OPCDCC.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdcc.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdcc.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set CC</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

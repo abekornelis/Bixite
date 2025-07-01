@@ -1,7 +1,7 @@
          HTMLDEF OPCDA3.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcda3.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcda3.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set A3</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -140,7 +140,7 @@
          HTMLDEF OPCDA3.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcda3.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcda3.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set A3</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

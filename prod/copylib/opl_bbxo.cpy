@@ -1,7 +1,7 @@
          HTMLDEF OPL_BBXO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bbxo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bbxo.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes, Directives, and Extended Mnemonics,
@@ -41,7 +41,7 @@
          HTMLDEF OPL_BBXO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bbxo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bbxo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes, Directives en Extended Mnemonics, op

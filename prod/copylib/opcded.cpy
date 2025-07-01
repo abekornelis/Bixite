@@ -1,7 +1,7 @@
          HTMLDEF OPCDED.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcded.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcded.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, floating point extension set ED
 </title>
@@ -123,7 +123,7 @@
          HTMLDEF OPCDED.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcded.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcded.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, floating point extension set ED
 </title>

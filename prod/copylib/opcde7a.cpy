@@ -1,7 +1,7 @@
          HTMLDEF OPCDE7A.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde7a.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde7a.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E7A0-E7AF</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE7A.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde7a.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde7a.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E7A0-E7AF</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

@@ -1,7 +1,7 @@
          HTMLDEF OPL_CDFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cdfm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cdfm.htm -->
 <!-- -->
 <title>
  HLASM - List of current Directives and Function Codes, Sorted by
@@ -42,7 +42,7 @@
          HTMLDEF OPL_CDFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cdfm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cdfm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Directives en Functie Codes, op volgorde

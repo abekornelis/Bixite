@@ -1,7 +1,7 @@
          HTMLDEF OPCDC04.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdc04.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdc04.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BRCL instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -144,7 +144,7 @@
          HTMLDEF OPCDC04.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcdc04.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcdc04.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BRCL instruction</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

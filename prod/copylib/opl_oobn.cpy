@@ -1,7 +1,7 @@
          HTMLDEF OPL_OOBN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_oobn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_oobn.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes, Extended Mnemonics, and Function
@@ -42,7 +42,7 @@
          HTMLDEF OPL_OOBN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_oobn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_oobn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes, Extended Mnemonics en Functie

@@ -1,7 +1,7 @@
          HTMLDEF OPCDC4.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdc4.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdc4.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, Relative Long extension set C4
 </title>
@@ -124,7 +124,7 @@
          HTMLDEF OPCDC4.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdc4.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdc4.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, Relative Long extension set C4
 </title>

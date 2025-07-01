@@ -1,7 +1,7 @@
          HTMLDEF OPL_BOXM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_boxm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_boxm.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes and Extended Mnemonics, Sorted by Mnemonic
@@ -41,7 +41,7 @@
          HTMLDEF OPL_BOXM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_boxm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_boxm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes en Extended Mnemonics, op volgorde van

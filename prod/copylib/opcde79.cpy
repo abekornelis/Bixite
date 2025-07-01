@@ -1,7 +1,7 @@
          HTMLDEF OPCDE79.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde79.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde79.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E790-E79F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE79.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde79.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde79.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E790-E79F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

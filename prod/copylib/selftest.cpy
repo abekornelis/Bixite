@@ -1,7 +1,7 @@
          HTMLDEF SELFTEST.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/selftest.htm -->
+<!-- Saved from http://www.bixoft.com/english/selftest.htm -->
 <!-- -->
 <title>HLASM - Assembler Proficiency Self-test</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

@@ -1,7 +1,7 @@
          HTMLDEF SLFTST3A.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/slftst3a.htm -->
+<!-- Saved from http://www.bixoft.com/english/slftst3a.htm -->
 <!-- -->
 <title>HLASM - Test-driver for Assembler self-test assignment 3</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

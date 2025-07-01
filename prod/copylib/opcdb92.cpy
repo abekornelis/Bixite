@@ -1,7 +1,7 @@
          HTMLDEF OPCDB92.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdb92.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdb92.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets B91E, B920-B92F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -134,7 +134,7 @@
          HTMLDEF OPCDB92.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdb92.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdb92.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets B91E, B920-B92F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

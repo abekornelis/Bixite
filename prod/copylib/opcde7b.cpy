@@ -1,7 +1,7 @@
          HTMLDEF OPCDE7B.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde7b.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde7b.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E7B0-E7BF</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE7B.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde7b.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde7b.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E7B0-E7BF</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

@@ -1,7 +1,7 @@
          HTMLDEF OPL_COXM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_coxm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_coxm.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes and Extended Mnemonics, Sorted by
@@ -42,7 +42,7 @@
          HTMLDEF OPL_COXM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_coxm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_coxm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes en Extended Mnemonics, op volgorde

@@ -1,7 +1,7 @@
          HTMLDEF OPCDA2.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcda2.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcda2.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set A2</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -140,7 +140,7 @@
          HTMLDEF OPCDA2.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcda2.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcda2.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set A2</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

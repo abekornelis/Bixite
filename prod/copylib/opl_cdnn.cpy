@@ -1,7 +1,7 @@
          HTMLDEF OPL_CDNN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cdnn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cdnn.htm -->
 <!-- -->
 <title>
  HLASM - List of current Directives, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CDNN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cdnn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cdnn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Directives, op volgorde van Naam

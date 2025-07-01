@@ -1,7 +1,7 @@
          HTMLDEF OPL_BBNM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bbnm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bbnm.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes and Directives, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BBNM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bbnm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bbnm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes en Directives, op volgorde van Mnemonic

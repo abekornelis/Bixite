@@ -1,7 +1,7 @@
          HTMLDEF OPCDEC4.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdec4.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdec4.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EC40-EC4F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -146,7 +146,7 @@
          HTMLDEF OPCDEC4.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdec4.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdec4.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EC40-EC4F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

@@ -1,7 +1,7 @@
          HTMLDEF OPL_OBXO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_obxo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_obxo.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes, Directives, and Extended Mnemonics,
@@ -42,7 +42,7 @@
          HTMLDEF OPL_OBXO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_obxo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_obxo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes, Directives en Extended

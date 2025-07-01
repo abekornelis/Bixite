@@ -1,7 +1,7 @@
          HTMLDEF OPL_OOXO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_ooxo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_ooxo.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes and Extended Mnemonics, Sorted by
@@ -41,7 +41,7 @@
          HTMLDEF OPL_OOXO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_ooxo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_ooxo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes en Extended Mnemonics, op

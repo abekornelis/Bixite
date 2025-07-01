@@ -1,7 +1,7 @@
          HTMLDEF OPL_BONM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bonm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bonm.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BONM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bonm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bonm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes, op volgorde van Mnemonic

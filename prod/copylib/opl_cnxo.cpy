@@ -1,7 +1,7 @@
          HTMLDEF OPL_CNXO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cnxo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cnxo.htm -->
 <!-- -->
 <title>
  HLASM - List of current Extended Mnemonics, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CNXO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cnxo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cnxo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Extended Mnemonics, op volgorde van Opcode

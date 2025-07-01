@@ -1,7 +1,7 @@
          HTMLDEF OPL_CBFO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cbfo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cbfo.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes, Directives, and Function Codes,
@@ -41,7 +41,7 @@
          HTMLDEF OPL_CBFO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cbfo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cbfo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes, Directives en Functie Codes, op

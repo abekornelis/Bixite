@@ -1,7 +1,7 @@
          HTMLDEF OPL_BDNN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bdnn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bdnn.htm -->
 <!-- -->
 <title>
  HLASM - List of all Directives, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BDNN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bdnn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bdnn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Directives, op volgorde van Naam

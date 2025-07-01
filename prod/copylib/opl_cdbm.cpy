@@ -1,7 +1,7 @@
          HTMLDEF OPL_CDBM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cdbm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cdbm.htm -->
 <!-- -->
 <title>
  HLASM - List of current Directives, Extended Mnemonics, and Function
@@ -42,7 +42,7 @@
          HTMLDEF OPL_CDBM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cdbm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cdbm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Directives, Extended Mnemonics en Functie

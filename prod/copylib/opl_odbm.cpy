@@ -1,7 +1,7 @@
          HTMLDEF OPL_ODBM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_odbm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_odbm.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Directives, Extended Mnemonics, and Function
@@ -42,7 +42,7 @@
          HTMLDEF OPL_ODBM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_odbm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_odbm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Directives, Extended Mnemonics en Functie

@@ -1,7 +1,7 @@
          HTMLDEF OPL_BOBN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bobn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bobn.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes, Extended Mnemonics, and Function Codes,
@@ -41,7 +41,7 @@
          HTMLDEF OPL_BOBN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bobn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bobn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes, Extended Mnemonics en Functie Codes,

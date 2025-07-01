@@ -1,7 +1,7 @@
          HTMLDEF OPL_ODNO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_odno.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_odno.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Directives, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_ODNO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_odno.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_odno.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Directives, op volgorde van Opcode

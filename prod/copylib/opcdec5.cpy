@@ -1,7 +1,7 @@
          HTMLDEF OPCDEC5.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdec5.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdec5.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EC50-EC5F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDEC5.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdec5.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdec5.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EC50-EC5F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

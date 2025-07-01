@@ -1,7 +1,7 @@
          HTMLDEF OPL_OONM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_oonm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_oonm.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_OONM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_oonm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_oonm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes, op volgorde van Mnemonic

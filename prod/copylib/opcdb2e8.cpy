@@ -1,7 +1,7 @@
          HTMLDEF OPCDB2E8.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdb2e8.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdb2e8.htm -->
 <!-- -->
 <title>HLASM - Function Codes for PPA instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDB2E8.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdb2e8.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdb2e8.htm -->
 <!-- -->
 <title>HLASM - Function Codes for PPA instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

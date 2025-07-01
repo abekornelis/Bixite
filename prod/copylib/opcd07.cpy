@@ -1,7 +1,7 @@
          HTMLDEF OPCD07.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcd07.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcd07.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BCR instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -132,7 +132,7 @@
          HTMLDEF OPCD07.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcd07.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcd07.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics pour l'instruction BCR</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

@@ -1,7 +1,7 @@
          HTMLDEF OPL_BBFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bbfm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bbfm.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes, Directives, and Function Codes, Sorted
@@ -41,7 +41,7 @@
          HTMLDEF OPL_BBFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bbfm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bbfm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes, Directives en Functie Codes, op

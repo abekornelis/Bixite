@@ -1,7 +1,7 @@
          HTMLDEF OPCDB3.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdb3.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdb3.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, floating point extension set B3
 </title>
@@ -123,7 +123,7 @@
          HTMLDEF OPCDB3.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcdb3.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcdb3.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, floating point extension set B3
 </title>

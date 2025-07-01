@@ -1,7 +1,7 @@
          HTMLDEF OPL_CBNN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cbnn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cbnn.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes and Directives, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CBNN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cbnn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cbnn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes en Directives, op volgorde van Naam

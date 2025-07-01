@@ -1,7 +1,7 @@
          HTMLDEF OPL_XNN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_xnn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_xnn.htm -->
 <!-- -->
 <title>HLASM - Empty List of Instructions</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -38,7 +38,7 @@
          HTMLDEF OPL_XNN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_xnn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_xnn.htm -->
 <!-- -->
 <title>
  HLASM - Lege lijst van instructies

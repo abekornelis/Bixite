@@ -113,7 +113,7 @@
          HTMLDEF OPCODES.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcodes.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcodes.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -681,7 +681,7 @@
          HTMLDEF OPCODES.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcodes.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcodes.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

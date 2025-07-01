@@ -1,7 +1,7 @@
          HTMLDEF OPCD010.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcd010.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcd010.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets 0100-010F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -130,7 +130,7 @@
          HTMLDEF OPCD010.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcd010.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcd010.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets 010x</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

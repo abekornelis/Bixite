@@ -18,7 +18,7 @@
 <bxa dir="english">
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/whatsnew.htm -->
+<!-- Saved from http://www.bixoft.com/english/whatsnew.htm -->
 <!-- -->
 <title>Overview of changes for the Bixoft and HLASM sites</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -500,7 +500,7 @@
          HTMLDEF WHATSNEW.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/whatsnew.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/whatsnew.htm -->
 <!-- -->
 <title>Overzicht van wijzigingen aan de Bixoft- en HLASM-sites</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -747,7 +747,7 @@
          HTMLDEF WHATSNEW.DEH
 <!-- DE -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/deutsch/whatsnew.htm -->
+<!-- Saved from http://www.bixoft.com/deutsch/whatsnew.htm -->
 <!-- -->
 <title>High Level Assembler - Deutsche Homepage</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -804,7 +804,7 @@
          HTMLDEF WHATSNEW.ESH
 <!-- ES -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/espanol/whatsnew.htm -->
+<!-- Saved from http://www.bixoft.com/espanol/whatsnew.htm -->
 <!-- -->
 <title>High Level Assembler - Spanish change log.</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -855,7 +855,7 @@
          HTMLDEF WHATSNEW.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/whatsnew.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/whatsnew.htm -->
 <!-- -->
 <title>High Level Assembler - Nouveaut&eacute;s</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -912,7 +912,7 @@
          HTMLDEF WHATSNEW.FYH
 <!-- FY -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/frysk/whatsnew.htm -->
+<!-- Saved from http://www.bixoft.com/frysk/whatsnew.htm -->
 <!-- -->
 <title>High Level Assembler - Changes</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -964,7 +964,7 @@
          HTMLDEF WHATSNEW.ITH
 <!-- IT -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/italiano/whatsnew.htm -->
+<!-- Saved from http://www.bixoft.com/italiano/whatsnew.htm -->
 <!-- -->
 <title>High Level Assembler - Aggiornamenti</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

@@ -1,7 +1,7 @@
          HTMLDEF OPL_ODXN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_odxn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_odxn.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Directives and Extended Mnemonics, Sorted by
@@ -42,7 +42,7 @@
          HTMLDEF OPL_ODXN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_odxn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_odxn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Directives en Extended Mnemonics, op

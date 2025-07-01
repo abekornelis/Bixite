@@ -1,7 +1,7 @@
          HTMLDEF OPCD9F.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcd9f.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcd9f.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, I/O extension set 9F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -136,7 +136,7 @@ I/O Extension Set 9F</h1>
          HTMLDEF OPCD9F.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcd9f.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcd9f.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, I/O extension set 9F</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

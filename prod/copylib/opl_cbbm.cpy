@@ -1,7 +1,7 @@
          HTMLDEF OPL_CBBM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cbbm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cbbm.htm -->
 <!-- -->
 <title>
  HLASM - Complete list of current Instructions, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CBBM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cbbm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cbbm.htm -->
 <!-- -->
 <title>
  HLASM - Volledige lijst van gangbare Instructies, op volgorde van

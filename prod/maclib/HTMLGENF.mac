@@ -150,6 +150,7 @@
          LCLB  &SUBPAGE                 * Opcode points to subpage
          LCLB  &OLDPAGE                 * All opcodes on page are old
          LCLC  &HEXDIGS                 * Valid hex digits
+         LCLC  &THVAL                   * text for th tag
          LCLC  &nbsp,&Q
 .* counters used for format=ndx
          LCLA  &MNEM_NM                 * Count of non-masked mnemonics
@@ -199,6 +200,7 @@
 &XNUL(15) SETC ''                       * unused
 &XNUL(16) SETC ''                       * unused
 &XNUL(17) SETC ''                       * unused
+&XNUL(18) SETC ''                       * standard column
 .*
 .* format code 0: required 0 value
           LCLC  &X000(16)               * headers for required 0
@@ -219,6 +221,7 @@
 &X000(15) SETC ''                       * unused
 &X000(16) SETC ''                       * unused
 &X000(17) SETC ''                       * cannot be omitted
+&X000(18) SETC ''                       * standard column
 .*
 .* format code f: FPF = Floating Point Format
           LCLC  &XFPF(16)               * headers for f in format-code
@@ -239,6 +242,7 @@
 &XFPF(15) SETC ''                       * unused
 &XFPF(16) SETC ''                       * unused
 &XFPF(17) SETC ''                       * cannot be omitted
+&XFPF(18) SETC ''                       * standard column
 .*
 .* format code s: S = Single Element Control
           LCLC  &XSEC(16)               * headers for s in format-code
@@ -259,6 +263,7 @@
 &XSEC(15) SETC ''                       * unused
 &XSEC(16) SETC ''                       * unused
 &XSEC(17) SETC ''                       * cannot be omitted
+&XSEC(18) SETC 'WIDE'                   * wide column
 .*
 .* format code cs: Condition Code Set
           LCLC  &XCCS(16)               * headers for format-code cs
@@ -280,6 +285,7 @@
 &XCCS(16) SETC ''                       * unused
 .* if not optional below entry is overwritten to suppress
 &XCCS(17) SETC 'CS&nbsp;Not&nbsp;Implied<br />Default=0'
+&XCCS(18) SETC 'WIDE'                   * standard column
 .*
 .* format code ssq: S = Single Element Control; sq=Signal-on-QNaN
           LCLC  &XSSQ(16)               * headers for format-code ssq
@@ -304,6 +310,7 @@
 &XSSQ(15) SETC ''                       * unused
 &XSSQ(16) SETC ''                       * unused
 &XSSQ(17) SETC ''                       * cannot be omitted
+&XSSQ(18) SETC 'WIDE'                   * standard column
 .*
 .* format code SO: SGN = Sign Operation
           LCLC  &XSGN(16)               * headers for SO in format-code
@@ -324,6 +331,7 @@
 &XSGN(15) SETC ''                       * unused
 &XSGN(16) SETC ''                       * unused
 &XSGN(17) SETC 'Operation<br />Not&nbsp;Implied' * has to be hard coded
+&XSGN(18) SETC ''                       * standard column
 .*
 .* format code es: Element Size
           LCLC  &XESZ(16)               * headers for format-code es
@@ -344,6 +352,7 @@
 &XESZ(15) SETC ''                       * unused
 &XESZ(16) SETC ''                       * unused
 &XESZ(17) SETC ''                       * cannot be omitted
+&XESZ(18) SETC ''                       * standard column
 .*
 .* format code x: index value
           LCLC  &XNDX(16)               * headers for format-code x
@@ -364,6 +373,7 @@
 &XNDX(15) SETC 'x=E'                    * for x=14
 &XNDX(16) SETC 'x=F'                    * for x=15
 &XNDX(17) SETC ''                       * cannot be omitted
+&XNDX(18) SETC ''                       * standard column
 .*
 .* format code z: zero search
           LCLC  &XZSR(16)               * headers for format-code z
@@ -385,6 +395,7 @@
 &XZSR(16) SETC ''                       * unused
 .* if not optional below entry is overwritten to suppress
 &XZSR(17) SETC 'Not&nbsp;Implied<br />Default=0'
+&XZSR(18) SETC 'WIDE'                   * standard column
 .*
 .* format code zs: zero search + condition code set
           LCLC  &XZSC(16)               * headers for format-code zs
@@ -410,6 +421,7 @@
 &XZSC(16) SETC ''                       * unused
 .* if not optional below entry is overwritten to suppress
 &XZSC(17) SETC 'Not&nbsp;Implied<br />Default=0'
+&XZSC(18) SETC 'WIDE'                   * standard column
 .*
 .* Check args - find range & size of table to generate
          AIF   (K'&FORMAT EQ 0).ERROR1  * Omitted
@@ -813,34 +825,38 @@
          AIF   (&(L&NUMZ) EQ &FIRSTZ).LPHTBMT * Skip empty column
          HTMLPUN '  <th>&nbsp;</th>'
 .LPHTBMT ANOP  ,
-         HTMLPUN '  <th>&PREFIX<br />'
+         HTMLPUN '  <th class="wide">&PREFIX<br />'
          HTMLPUN '      &TBLDESC.</th>'
          AGO   .LPHDR                   * Go create header columns
 .LPHTB1  ANOP ,                         * We have only one table
-         HTMLPUN '  <th>&PREFIX</th>'
+         HTMLPUN '  <th class="wide">&PREFIX</th>'
          AGO   .LPHDR                   * Go create header columns
 .*
 .* Loop across all columns to create cells in header row
 .LPHDR   ANOP  ,                        * Loop over all headers
 &(L&NUMX) SETA &(L&NUMX)+1
          AIF   (&(L&NUMX) GT 17).LPHDREX * All columns listed
+&THVAL   SETC  '<th>'                   * Assume normal column hdr
+         AIF   ('&(X&DIMX)(18)' NE 'WIDE').THVALOK * check coltype
+&THVAL   SETC  '<th class="wide">'      * make it a wide column
+.THVALOK ANOP  ,                        *
 &X       SETC  '&(X&DIMX)(&(L&NUMX))'   * Get description
          AIF   ('&X' EQ '').LPHDR       * Skip entry
 &L       SETA  ('&X' INDEX '<br />')    * Contains a break?
          AIF   (&L EQ 0).LPHDRP1        * Go punch just one line
 &CARD    SETC  '&X'(1,&L+5)             * Get first part including br
-         HTMLPUN '  <th>&CARD'
+         HTMLPUN '  &THVAL.&CARD'
 &CARD    SETC  '&X'(&L+6,*)             * Get remainder of header
          HTMLPUN '      &CARD</th>'
          AGO   .LPHDR
 .LPHDRP1 ANOP  ,                        * Punch one line
          AIF   ('&X' EQ ' ' AND '&HDRTYPE' EQ 'OPCD|MNEM').LPHDRP2
 .* default case: just use &X
-         HTMLPUN '  <th>&X.</th>'
+         HTMLPUN '  &THVAL.&X.</th>'
          AGO   .LPHDR
 .* Case for HDRTYPE=OPCD|MNEM
 .LPHDRP2 ANOP  ,
-         HTMLPUN '  <th>&MNEMONS</th>'
+         HTMLPUN '  &THVAL.&MNEMONS</th>'
 &HDRTYPE SETC  '*Suppress'
          AGO   .LPHDR
 .LPHDREX ANOP  ,                        * Exit point for header loop
@@ -933,7 +949,7 @@
          AIF   ('&OPCD_ATTR' EQ 'Mix').LPMNM * Ok: some entries current
 .OLDCELL ANOP  ,
 &CARD    SETC  '  <td class="old">'
-.LPMNM   ANOP  ,                        * Loop over mnemonnics found
+.LPMNM   ANOP  ,                        * Loop over mnemonics found
 &P       SETA  &OPCDPTR(&L4)            * Extract pointer to &OPCD
          AIF   (&ONLYNEG AND '&ATTR(&P)' NE 'Old').LPMNMNX * Go next
          AIF   (&ONLYPOS AND '&ATTR(&P)' EQ 'Old').LPMNMNX * Go next

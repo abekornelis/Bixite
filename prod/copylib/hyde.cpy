@@ -29,7 +29,7 @@
  and referred to their assembly language. However, since the arguments
  presented by the author hold for mainframes as well, we thought it
  relevant
- to publish it in the hlasm.com site as well.</p>
+ to publish it on the bixoft.com site as well.</p>
 
 <p class="remark">
  Disclaimer:<br />
@@ -833,8 +833,7 @@
  aangezien de argumenten die de auteur hanteert ook voor mainframes
  opgeld
  doen, vinden wij het relevant genoeg om dit artikel ook op de
- hlasm.com
- site te publiceren.</p>
+ bixoft.nl site te publiceren.</p>
 
 <p class="remark">
  Opmerking:<br />
@@ -1691,7 +1690,7 @@
  die vom
  Autor pr&auml;sentierten Argumente auch auf den Mainframe zutreffen,
  dachten
- wir, dass es hilfreich ist, diesen Artikel auch auf hlasm.com zu
+ wir, dass es hilfreich ist, diesen Artikel auch auf bixoft.com zu
  ver&ouml;ffentlichen.</p>
 
 <p class="remark">
@@ -2931,7 +2930,7 @@
  and referred to their assembly language. However, since the arguments
  presented by the author hold for mainframes as well, we thought it
  relevant
- to publish it in the hlasm.com site as well.</p>
+ to publish it in the bixoft.com site as well.</p>
 
 <p class="remark">
  Disclaimer:<br />
@@ -3733,7 +3732,7 @@
  and referred to their assembly language. However, since the arguments
  presented by the author hold for mainframes as well, we thought it
  relevant
- to publish it in the hlasm.com site as well.</p>
+ to publish it in the bixoft.com site as well.</p>
 
 <p class="remark">
  Disclaimer:<br />

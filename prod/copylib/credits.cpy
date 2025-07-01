@@ -1,7 +1,7 @@
          HTMLDEF CREDITS.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/credits.htm -->
+<!-- Saved from http://www.bixoft.com/english/credits.htm -->
 <!-- -->
 <title>Bixoft &amp; High Level Assembler - Credits and
        Acknowledgements</title>

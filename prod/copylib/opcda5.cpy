@@ -1,7 +1,7 @@
          HTMLDEF OPCDA5.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcda5.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcda5.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, Halfword Immediate extension set A5
 </title>
@@ -200,7 +200,7 @@ Halfword Immediate Extension Set A5</h1>
          HTMLDEF OPCDA5.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcda5.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcda5.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, Halfword Immediate extension set A5
 </title>

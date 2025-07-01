@@ -1,7 +1,7 @@
          HTMLDEF OPLIST.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/oplist.htm -->
+<!-- Saved from http://www.bixoft.com/english/oplist.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview of opcode lists</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -383,7 +383,7 @@
          HTMLDEF OPLIST.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/oplist.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/oplist.htm -->
 <!-- -->
 <title>HLASM - Overzicht van opcode lijsten</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
