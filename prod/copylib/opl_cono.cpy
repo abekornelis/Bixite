@@ -1,7 +1,7 @@
          HTMLDEF OPL_CONO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cono.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cono.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CONO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cono.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cono.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes, op volgorde van Opcode

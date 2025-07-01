@@ -1,7 +1,7 @@
          HTMLDEF OPCD47.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcd47.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcd47.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for BC instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -136,7 +136,7 @@
          HTMLDEF OPCD47.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcd47.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcd47.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics pour l'instruction BC</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

@@ -1,7 +1,7 @@
          HTMLDEF OPL_ONFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_onfm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_onfm.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Function Codes, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_ONFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_onfm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_onfm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Functie Codes, op volgorde van Mnemonic

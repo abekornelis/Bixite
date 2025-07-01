@@ -1,7 +1,7 @@
          HTMLDEF OPL_BNBO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bnbo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bnbo.htm -->
 <!-- -->
 <title>
  HLASM - List of all Extended Mnemonics and Function Codes, Sorted by
@@ -41,7 +41,7 @@
          HTMLDEF OPL_BNBO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bnbo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bnbo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Extended Mnemonics en Functie Codes, op

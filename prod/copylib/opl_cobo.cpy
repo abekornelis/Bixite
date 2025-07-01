@@ -1,7 +1,7 @@
          HTMLDEF OPL_COBO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cobo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cobo.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes, Extended Mnemonics, and Function
@@ -42,7 +42,7 @@
          HTMLDEF OPL_COBO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cobo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cobo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes, Extended Mnemonics en Functie

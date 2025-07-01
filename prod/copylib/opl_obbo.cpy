@@ -1,7 +1,7 @@
          HTMLDEF OPL_OBBO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_obbo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_obbo.htm -->
 <!-- -->
 <title>
  HLASM - Complete list of outdated Instructions, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_OBBO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_obbo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_obbo.htm -->
 <!-- -->
 <title>
  HLASM - Volledige lijst van vervallen Instructies, op volgorde van

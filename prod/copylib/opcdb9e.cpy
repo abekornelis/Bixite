@@ -1,7 +1,7 @@
          HTMLDEF OPCDB9E.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdb9e.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdb9e.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets B9Ex</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -134,7 +134,7 @@
          HTMLDEF OPCDB9E.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdb9e.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdb9e.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets B9Ex</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

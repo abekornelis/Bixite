@@ -46,7 +46,7 @@
 <p class="root" align="center">
  <a href="whatsnew.htm">
   <img src="images/new.gif" border="0" alt="NEW!" /></a>
- <a href="whatsnew.htm">What's new</a> on hlasm.com and bixoft.com.
+ <a href="whatsnew.htm">What's new</a> on bixoft.nl and bixoft.com.
 </p>
 
 <p class="root" align="center">
@@ -662,6 +662,16 @@ table.opcodes tr th {
   font-weight     : bold;
   text-align      : left;
   vertical-align  : bottom }
+table.opcodes tr th.wide {
+  border-bottom   : thin;
+  border-left     : 0;
+  border-right    : thin;
+  border-style    : ridge;
+  border-top      : 0;
+  font-weight     : bold;
+  text-align      : left;
+  vertical-align  : bottom;
+  width           : 11em }
 table.opcodes tr td {
   border-bottom   : thin;
   border-left     : 0;

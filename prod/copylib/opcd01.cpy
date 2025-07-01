@@ -1,7 +1,7 @@
          HTMLDEF OPCD01.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcd01.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcd01.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set 01</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -140,7 +140,7 @@
          HTMLDEF OPCD01.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcd01.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcd01.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set 01</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

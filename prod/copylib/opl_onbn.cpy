@@ -1,7 +1,7 @@
          HTMLDEF OPL_ONBN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_onbn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_onbn.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Extended Mnemonics and Function Codes,
@@ -41,7 +41,7 @@
          HTMLDEF OPL_ONBN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_onbn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_onbn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Extended Mnemonics en Functie Codes, op

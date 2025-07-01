@@ -1,7 +1,7 @@
          HTMLDEF OPCDE76.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde76.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde76.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E760-E76F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE76.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde76.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde76.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E760-E76F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

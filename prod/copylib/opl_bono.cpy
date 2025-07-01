@@ -1,7 +1,7 @@
          HTMLDEF OPL_BONO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bono.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bono.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BONO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bono.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bono.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes, op volgorde van Opcode

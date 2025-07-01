@@ -18,7 +18,7 @@
 * (C) Copyright B.V. Bixoft, 2006
 ***********************************************************************
 *
-* This program generates the html for the hlasm.com site
+* This program generates the html for the bixoft.com site
 *
 ***********************************************************************
          GBLC  &HTMLOUT(50000)         * Text to be punched
@@ -49,6 +49,7 @@
          HTMLGEN  $OPCDA74.UK
          HTMLGEN  $OPCDAE.UK
          HTMLGEN  $OPCDB2.UK
+         HTMLGEN  $OPCDB24.UK
          HTMLGEN  OPCDB2E8.UK
          HTMLGEN  $OPCDB3.UK
          HTMLGEN  $OPCDB9.UK
@@ -94,6 +95,7 @@
          HTMLGEN  $OPCDEA.UK
          HTMLGEN  $OPCDEB.UK
          HTMLGEN  $OPCDEB2.UK
+         HTMLGEN  $OPCDEB4.UK
          HTMLGEN  $OPCDEBE.UK
          HTMLGEN  $OPCDEBF.UK
          HTMLGEN  $OPCDEC.UK

@@ -1109,6 +1109,9 @@ DXTRA        = B3D9    %      $   # Divide eXtended Tfp Register
 EAR          = B24F    %      $   # Extract Access Register
 ECA          =-B2ED    %      $ X # Extract Coprocessor group Address
 ECAG         = EB4C    %      $ P # Extract Cache Attribute Grande
+ECAG.CAS     = EB4C.0  %      $ P # ECAG - Cache-Attribute-Set
+                                  + operation
+ECAG.CPUAS   = EB4C.1  %      $ P # ECAG - CPU-Attribute-Set operation
 ECCTR        = B2E4    %      $ X # Extract Cpu CounTeR
 ECPGA        = B2ED    %      $ X # Extract CoProcessor Group Address
 ECTG         = C81     %      $ A # Extract Cpu Time Grande
@@ -1141,6 +1144,12 @@ ESDTR        = B3E7    %      $   # Extract Significance from Double
 ESEA         = B99D    %      $   # Extract and Set Extended Authority
 ESSA         = B9AB    %      $ Y # Extract and Set Storage Attributes
 ESTA         = B24A    %      $   # Extract stacked STAte
+ESTA.ASTEIN  = B24A.05 %      $   # ESTA - secondary and primary ASTEIN
+ESTA.MODAREA = B24A.03 %      $   # ESTA - MODifiable AREA
+ESTA.PSEP    = B24A.00 %      $   # ESTA - Pkm, Sasn, Eax, Pasn
+ESTA.PSW31   = B24A.01 %      $   # ESTA - PSW for 31-bit architecture
+ESTA.PSW64   = B24A.04 %      $   # ESTA - PSW for 64-bit architecture
+ESTA.TARGET  = B24A.02 %      $   # ESTA - TARGET of branch or pc
 ESXTR        = B3EF    %      $   # Extract Significance from eXtended
                                   + Tfp Register
 ETND         = B2EC    %      $ 4 # Extract Transaction Nesting Depth
@@ -1325,7 +1334,9 @@ KDSA.EECS384   = B93A.12 %    $   # KDSA - Encrypted-ECdsa-Sign-p384
 KDSA.EECS521   = B93A.13 %    $   # KDSA - Encrypted-ECdsa-Sign-p521
 KDSA.EEDSE25519= B93A.30 %    $   # KDSA - Encrypted EDdsa-Sign-Ed25519
 KDSA.EEDSE448  = B93A.34 %    $   # KDSA - Encrypted EDdsa-Sign-Ed448
-KDSA.QRY       = B93A.00 %    $   # KDSA - QueRY
+KDSA.QAI       = B93A.7F %    $   # KDSA - Query Authentication
+                                  + Information
+KDSA.QUERY     = B93A.00 %    $   # KDSA - QUERY
 KDTR         = B3E0    %      $   # Kompare and signal Double Tfp
                                   + Register
 KEB          = ED08    %      $ P # Kompare and signal Exponential
@@ -1398,6 +1409,12 @@ KM.ETDEA128  = B92E.0A %      $   # KM - Encrypted Triple Data
                                   + Encryption Algorithm 128-bit
 KM.ETDEA192  = B92E.0B %      $   # KM - Encrypted Triple Data
                                   + Encryption Algorithm 192-bit
+KM.FXAES128  = B92E.52 %      $   # KM - Full Xts AES 128-bit
+KM.FXAES256  = B92E.54 %      $   # KM - Full Xts AES 256-bit
+KM.FXEAES128 = B92E.5A %      $   # KM - Full Xts Encrypted AES 128-bit
+KM.FXEAES256 = B92E.5C %      $   # KM - Full Xts Encrypted AES 256-bit
+KM.QAI       = B92E.7F %      $   # KM - Query Authentication
+                                  + Information
 KM.QUERY     = B92E.00 %      $   # KM - QUERY
 KM.TDEA128   = B92E.02 %      $   # KM - Triple Data Encryption
                                   + Algorithm 128-bit
@@ -1421,6 +1438,8 @@ KMA.GEAES192 = B929.1B %      $   # KMA - Galois counter mode
                                   + Encrypted AES 192-bit
 KMA.GEAES256 = B929.1C %      $   # KMA - Galois counter mode
                                   + Encrypted AES 256-bit
+KMA.QAI      = B929.7F %      $   # KMA - Query Authentication
+                                  + Information
 KMA.QUERY    = B929.00 %      $   # KMA - QUERY
 KMAC         = B91E    %      $ Z # Kompute Message Authentication
                                   + Code
@@ -1439,11 +1458,21 @@ KMAC.EAES256 = B91E.1C %      $   # KMAC - Encrypted Advanced
                                   + Encryption Standard 256-bit
 KMAC.EDEA    = B91E.09 %      $   # KMAC - Encrypted Data Encryption
                                   + Algorithm
+KMAC.ESHA224 = B91E.78 %      $   # KMAC - hmac Encrypted SHA 224-bit
+KMAC.ESHA256 = B91E.79 %      $   # KMAC - hmac Encrypted SHA 256-bit
+KMAC.ESHA384 = B91E.7A %      $   # KMAC - hmac Encrypted SHA 384-bit
+KMAC.ESHA512 = B91E.7B %      $   # KMAC - hmac Encrypted SHA 512-bit
 KMAC.ETDEA128= B91E.0A %      $   # KMAC - Encrypted Triple Data
                                   + Encryption Algorithm 128-bit
 KMAC.ETDEA192= B91E.0B %      $   # KMAC - Encrypted Triple Data
                                   + Encryption Algorithm 192-bit
+KMAC.QAI     = B91E.7F %      $   # KMAC - Query Authentication
+                                  + Information
 KMAC.QUERY   = B91E.00 %      $   # KMAC - QUERY
+KMAC.SHA224  = B91E.70 %      $   # KMAC - hmac-SHA 224-bit
+KMAC.SHA256  = B91E.71 %      $   # KMAC - hmac-SHA 256-bit
+KMAC.SHA384  = B91E.72 %      $   # KMAC - hmac-SHA 384-bit
+KMAC.SHA512  = B91E.73 %      $   # KMAC - hmac-SHA 512-bit
 KMAC.TDEA128 = B91E.02 %      $   # KMAC - Triple Data Encryption
                                   + Algorithm 128-bit
 KMAC.TDEA192 = B91E.03 %      $   # KMAC - Triple Data Encryption
@@ -1470,6 +1499,8 @@ KMC.ETDEA192 = B92F.0B %      $   # KMC - Encrypted Triple Data
                                   + Encryption Algorithm 192-bit
 KMC.PRNG     = B92F.43 %      $   # KMC - Pseudo Random Number
                                   + Generation
+KMC.QAI      = B92F.7F %      $   # KMC - Query Authentication
+                                  + Information
 KMC.QUERY    = B92F.00 %      $   # KMC - QUERY
 KMC.TDEA128  = B92F.02 %      $   # KMC - Triple Data Encryption
                                   + Algorithm 128-bit
@@ -1495,6 +1526,8 @@ KMCTR.ETDEA128=B92D.0A %      $   # KMCTR - Encrypted Triple Data
                                   + Encryption Algorithm 128-bit
 KMCTR.ETDEA192=B92D.0B %      $   # KMCTR - Encrypted Triple Data
                                   + Encryption Algorithm 192-bit
+KMCTR.QAI    = B92D.7F %      $   # KMCTR - Query Authentication
+                                  + Information
 KMCTR.QUERY  = B92D.00 %      $   # KMCTR - QUERY
 KMCTR.TDEA128= B92D.02 %      $   # KMCTR - Triple Data Encryption
                                   + Algorithm 128-bit
@@ -1521,6 +1554,8 @@ KMF.ETDEA128 = B92A.0A %      $   # KMF - Encrypted Triple Data
                                   + Encryption Algorithm 128-bit
 KMF.ETDEA192 = B92A.0B %      $   # KMF - Encrypted Triple Data
                                   + Encryption Algorithm 192-bit
+KMF.QAI      = B92A.7F %      $   # KMF - Query Authentication
+                                  + Information
 KMF.QUERY    = B92A.00 %      $   # KMF - QUERY
 KMF.TDEA128  = B92A.02 %      $   # KMF - Triple Data Encryption
                                   + Algorithm 128-bit
@@ -1547,6 +1582,8 @@ KMO.ETDEA128 = B92B.0A %      $   # KMO - Encrypted Triple Data
                                   + Encryption Algorithm 128-bit
 KMO.ETDEA192 = B92B.0B %      $   # KMO - Encrypted Triple Data
                                   + Encryption Algorithm 192-bit
+KMO.QAI      = B92B.7F %      $   # KMO - Query Authentication
+                                  + Information
 KMO.QUERY    = B92B.00 %      $   # KMO - QUERY
 KMO.TDEA128  = B92B.02 %      $   # KMO - Triple Data Encryption
                                   + Algorithm 128-bit
@@ -2375,21 +2412,30 @@ NNPA.BATCHNORM    = B93B.40 % $   # NNPA - BATCHNORM
 NNPA.CONVOLUTION  = B93B.70 % $   # NNPA - CONVOLUTION
 NNPA.DIV          = B93B.13 % $   # NNPA - DIVide
 NNPA.EXP          = B93B.21 % $   # NNPA - EXPonential
+NNPA.GELU         = B93B.35 % $   # NNPA - Gaussian Error Linear Unit
 NNPA.GRUACT       = B93B.61 % $   # NNPA - GRUACT
+NNPA.INVSQRT      = B93B.23 % $   # NNPA - INVerse SQare RooT
+NNPA.LAYERNORM    = B93B.42 % $   # NNPA - LAYER NORMalization
 NNPA.LOG          = B93B.20 % $   # NNPA - natural LOGarithm
 NNPA.LSTMACT      = B93B.60 % $   # NNPA - LSTMACT
 NNPA.MATMULOP     = B93B.71 % $   # NNPA - MATMUL-OP
-NNPA.MATMULOPBCAST23=B93B.72 % $  # NNPA - MATMUL-OP-BCAST23
+NNPA.MATMULOPBCAST1=B93B.73 % $   # NNPA - MATMUL-OP-BCAST1
+NNPA.MATMULOPBCAST23=B93B.72% $   # NNPA - MATMUL-OP-BCAST23
 NNPA.MAX          = B93B.15 % $   # NNPA - MAXimum
 NNPA.MAXPOOL2D    = B93B.50 % $   # NNPA - MAXimum POOL 2Dimensions
 NNPA.MIN          = B93B.14 % $   # NNPA - MINimum
+NNPA.MOMENTS      = B93B.41 % $   # NNPA - MOMENTS
 NNPA.MUL          = B93B.12 % $   # NNPA - MULtiply
+NNPA.NORM         = B93B.43 % $   # NNPA - NORMalization
 NNPA.QAF          = B93B.00 % $   # NNPA - Query Available Functions
+NNPA.REDUCE       = B93B.F1 % $   # NNPA - REDUCE
 NNPA.RELU         = B93B.31 % $   # NNPA - REctified Linear Unit
 NNPA.SIGMOID      = B93B.33 % $   # NNPA - SIGMOID
 NNPA.SOFTMAX      = B93B.34 % $   # NNPA - SOFTMAX
+NNPA.SQRT         = B93B.22 % $   # NNPA - SQare RooT
 NNPA.SUB          = B93B.11 % $   # NNPA - SUB
 NNPA.TANH         = B93B.32 % $   # NNPA - TANgent Hyperbolic
+NNPA.TRANSFORM    = B93B.F0 % $   # NNPA - TRANSFORM
 NNRK         = B974    %      $   # Not aNd Register Keeping source
                                   + data
 NOGRK        = B966    %      $   # Not Or Grande Register Keeping
@@ -2463,6 +2509,7 @@ OPCDA7x      = A7      %      $   # Halford Immediate Extension set A7
 OPCDAEfc     = AE      %      $   # Function codes for SIGP instruction
 OPCDB2xx     = B2      %      $   # Extension set B2
 OPCDB242     =-B242    %      $ I # Add FRR
+OPCDB24Afc   = B24A    %      $   # function codes for ESTA instruction
 OPCDB253     =-B253    %      $   # An unknown instruction
 OPCDB25B     =-B25B    %      $ N # An Asynchronous Page Facility
                                   + instruction
@@ -2885,6 +2932,7 @@ OPCDEB23m    = EB23    %      $   # @opcdeb2 Extended mnemonics for
                                   + CLT instruction
 OPCDEB2Bm    = EB2B    %      $   # @opcdeb2 Extended mnemonics for
                                   + CLGT instruction
+OPCDEB4Cfc   = EB4C    %      $   # function codes for ECAG instruction
 OPCDEBE0m    = EBE0    %      $   # @opcdebe Extended mnemonics for
                                   + LOCFH instruction
 OPCDEBE1m    = EBE1    %      $   # @opcdebe Extended mnemonics for
@@ -2995,6 +3043,8 @@ PCC.LTDEA128 = B92C.02 %      $   # PCC - compute Last block cmac
                                   + using Triple DEA-128
 PCC.LTDEA192 = B92C.03 %      $   # PCC - compute Last block cmac
                                   + using Triple DEA-192
+PCC.QAI      = B92C.7F %      $   # PCC - Query Authentication
+                                  + Information
 PCC.QUERY    = B92C.00 %      $   # PCC - QUERY
 PCC.SME25519 = B92C.48 %      $   # PCC - Scalar Multiply Ed25519
 PCC.SME448   = B92C.49 %      $   # PCC - Scalar Multiply Ed448
@@ -3014,6 +3064,10 @@ PCC.XEAES256 = B92C.3C %      $   # PCC - compute Xts parameter
 PCF          =-B218    %      $   # Program Call Fast
 PCKMO           = B928    %      $   # Perform Cryptographic Key
                                      + Management Operation
+PCKMO.EAESX128  = B928.15 %      $   # PCKMO - Encrypt AES Xts 128
+                                     + double key
+PCKMO.EAESX256  = B928.16 %      $   # PCKMO - Encrypt AES Xts 256
+                                     + double key
 PCKMO.EAES128   = B928.12 %      $   # PCKMO - Encrypt AES-128 key
 PCKMO.EAES192   = B928.13 %      $   # PCKMO - Encrypt AES-192 key
 PCKMO.EAES256   = B928.14 %      $   # PCKMO - Encrypt AES-256 key
@@ -3023,8 +3077,13 @@ PCKMO.EECC256   = B928.20 %      $   # PCKMO - Encrypt ECC-p256 key
 PCKMO.EECC384   = B928.21 %      $   # PCKMO - Encrypt ECC-p384 key
 PCKMO.EECC448   = B928.29 %      $   # PCKMO - Encrypr ECC-ed448 key
 PCKMO.EECC521   = B928.22 %      $   # PCKMO - Encrypt ECC-p521 key
+PCKMO.EHMAC1024 = B928.7A %      $   # PCKMO - Encrypt HMAC 1024-bit
+                                     + key
+PCKMO.EHMAC512  = B928.76 %      $   # PCKMO - Encrypt HMAC 512-bit key
 PCKMO.ETDEA128  = B928.02 %      $   # PCKMO - Encrypt TDEA-128 key
 PCKMO.ETDEA192  = B928.03 %      $   # PCKMO - Encrypt TDEA-192 key
+PCKMO.QAI       = B928.7F %      $   # PCKMO - Query Authentication
+                                     + Information
 PCKMO.QUERY     = B928.00 %      $   # PCKMO - QUERY
 PFD          = E336       %      $ P # PreFetch Data
 PFDRL        = C62        %      $ A # PreFetch Data Relative Long
@@ -3087,7 +3146,9 @@ PPNO         = B93C    %      $   # Perform Pseudorandom Number
                                   + Operation
 PPNO.DRNG    = B93C.03 %      $   # PPNO - Deterministic Random-Number
                                   + Generation
-PPNO.QRY     = B93C.00 %      $   # PPNO - QueRY
+PPNO.QAI     = B93C.7F %      $   # PPNO - Query Authentication
+                                  + Information
+PPNO.QUERY   = B93C.00 %      $   # PPNO - QUERY
 PPNO.TRNG    = B93C.72 %      $   # PPNO - True Random-Number
                                   + Generation
 PPNO.TRNGQRY = B93C.70 %      $   # PPNO - True Random-Number
@@ -3098,7 +3159,9 @@ PRINT        = --      %      $   # PRINT settings
 PRNO         = B93C    %      $   # Perform Random Number Operation
 PRNO.DRNG    = B93C.03 %      $   # PRNO - Deterministic Random-Number
                                   + Generation
-PRNO.QRY     = B93C.00 %      $   # PRNO - QueRY
+PRNO.QAI     = B93C.7F %      $   # PRNO - Query Authentication
+                                  + Information
+PRNO.QUERY   = B93C.00 %      $   # PRNO - QUERY
 PRNO.TRNG    = B93C.72 %      $   # PRNO - True Random-Number
                                   + Generation
 PRNO.TRNGQRY = B93C.70 %      $   # PRNO - True Random-Number
@@ -3123,6 +3186,7 @@ PTFF.QTOU    = 0104.05 %      $   # PTFF - Query Time-of-day Offset
                                   + User
 PTFF.QTOUE   = 0104.0D %      $   # PTFF - Query Time-of-day Offset
                                   + User Extended
+PTFF.QTSE    = 0104.06 %      $   # PTFF - Query TimeStamp Event
 PTFF.QUI     = 0104.04 %      $   # PTFF - Query Utc Information
 PTFF.SFS     =-0104.42 %      $   # PTFF - Set Fine-Steering rate
 PTFF.SGS     =-0104.43 %      $   # PTFF - Set Gross-Steering rate

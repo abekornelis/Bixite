@@ -1,7 +1,7 @@
          HTMLDEF OPCDAE.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdae.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdae.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set AE</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -99,9 +99,9 @@
 <p>Alle instructies in deze tabel zijn vier bytes lang. De eerste byte
  heeft altijd de waarde X'AE'
  De opdrachtcode wordt afgeleid uit het adres van de tweede operand.
- Derhalve maakt het geen odnerdeel uit van de object code
+ Derhalve maakt het geen onderdeel uit van de object code
  voor de geassembleerde instructie.
- Deze opddrachtcode bepaalt de exacte pseudo opcode.
+ Deze opdrachtcode bepaalt de exacte pseudo opcode.
 </p>
 
 /HTML
@@ -120,7 +120,7 @@
          HTMLDEF OPCDAE.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdae.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdae.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets AE</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

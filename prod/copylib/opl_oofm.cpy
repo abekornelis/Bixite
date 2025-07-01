@@ -1,7 +1,7 @@
          HTMLDEF OPL_OOFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_oofm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_oofm.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes and Function Codes, Sorted by
@@ -41,7 +41,7 @@
          HTMLDEF OPL_OOFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_oofm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_oofm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes en Functie Codes, op volgorde van

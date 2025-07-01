@@ -1,7 +1,7 @@
          HTMLDEF OPL_CBXN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cbxn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cbxn.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes, Directives, and Extended Mnemonics,
@@ -41,7 +41,7 @@
          HTMLDEF OPL_CBXN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cbxn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cbxn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes, Directives en Extended Mnemonics,

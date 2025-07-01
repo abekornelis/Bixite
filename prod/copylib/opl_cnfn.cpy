@@ -1,7 +1,7 @@
          HTMLDEF OPL_CNFN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cnfn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cnfn.htm -->
 <!-- -->
 <title>
  HLASM - List of current Function Codes, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CNFN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cnfn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cnfn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Functie Codes, op volgorde van Naam

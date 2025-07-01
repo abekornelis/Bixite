@@ -1,7 +1,7 @@
          HTMLDEF OPL_CBBN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cbbn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cbbn.htm -->
 <!-- -->
 <title>
  HLASM - Complete list of current Instructions, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CBBN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cbbn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cbbn.htm -->
 <!-- -->
 <title>
  HLASM - Volledige lijst van gangbare Instructies, op volgorde van Naam

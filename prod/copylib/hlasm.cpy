@@ -2,7 +2,7 @@
 <bxa dir=".">
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/hlasm.htm -->
+<!-- Saved from http://www.bixoft.com/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - Home Page</title>
 <link rel="shortcut icon" href="images/bixoft.ico"
@@ -25,7 +25,7 @@
 <bxa dir="english">
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/hlasm.htm -->
+<!-- Saved from http://www.bixoft.com/english/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - English Home Page</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -67,7 +67,7 @@
  <a href="whatsnew.htm">
   <img src="images/new.gif" border="0" alt="NEW!" /></a>
  <a href="whatsnew.htm">What's new</a>
- on hlasm.com and bixoft.com.
+ on bixoft.nl and bixoft.com.
 </p>
 
 <p class="root" align="center">
@@ -216,7 +216,7 @@
          HTMLDEF HLASM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/hlasm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - Nederlandse Home Page</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -345,7 +345,7 @@
          HTMLDEF HLASM.DEH
 <!-- DE -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/deutsch/hlasm.htm -->
+<!-- Saved from http://www.bixoft.com/deutsch/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - Deutsche Homepage</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -464,7 +464,7 @@
          HTMLDEF HLASM.ESH
 <!-- ES -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/espanol/hlasm.htm -->
+<!-- Saved from http://www.bixoft.com/espanol/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - P&aacute;gina Inicial en Espa&ntilde;ol
 </title>
@@ -587,7 +587,7 @@
          HTMLDEF HLASM.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/hlasm.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - Bienvenue</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -708,7 +708,7 @@
          HTMLDEF HLASM.FYH
 <!-- FY -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/frysk/hlasm.htm -->
+<!-- Saved from http://www.bixoft.com/frysk/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - Fryske Home Page</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />
@@ -819,7 +819,7 @@
          HTMLDEF HLASM.ITH
 <!-- IT -->
 <!-- -->
-<!-- Salvato da http://www.hlasm.com/italiano/hlasm.htm -->
+<!-- Salvato da http://www.bixoft.com/italiano/hlasm.htm -->
 <!-- -->
 <title>High Level Assembler - Home Page in italiano</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

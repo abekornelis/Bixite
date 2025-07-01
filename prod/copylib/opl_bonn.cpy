@@ -1,7 +1,7 @@
          HTMLDEF OPL_BONN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bonn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bonn.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BONN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bonn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bonn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes, op volgorde van Naam

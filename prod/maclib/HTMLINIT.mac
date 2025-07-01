@@ -176,8 +176,8 @@
 ** For the terms and conditions of the license you have selected
 ** please check the text of the license, which should be in the
 ** macro library. Alternatively, you can find a copy on our site:
-** GPL2.0   - http://www.hlasm.com/english/gpl
-** BXAPL1.0 - http://www.hlasm.com/english/license
+** GPL2.0   - http://www.bixoft.com/english/gpl
+** BXAPL1.0 - http://www.bixoft.com/english/license
 **
 ***********************************************************************
 &SP_LICOK  SETB 1                      * License was accepted

@@ -1,7 +1,7 @@
          HTMLDEF OPL_CNBO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cnbo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cnbo.htm -->
 <!-- -->
 <title>
  HLASM - List of current Extended Mnemonics and Function Codes, Sorted
@@ -41,7 +41,7 @@
          HTMLDEF OPL_CNBO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cnbo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cnbo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Extended Mnemonics en Functie Codes, op

@@ -1,7 +1,7 @@
          HTMLDEF OPL_BDFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bdfm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bdfm.htm -->
 <!-- -->
 <title>
  HLASM - List of all Directives and Function Codes, Sorted by Mnemonic
@@ -41,7 +41,7 @@
          HTMLDEF OPL_BDFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bdfm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bdfm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Directives en Functie Codes, op volgorde van

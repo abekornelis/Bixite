@@ -1,7 +1,7 @@
          HTMLDEF OPL_BBNO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bbno.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bbno.htm -->
 <!-- -->
 <title>
  HLASM - List of all Opcodes and Directives, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BBNO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bbno.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bbno.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Opcodes en Directives, op volgorde van Opcode

@@ -1,7 +1,7 @@
          HTMLDEF OPCDEC.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdec.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdec.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, 64-bit extension set EC</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -121,7 +121,7 @@
          HTMLDEF OPCDEC.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcdec.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcdec.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, 64-bit extension set EC</title>
 <link rev="HLASM Home Page"   href="../hlasm.htm" />

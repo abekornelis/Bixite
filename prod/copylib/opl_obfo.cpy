@@ -1,7 +1,7 @@
          HTMLDEF OPL_OBFO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_obfo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_obfo.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes, Directives, and Function Codes,
@@ -41,7 +41,7 @@
          HTMLDEF OPL_OBFO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_obfo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_obfo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes, Directives en Functie Codes, op

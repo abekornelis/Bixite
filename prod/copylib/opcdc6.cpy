@@ -1,7 +1,7 @@
          HTMLDEF OPCDC6.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdc6.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdc6.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, Relative Long extension set C6
 </title>
@@ -124,7 +124,7 @@
          HTMLDEF OPCDC6.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdc6.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdc6.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, Relative Long extension set C6
 </title>

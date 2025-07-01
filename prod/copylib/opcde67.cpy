@@ -1,7 +1,7 @@
          HTMLDEF OPCDE67.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde67.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde67.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E670-E67F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE67.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde67.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde67.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E670-E67F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

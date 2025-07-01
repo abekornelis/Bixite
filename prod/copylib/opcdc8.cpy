@@ -1,7 +1,7 @@
          HTMLDEF OPCDC8.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdc8.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdc8.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set C8</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -122,7 +122,7 @@
          HTMLDEF OPCDC8.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdc8.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdc8.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set C8</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

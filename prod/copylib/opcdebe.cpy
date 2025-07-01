@@ -1,7 +1,7 @@
          HTMLDEF OPCDEBE.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdebe.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdebe.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EBEx</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -142,7 +142,7 @@
          HTMLDEF OPCDEBE.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdebe.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdebe.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets EBEx</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

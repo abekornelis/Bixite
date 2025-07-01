@@ -1,7 +1,7 @@
          HTMLDEF OPL_CNFM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cnfm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cnfm.htm -->
 <!-- -->
 <title>
  HLASM - List of current Function Codes, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CNFM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cnfm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cnfm.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Functie Codes, op volgorde van Mnemonic

@@ -1,7 +1,7 @@
          HTMLDEF OPCDEE.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdee.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdee.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for PLO instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -120,7 +120,7 @@
          HTMLDEF OPCDEE.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdee.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdee.htm -->
 <!-- -->
 <title>HLASM - Extended Mnemonics for PLO instruction</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

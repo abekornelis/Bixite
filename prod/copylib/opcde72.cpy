@@ -1,7 +1,7 @@
          HTMLDEF OPCDE72.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde72.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde72.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E720-E72F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE72.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde72.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde72.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E720-E72F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

@@ -1,7 +1,7 @@
          HTMLDEF OPCDB97.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdb97.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdb97.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets B97x</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -138,7 +138,7 @@
          HTMLDEF OPCDB97.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdb97.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdb97.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets B97x</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

@@ -1,7 +1,7 @@
          HTMLDEF OPCDE4.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde4.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde4.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, vector extension set E4</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -135,7 +135,7 @@
          HTMLDEF OPCDE4.FRH
 <!-- FR -->
 <!-- -->
-<!-- Sur le site http://www.hlasm.com/francais/opcde4.htm -->
+<!-- Sur le site http://www.bixoft.com/francais/opcde4.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, vector extension set E4</title>
 <link rev="HLASM Home Page" href="../hlasm.htm" />

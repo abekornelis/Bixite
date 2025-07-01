@@ -1,7 +1,7 @@
          HTMLDEF OPCDE74.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcde74.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcde74.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E740-E74F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"
@@ -129,7 +129,7 @@
          HTMLDEF OPCDE74.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcde74.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcde74.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension sets E740-E74F</title>
 <link rel="shortcut icon" href="../images/hlasm.ico"

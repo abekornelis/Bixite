@@ -1,7 +1,7 @@
          HTMLDEF OPCDEA.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opcdea.htm -->
+<!-- Saved from http://www.bixoft.com/english/opcdea.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set EA for 14xx emulation
 </title>
@@ -122,7 +122,7 @@
          HTMLDEF OPCDEA.FRH
 <!-- FR -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/francais/opcdea.htm -->
+<!-- Saved from http://www.bixoft.com/francais/opcdea.htm -->
 <!-- -->
 <title>HLASM - Opcodes overview, extension set EA for 14xx emulation
 </title>

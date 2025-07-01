@@ -1,7 +1,7 @@
          HTMLDEF OPL_BDXO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bdxo.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bdxo.htm -->
 <!-- -->
 <title>
  HLASM - List of all Directives and Extended Mnemonics, Sorted by
@@ -42,7 +42,7 @@
          HTMLDEF OPL_BDXO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bdxo.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bdxo.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van alle Directives en Extended Mnemonics, op volgorde

@@ -1,7 +1,7 @@
          HTMLDEF OPL_BBBM.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_bbbm.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_bbbm.htm -->
 <!-- -->
 <title>
  HLASM - Complete list of all Instructions, Sorted by Mnemonic
@@ -40,7 +40,7 @@
          HTMLDEF OPL_BBBM.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_bbbm.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_bbbm.htm -->
 <!-- -->
 <title>
  HLASM - Volledige lijst van alle Instructies, op volgorde van Mnemonic

@@ -2,7 +2,7 @@
 <bxa dir=".">
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/index.htm -->
+<!-- Saved from http://www.bixoft.com/index.htm -->
 <!-- -->
 <title>Bixoft &amp; High Level Assembler - Home Page</title>
 <link rel="shortcut icon" href="images/bixoft.ico"
@@ -78,7 +78,7 @@
   </td>
   <td align="left" valign="middle">
    <a href="whatsnew.htm">What's new</a>
-   on hlasm.com and bixoft.com.
+   on bixoft.nl and bixoft.com.
   </td>
  </tr>
 <!-- HLASM -->
@@ -90,7 +90,7 @@
    </a>
   </td>
   <td align="left" valign="middle">
-   <a href="hlasm.htm">hlasm.com</a>
+   <a href="hlasm.htm">bixoft.com</a>
    is for more general topics related to
    the use of IBM's High Level Assembler for mainframes.<br />
    Please look below for a complete

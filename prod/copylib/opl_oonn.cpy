@@ -1,7 +1,7 @@
          HTMLDEF OPL_OONN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_oonn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_oonn.htm -->
 <!-- -->
 <title>
  HLASM - List of outdated Opcodes, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_OONN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_oonn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_oonn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van vervallen Opcodes, op volgorde van Naam

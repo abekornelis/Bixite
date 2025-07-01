@@ -1,7 +1,7 @@
          HTMLDEF OPL_CDNO.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cdno.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cdno.htm -->
 <!-- -->
 <title>
  HLASM - List of current Directives, Sorted by Opcode
@@ -40,7 +40,7 @@
          HTMLDEF OPL_CDNO.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cdno.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cdno.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Directives, op volgorde van Opcode

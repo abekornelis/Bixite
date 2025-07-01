@@ -1,7 +1,7 @@
          HTMLDEF OPL_COFN.UKH
 <!-- UK -->
 <!-- -->
-<!-- Saved from http://www.hlasm.com/english/opl_cofn.htm -->
+<!-- Saved from http://www.bixoft.com/english/opl_cofn.htm -->
 <!-- -->
 <title>
  HLASM - List of current Opcodes and Function Codes, Sorted by Name
@@ -40,7 +40,7 @@
          HTMLDEF OPL_COFN.NLH
 <!-- NL -->
 <!-- -->
-<!-- Gekopieerd van http://www.hlasm.com/hollands/opl_cofn.htm -->
+<!-- Gekopieerd van http://www.bixoft.com/hollands/opl_cofn.htm -->
 <!-- -->
 <title>
  HLASM - Lijst van gangbare Opcodes en Functie Codes, op volgorde van
